@@ -2,21 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
+  min-height: 100%;
+  overflow-x: hidden;
   background: #000;
 }
 
-/* The captured Canva stylesheet sets `body{overflow:hidden}` because the
-   original site is a single-viewport "slide" with its own internal
-   pagination. Our page needs normal browser scrolling instead (both because
-   a 16:9-locked section can be taller than a narrow/short window, and because
-   we stack multiple sections), so override it here — the captured .ltr.css
-   files themselves are left untouched. */
-html,
-body {
-  overflow-y: auto !important;
-  height: auto !important;
+button {
+  font: inherit;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.left-0 {
+  left: 0;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.origin-top-left {
+  transform-origin: top left;
+}
+
+.select-none {
+  user-select: none;
+}
+
+.bg-black {
+  background-color: #000;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.outline-none {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+button.absolute {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+button.absolute:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+button.absolute:focus-visible {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.7);
 }
