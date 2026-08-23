@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+}
+
+/* The captured Canva stylesheet sets `body{overflow:hidden}` because the
+   original site is a single-viewport "slide" with its own internal
+   pagination. Our page needs normal browser scrolling instead (both because
+   a 16:9-locked section can be taller than a narrow/short window, and because
+   we stack multiple sections), so override it here — the captured .ltr.css
+   files themselves are left untouched. */
+html,
+body {
+  overflow-y: auto !important;
+  height: auto !important;
+}
