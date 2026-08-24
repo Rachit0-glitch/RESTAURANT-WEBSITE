@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
@@ -8,6 +8,90 @@ type TextLayer = { x: number; y: number; w: number; h: number; r: number; runs: 
 type ImageLayer = { x: number; y: number; w: number; h: number; r: number; src: string; cropX: number; cropY: number; cropW: number; cropH: number };
 type Hotspot = { label: string; target: string; x: number; y: number; w: number; h: number };
 type Section = { id: string; label: string; width: number; height: number; images: ImageLayer[]; texts: TextLayer[]; hotspots: Hotspot[] };
+type DishesDishKey = "sushi" | "ramen" | "udon" | "tempura" | "yakitori" | "okonomiyaki";
+type DishesPage = "first" | "second" | "third";
+
+const HERO_BOARD_SRC = "/sakura-assets/_assets/media/2cccb1d8bca202e0ae7adde1a1d5d489.png";
+const HERO_NAV_BAR_SRC = "/sakura-assets/_assets/media/cf0278f8f8782ba0c748d3e016aabe40.png";
+const HERO_LOGO_SRC = "/sakura-assets/_assets/media/6c06138391acf332fac3fc3d9be64b42.png";
+const HERO_CTA_SRC = "/sakura-assets/_assets/media/d7008c2fca28475fcc4c0217970428fb.png";
+const HERO_CTA_ARROW_SRC = "/sakura-assets/_assets/media/30f4682c39416bf4fa425304a1e01229.png";
+const HERO_SUSHI_PLATTER_SRC = "/sakura-assets/_assets/media/2cccb1d8bca202e0ae7adde1a1d5d489.png";
+const HERO_SUSHI_PLATTER_HQ_SRC = "/sakura-assets/_assets/media/hero-sushi-platter-hq-cutout.png";
+const DISHES_BLACK_BLOCK_SRC = "/sakura-assets/_assets/media/dishes/328fb685432d62976b0179f561f987bf.png";
+const DISHES_TOP_BLACK_BLOCK_SRC = "/sakura-assets/_assets/media/dishes/c2d746e5094a5d523e58dfbfefe4d7f7.png";
+const DISHES_SUSHI_PLATTER_SRC = "/sakura-assets/_assets/media/dishes/4bb926cd437f06f219ac808e624af238.png";
+const DISHES_RAMEN_SRC = "/sakura-assets/_assets/media/dishes/bac4a56380ea691e5dd17fa59a382553.png";
+const DISHES_SUSHI_PLATTER_HQ_SRC = "/sakura-assets/_assets/media/dishes/sushi-platter-hq-cutout.png";
+const DISHES_RAMEN_HQ_SRC = "/sakura-assets/_assets/media/dishes/ramen-hq-cutout.png";
+const DISHES_UDON_HQ_SRC = "/sakura-assets/_assets/media/dishes/udon-hq-cutout.png";
+const DISHES_TEMPURA_HQ_SRC = "/sakura-assets/_assets/media/dishes/tempura-hq-cutout.png";
+const DISHES_YAKITORI_HQ_SRC = "/sakura-assets/_assets/media/dishes/yakitori-hq-cutout.png";
+const DISHES_OKONOMIYAKI_HQ_SRC = "/sakura-assets/_assets/media/dishes/okonomiyaki-hq-cutout.png";
+const HERO_TITLE_POSITION = { x: 278, y: 105 };
+const HERO_TITLE_SIZE = { width: 1420, height: 737, fontSize: "548px", lineHeight: "690px" };
+const HERO_NAV_FRAME = { x: 20.6589, y: -6.65675, w: 1875.37, h: 158.385 };
+const WIDESCREEN_STAGE = { width: 1920, height: 1080 };
+const renderedSectionIds = new Set(["home", "dishes-1"]);
+const initialDishesCornerPositions = {
+  top: { x: 1348, y: -42 },
+  bottom: { x: -128, y: 842 },
+};
+const initialDishesDishPositions = {
+  sushi: { x: 80, y: 485 },
+  ramen: { x: 1088, y: 42 },
+  tempura: { x: 80, y: 500 },
+  udon: { x: 1088, y: 42 },
+  okonomiyaki: { x: 80, y: 500 },
+  yakitori: { x: 1088, y: 42 },
+};
+
+const dishesCopy = {
+  first: {
+    top: {
+      number: "01.",
+      title: "Tonkotsu Ramen",
+      description: ["Rich pork-bone broth,", "ramen noodles, chashu", "pork, soft-boiled egg,", "nori, scallions."],
+    },
+    bottom: {
+      number: "02.",
+      title: "Sushi Platter",
+      description: ["Salmon, tuna & shrimp", "nigiri, maki rolls, sashimi,", "pickled ginger, wasabi."],
+    },
+  },
+  second: {
+    top: {
+      number: "03.",
+      title: "Udon",
+      description: ["Thick wheat noodles", "in savory dashi broth,", "with tempura and wakame."],
+    },
+    bottom: {
+      number: "04.",
+      title: "Tempura",
+      description: ["Crispy shrimp and vegetable", "tempura served with tentsuyu", "dipping sauce."],
+    },
+  },
+  third: {
+    top: {
+      number: "05.",
+      title: "Yakitori",
+      description: ["Grilled chicken skewers with", "scallions, glazed with sweet", "soy sauce (tare)."],
+    },
+    bottom: {
+      number: "06.",
+      title: "Okonomiyaki",
+      description: ["Savory Japanese pancake", "with cabbage, seafood,", "sauce, mayo, bonito, aonori."],
+    },
+  },
+};
+
+const navUnderline = {
+  home: { x: 493, w: 72 },
+  "dishes-1": { x: 719, w: 84 },
+  "dishes-2": { x: 887, w: 116 },
+  "dishes-3": { x: 1088, w: 91 },
+  contact: { x: 1253, w: 126 },
+};
 
 const sections = [
   {
@@ -1577,6 +1661,10 @@ const sections = [
 
 function scrollToSection(id: string) { document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); }
 
+function safeScrollTarget(id: string) {
+  return renderedSectionIds.has(id) ? id : "dishes-1";
+}
+
 function getTextStyle(layer: TextLayer): CSSProperties {
   const style: CSSProperties = { ...layer.style };
   if (typeof style.fontSize === "number") style.fontSize = `${style.fontSize}px`;
@@ -1584,31 +1672,661 @@ function getTextStyle(layer: TextLayer): CSSProperties {
   return style;
 }
 
-function DesignStage({ section }: { section: Section }) {
-  const shellRef = useRef<HTMLDivElement | null>(null);
-  const [scale, setScale] = useState(1);
-  useLayoutEffect(() => { const shell = shellRef.current; if (!shell) return; const updateScale = () => setScale(shell.clientWidth / section.width); updateScale(); const observer = new ResizeObserver(updateScale); observer.observe(shell); return () => observer.disconnect(); }, [section.width]);
+function isHeroSushiTitle(layer: TextLayer) {
+  return layer.runs.some((run) => run.text === "SUSHI");
+}
+
+function layerClass(layer: ImageLayer) {
+  if (layer.src === HERO_BOARD_SRC) return "sakura-hero-board";
+  if (layer.src === HERO_CTA_SRC) return "sakura-cta-plate";
+  if (layer.src === HERO_CTA_ARROW_SRC) return "sakura-cta-arrow";
+  return "";
+}
+
+function navPercent(value: number) {
+  return `${((value - HERO_NAV_FRAME.x) / HERO_NAV_FRAME.w) * 100}%`;
+}
+
+function getStageSize(section: Section) {
+  return section.id === "dishes-1" ? WIDESCREEN_STAGE : { width: section.width, height: section.height };
+}
+
+function getDisplayImageLayer(section: Section, layer: ImageLayer, index: number): ImageLayer {
+  if (section.id === "home" && layer.src === HERO_SUSHI_PLATTER_SRC) {
+    return { ...layer, src: HERO_SUSHI_PLATTER_HQ_SRC };
+  }
+
+  if (section.id !== "dishes-1") return layer;
+
+  if (index === 0) {
+    return {
+      ...layer,
+      x: 0,
+      w: WIDESCREEN_STAGE.width,
+      cropW: WIDESCREEN_STAGE.width,
+    };
+  }
+
+  if (layer.src === DISHES_BLACK_BLOCK_SRC) {
+    return { ...layer, x: 0, y: 805, w: 720, h: 275, cropX: 0, cropY: 0, cropW: 720, cropH: 275 };
+  }
+
+  if (layer.src === DISHES_TOP_BLACK_BLOCK_SRC) {
+    return { ...layer, x: 1410, y: 35, w: 510, h: 345, cropX: 0, cropY: 0, cropW: 510, cropH: 345 };
+  }
+
+  if (layer.src === DISHES_SUSHI_PLATTER_SRC) {
+    return { ...layer, src: DISHES_SUSHI_PLATTER_HQ_SRC, x: 80, y: 485, w: 595, h: 579, cropX: 0, cropY: 0, cropW: 595, cropH: 579 };
+  }
+
+  if (layer.src === DISHES_RAMEN_SRC) {
+    return { ...layer, src: DISHES_RAMEN_HQ_SRC, x: 1088, y: 42, w: 640, h: 640, cropX: 0, cropY: 0, cropW: 640, cropH: 640 };
+  }
+
+  if (index === 3) {
+    return { ...layer, x: 520, y: 720, w: 64, h: 140, cropW: 64, cropH: 140 };
+  }
+
+  if (index >= 6) {
+    return { ...layer, x: 1580 + (index - 6) * 86, y: 985, w: 70, h: 76, cropW: 70, cropH: 76 };
+  }
+
+  return layer;
+}
+
+function isDishesBlackBlock(layer: ImageLayer) {
+  return [DISHES_BLACK_BLOCK_SRC, DISHES_TOP_BLACK_BLOCK_SRC].includes(layer.src);
+}
+
+function dishesDishKey(layer: ImageLayer): DishesDishKey | null {
+  if (layer.src === DISHES_SUSHI_PLATTER_SRC) return "sushi";
+  if (layer.src === DISHES_RAMEN_SRC) return "ramen";
+  if (layer.src === DISHES_UDON_HQ_SRC) return "udon";
+  if (layer.src === DISHES_TEMPURA_HQ_SRC) return "tempura";
+  return null;
+}
+
+function makeDishLayer(src: string, x: number, y: number, w: number, h: number): ImageLayer {
+  return { src, x, y, w, h, r: 0, cropX: 0, cropY: 0, cropW: w, cropH: h };
+}
+
+function getDishesTextTemplate(section: Section, text: string) {
+  return getDisplayTextLayer(
+    section,
+    section.texts.find((layer) => layerText(layer) === text) ??
+      section.texts.find((layer) => layerText(layer).startsWith(text.slice(0, 20))) ??
+      section.texts[0],
+  );
+}
+
+function getDisplayTextLayer(section: Section, layer: TextLayer): TextLayer {
+  if (section.id !== "dishes-1") return layer;
+  const text = layerText(layer);
+
+  if (text === "TopDishes") {
+    return {
+      ...layer,
+      x: 95,
+      y: 205,
+      w: 315,
+      h: 380,
+      style: { ...layer.style, fontSize: 190, lineHeight: 146 },
+    };
+  }
+
+  if (text === "01.") return { ...layer, x: 650, y: 205, style: { ...layer.style, fontSize: 64, lineHeight: 64 } };
+  if (text === "Tonkotsu Ramen") return { ...layer, x: 650, y: 282, w: 420, style: { ...layer.style, fontSize: 39, lineHeight: 42 } };
+  if (text.startsWith("Rich pork-bone")) return { ...layer, x: 650, y: 357, w: 410, h: 190, style: { ...layer.style, fontSize: 33, lineHeight: 42 } };
+  if (text === "02.") return { ...layer, x: 1028, y: 690, style: { ...layer.style, fontSize: 64, lineHeight: 64 } };
+  if (text === "Sushi Platter") return { ...layer, x: 1028, y: 767, w: 365, style: { ...layer.style, fontSize: 39, lineHeight: 42 } };
+  if (text.startsWith("Salmon, tuna")) return { ...layer, x: 1028, y: 842, w: 425, h: 160, style: { ...layer.style, fontSize: 31, lineHeight: 39 } };
+  if (text === "Follow US!") return { ...layer, x: 1585, y: 940, w: 180, style: { ...layer.style, fontSize: 33, lineHeight: 36 } };
+
+  return layer;
+}
+
+function getDishesTextRuns(layer: TextLayer): TextRun[] {
+  const text = layerText(layer);
+
+  if (text.startsWith("Rich pork-bone")) {
+    return [
+      { text: "Rich pork-bone broth,", color: "rgb(0, 0, 0)", fontWeight: "400" },
+      { break: true },
+      { text: "ramen noodles, chashu", color: "rgb(0, 0, 0)", fontWeight: "400" },
+      { break: true },
+      { text: "pork, soft-boiled egg,", color: "rgb(0, 0, 0)", fontWeight: "400" },
+      { break: true },
+      { text: "nori, scallions.", color: "rgb(0, 0, 0)", fontWeight: "400" },
+    ];
+  }
+
+  if (text.startsWith("Salmon, tuna")) {
+    return [
+      { text: "Salmon, tuna & shrimp", color: "rgb(0, 0, 0)", fontWeight: "400" },
+      { break: true },
+      { text: "nigiri, maki rolls, sashimi,", color: "rgb(0, 0, 0)", fontWeight: "400" },
+      { break: true },
+      { text: "pickled ginger, wasabi.", color: "rgb(0, 0, 0)", fontWeight: "400" },
+    ];
+  }
+
+  return layer.runs;
+}
+
+function getDisplayHotspot(section: Section, hotspot: Hotspot): Hotspot {
+  if (section.id !== "dishes-1") return hotspot;
+  return hotspot;
+}
+
+function isHeroNavImage(layer: ImageLayer) {
+  return [HERO_NAV_BAR_SRC, HERO_LOGO_SRC, HERO_CTA_SRC, HERO_CTA_ARROW_SRC].includes(layer.src);
+}
+
+function layerText(layer: TextLayer) {
+  return layer.runs.map((run) => run.text ?? "").join("").trim();
+}
+
+function isHeroNavText(layer: TextLayer) {
+  return ["SAKURA", "RESTAURANT", "HOME", "MENU", "COMBOS", "ABOUT", "CONTACT", "ORDER NOW"].includes(layerText(layer));
+}
+
+function ImageLayerView({
+  layer,
+  index,
+  className = "",
+}: {
+  layer: ImageLayer;
+  index: number;
+  className?: string;
+}) {
   return (
-    <section id={section.id} aria-label={section.label} className="relative w-full overflow-hidden bg-black">
-      <div ref={shellRef} className="relative mx-auto w-full" style={{ aspectRatio: `${section.width} / ${section.height}` }}>
-        <div className="absolute left-0 top-0 origin-top-left overflow-hidden" style={{ width: section.width, height: section.height, transform: `scale(${scale})` }}>
-          {section.images.map((layer, index) => (
-            <div key={`img-${index}`} className="absolute overflow-hidden" style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left" }}>
-              <img src={layer.src} alt="" draggable={false} className="absolute select-none" style={{ left: layer.cropX, top: layer.cropY, width: layer.cropW, height: layer.cropH }} />
-            </div>
-          ))}
-          {section.texts.map((layer, index) => (
-            <div key={`text-${index}`} className="absolute" style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left", ...getTextStyle(layer) }}>
-              {layer.runs.map((run, runIndex) => run.break ? <br key={runIndex} /> : <span key={runIndex} style={{ color: run.color, fontWeight: run.fontWeight, fontStyle: run.fontStyle, textDecorationLine: run.textDecorationLine }}>{run.text}</span>)}
-            </div>
-          ))}
-          {section.hotspots.map((hotspot) => (
-            <button key={hotspot.label} type="button" aria-label={hotspot.label} className="absolute cursor-pointer rounded-full outline-none transition duration-300 hover:bg-white/10 focus-visible:ring-4 focus-visible:ring-white/70" style={{ left: hotspot.x, top: hotspot.y, width: hotspot.w, height: hotspot.h }} onClick={() => scrollToSection(hotspot.target)} />
-          ))}
+    <div
+      key={`img-${index}`}
+      className={`absolute overflow-hidden ${layerClass(layer)} ${className}`}
+      style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left" }}
+    >
+      <img src={layer.src} alt="" draggable={false} className="absolute select-none" style={{ left: layer.cropX, top: layer.cropY, width: layer.cropW, height: layer.cropH }} />
+    </div>
+  );
+}
+
+function TextLayerView({ layer, index, className = "", runs }: { layer: TextLayer; index: number; className?: string; runs?: TextRun[] }) {
+  const isCenteredHeroTitle = isHeroSushiTitle(layer);
+  const displayRuns = runs ?? layer.runs;
+  const heroTitleStyle: CSSProperties = isCenteredHeroTitle
+      ? {
+        left: HERO_TITLE_POSITION.x,
+        top: HERO_TITLE_POSITION.y,
+        width: HERO_TITLE_SIZE.width,
+        height: HERO_TITLE_SIZE.height,
+        fontSize: HERO_TITLE_SIZE.fontSize,
+        lineHeight: HERO_TITLE_SIZE.lineHeight,
+        textAlign: "center",
+      }
+    : {};
+
+  return (
+    <div
+      key={`text-${index}`}
+      className={`absolute ${className}`}
+      style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left", ...getTextStyle(layer), ...heroTitleStyle }}
+    >
+      {displayRuns.map((run, runIndex) => run.break ? <br key={runIndex} /> : <span key={runIndex} style={{ color: run.color, fontWeight: run.fontWeight, fontStyle: run.fontStyle, textDecorationLine: run.textDecorationLine }}>{run.text}</span>)}
+    </div>
+  );
+}
+
+function AnimatedDishesText({
+  layer,
+  lines,
+  visible,
+  order,
+  baseDelay = 0,
+  className = "",
+}: {
+  layer: TextLayer;
+  lines: string[];
+  visible: boolean;
+  order: "ltr" | "rtl";
+  baseDelay?: number;
+  className?: string;
+}) {
+  const chars = lines.flatMap((line, lineIndex) => [
+    ...line.split("").map((char) => ({ char, lineBreak: false })),
+    ...(lineIndex < lines.length - 1 ? [{ char: "", lineBreak: true }] : []),
+  ]);
+  const letterCount = chars.filter((item) => !item.lineBreak).length;
+  let letterIndex = 0;
+
+  return (
+    <div
+      className={`sakura-animated-copy absolute ${className}`}
+      style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left", ...getTextStyle(layer) }}
+      aria-hidden={!visible}
+    >
+      {chars.map((item, index) => {
+        if (item.lineBreak) return <br key={`br-${index}`} />;
+
+        const indexForDelay = letterIndex++;
+        const visualOrder = order === "ltr" ? indexForDelay : letterCount - indexForDelay - 1;
+
+        return (
+          <span
+            key={`${item.char}-${index}`}
+            className="sakura-animated-letter"
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0)" : "translateY(14px)",
+              transitionDelay: `${baseDelay + visualOrder * 9}ms`,
+              width: item.char === " " ? "0.34em" : undefined,
+            }}
+          >
+            {item.char === " " ? "\u00a0" : item.char}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function hotspotNavId(hotspot: Hotspot) {
+  if (hotspot.label === "Contact") return "contact";
+  return hotspot.target;
+}
+
+const fixedNavItems = sections[0].hotspots.filter((hotspot) => hotspot.label !== "Order Now");
+
+function FixedSakuraNavbar({ activeNav, setActiveNav }: { activeNav: string; setActiveNav: (id: string) => void }) {
+  const underline = navUnderline[activeNav as keyof typeof navUnderline] ?? navUnderline.home;
+
+  return (
+    <nav className="sakura-fixed-nav" aria-label="Primary">
+      <img src={HERO_NAV_BAR_SRC} alt="" className="sakura-fixed-nav-bg" draggable={false} />
+      <div className="sakura-fixed-nav-content">
+        <button
+          type="button"
+          className="sakura-fixed-brand"
+          aria-label="Sakura home"
+          onClick={() => {
+            setActiveNav("home");
+            scrollToSection("home");
+          }}
+        >
+          <img src={HERO_LOGO_SRC} alt="" className="sakura-fixed-logo" draggable={false} />
+          <span className="sakura-fixed-brand-copy">
+            <span>SAKURA</span>
+            <small>RESTAURANT</small>
+          </span>
+        </button>
+
+        <span
+          aria-hidden="true"
+          className="sakura-fixed-nav-underline"
+          style={{ left: navPercent(underline.x), width: `${(underline.w / HERO_NAV_FRAME.w) * 100}%` }}
+        />
+
+        <div className="sakura-fixed-links">
+          {fixedNavItems.map((hotspot) => {
+            const navId = hotspotNavId(hotspot);
+            const target = safeScrollTarget(hotspot.target);
+            const linkPosition = navUnderline[navId as keyof typeof navUnderline] ?? navUnderline.home;
+
+            return (
+              <button
+                key={hotspot.label}
+                type="button"
+                className="sakura-fixed-link"
+                style={{ left: navPercent(linkPosition.x), width: `${(linkPosition.w / HERO_NAV_FRAME.w) * 100}%` }}
+                onClick={() => {
+                  setActiveNav(navId);
+                  scrollToSection(target);
+                }}
+              >
+                {hotspot.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          className="sakura-fixed-cta"
+          onClick={() => {
+            setActiveNav("dishes-1");
+            scrollToSection("dishes-1");
+          }}
+        >
+          <span>ORDER NOW</span>
+          <span className="sakura-css-arrow" aria-hidden="true">
+            <span />
+          </span>
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+function DesignStage({ section, activeNav, setActiveNav }: { section: Section; activeNav: string; setActiveNav: (id: string) => void }) {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const wheelAccumulatorRef = useRef(0);
+  const wheelGestureLockedRef = useRef(false);
+  const wheelQuietTimerRef = useRef<number | null>(null);
+  const [scale, setScale] = useState(1);
+  const [dishesPage, setDishesPage] = useState<DishesPage>("first");
+  const [isDishesAnimating, setIsDishesAnimating] = useState(false);
+  const dishPositions = initialDishesDishPositions;
+  const visibleImages = section.id === "home" ? section.images.filter((layer) => !isHeroNavImage(layer)) : section.images;
+  const visibleTexts = section.id === "home" ? section.texts.filter((layer) => !isHeroNavText(layer)) : section.texts;
+  const baseImages = section.id === "home" ? visibleImages.slice(0, 1) : visibleImages;
+  const overlayImages = section.id === "home" ? visibleImages.slice(1) : [];
+  const heroTitleTexts = section.id === "home" ? visibleTexts.filter(isHeroSushiTitle) : [];
+  const foregroundTexts = section.id === "home" ? visibleTexts.filter((layer) => !isHeroSushiTitle(layer)) : visibleTexts;
+  const stageSize = getStageSize(section);
+  const stageRatio = stageSize.width / stageSize.height;
+  const showDishesBaseOnly = section.id === "dishes-1";
+
+  useLayoutEffect(() => { const shell = shellRef.current; if (!shell) return; const updateScale = () => setScale(shell.clientWidth / stageSize.width); updateScale(); const observer = new ResizeObserver(updateScale); observer.observe(shell); return () => observer.disconnect(); }, [stageSize.width]);
+
+  useEffect(() => {
+    if (!showDishesBaseOnly) return;
+
+    function pinDishesFrame(element: HTMLElement) {
+      window.scrollTo({ top: element.offsetTop, left: 0, behavior: "auto" });
+    }
+
+    function resetWheelGesture() {
+      wheelAccumulatorRef.current = 0;
+      wheelGestureLockedRef.current = false;
+      if (wheelQuietTimerRef.current) window.clearTimeout(wheelQuietTimerRef.current);
+      wheelQuietTimerRef.current = null;
+    }
+
+    function holdWheelGesture(element: HTMLElement) {
+      wheelGestureLockedRef.current = true;
+      if (wheelQuietTimerRef.current) window.clearTimeout(wheelQuietTimerRef.current);
+      wheelQuietTimerRef.current = window.setTimeout(() => {
+        wheelQuietTimerRef.current = null;
+        if (!isDishesAnimating) resetWheelGesture();
+        pinDishesFrame(element);
+      }, 260);
+    }
+
+    function onWheel(event: WheelEvent) {
+      const element = sectionRef.current;
+      if (!element) return;
+
+      const rect = element.getBoundingClientRect();
+      const inDishesFrame = rect.top < window.innerHeight * 0.45 && rect.bottom > window.innerHeight * 0.45;
+      if (!inDishesFrame || event.deltaY === 0) return;
+
+      const shouldAdvance = event.deltaY > 0 && dishesPage !== "third";
+      const shouldReverse = event.deltaY < 0 && dishesPage !== "first";
+
+      if (!shouldAdvance && !shouldReverse) {
+        resetWheelGesture();
+        return;
+      }
+
+      event.preventDefault();
+      pinDishesFrame(element);
+
+      if (isDishesAnimating || wheelGestureLockedRef.current) {
+        holdWheelGesture(element);
+        return;
+      }
+
+      wheelAccumulatorRef.current += event.deltaY;
+      if (Math.abs(wheelAccumulatorRef.current) < 90) {
+        holdWheelGesture(element);
+        return;
+      }
+
+      const direction = wheelAccumulatorRef.current > 0 ? 1 : -1;
+      if ((direction > 0 && !shouldAdvance) || (direction < 0 && !shouldReverse)) {
+        resetWheelGesture();
+        return;
+      }
+
+      if (shouldAdvance || shouldReverse) {
+        event.preventDefault();
+        pinDishesFrame(element);
+        wheelGestureLockedRef.current = true;
+        wheelAccumulatorRef.current = 0;
+        setIsDishesAnimating(true);
+        setDishesPage((current) => {
+          if (direction > 0) return current === "first" ? "second" : "third";
+          return current === "third" ? "second" : "first";
+        });
+        [80, 260, 620, 1080, 1450].forEach((delay) => window.setTimeout(() => pinDishesFrame(element), delay));
+        window.setTimeout(() => {
+          setIsDishesAnimating(false);
+          if (!wheelQuietTimerRef.current) resetWheelGesture();
+        }, 1650);
+      }
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    return () => {
+      if (wheelQuietTimerRef.current) window.clearTimeout(wheelQuietTimerRef.current);
+      window.removeEventListener("wheel", onWheel, { capture: true });
+    };
+  }, [dishesPage, isDishesAnimating, showDishesBaseOnly]);
+
+  const showFirstDishes = dishesPage === "first";
+  const showSecondDishes = dishesPage === "second";
+  const showThirdDishes = dishesPage === "third";
+  const topNumberLayer = getDishesTextTemplate(section, "01.");
+  const topTitleLayer = getDishesTextTemplate(section, "Tonkotsu Ramen");
+  const topDescriptionLayer = getDishesTextTemplate(section, "Rich pork-bone broth,ramen noodles, chashupork, soft-boiled egg,nori, scallions.");
+  const bottomNumberLayer = getDishesTextTemplate(section, "02.");
+  const bottomTitleLayer = getDishesTextTemplate(section, "Sushi Platter");
+  const bottomDescriptionLayer = getDishesTextTemplate(section, "Salmon, tuna & shrimpnigiri, maki rolls, sashimi,pickled ginger, wasabi.");
+  const udonLayer = makeDishLayer(DISHES_UDON_HQ_SRC, dishPositions.udon.x, dishPositions.udon.y, 640, 626);
+  const tempuraLayer = makeDishLayer(DISHES_TEMPURA_HQ_SRC, dishPositions.tempura.x, dishPositions.tempura.y, 640, 590);
+  const yakitoriLayer = makeDishLayer(DISHES_YAKITORI_HQ_SRC, dishPositions.yakitori.x, dishPositions.yakitori.y + 35, 650, 488);
+  const okonomiyakiLayer = makeDishLayer(DISHES_OKONOMIYAKI_HQ_SRC, dishPositions.okonomiyaki.x + 12, dishPositions.okonomiyaki.y - 15, 610, 570);
+
+  return (
+    <section
+      ref={sectionRef}
+      id={section.id}
+      aria-label={section.label}
+      className={`sakura-section relative w-full overflow-hidden ${section.id === "dishes-1" ? "sakura-dishes-section" : ""}`}
+      style={{ scrollMarginTop: 0 }}
+    >
+      <div
+        ref={shellRef}
+        className={`sakura-stage-shell relative mx-auto w-full ${section.id === "dishes-1" ? "sakura-stage-fit-frame" : ""}`}
+        style={{ aspectRatio: `${stageSize.width} / ${stageSize.height}`, "--stage-ratio": stageRatio } as CSSProperties}
+      >
+        <div className="absolute left-0 top-0 origin-top-left overflow-hidden" style={{ width: stageSize.width, height: stageSize.height, transform: `scale(${scale})` }}>
+          {showDishesBaseOnly ? (
+            <>
+              {baseImages.slice(0, 1).map((layer, index) => (
+                <ImageLayerView
+                  key={`dishes-bg-${index}`}
+                  layer={getDisplayImageLayer(section, layer, index)}
+                  index={index}
+                />
+              ))}
+              <div
+                aria-hidden="true"
+                className="sakura-dishes-band"
+                style={{ left: initialDishesCornerPositions.top.x, top: initialDishesCornerPositions.top.y }}
+              />
+              <div
+                aria-hidden="true"
+                className="sakura-dishes-band"
+                style={{ left: initialDishesCornerPositions.bottom.x, top: initialDishesCornerPositions.bottom.y }}
+              />
+              {baseImages
+                .map((layer, index) => ({ layer, index }))
+                .filter(({ layer, index }) => index > 0 && !isDishesBlackBlock(layer) && !dishesDishKey(layer))
+                .map(({ layer, index }) => {
+                  return (
+                    <ImageLayerView
+                      key={`dishes-static-img-${index}`}
+                      layer={getDisplayImageLayer(section, layer, index)}
+                      index={index}
+                    />
+                  );
+                })}
+              {baseImages
+                .map((layer, index) => ({ layer, index }))
+                .filter(({ layer, index }) => index > 0 && !isDishesBlackBlock(layer) && dishesDishKey(layer))
+                .map(({ layer, index }) => {
+                  const dishKey = dishesDishKey(layer);
+                  const displayLayer = getDisplayImageLayer(section, layer, index);
+                  const movableLayer = dishKey ? { ...displayLayer, x: dishPositions[dishKey].x, y: dishPositions[dishKey].y } : displayLayer;
+                  const route = dishKey === "ramen" ? "top" : "bottom";
+
+                  return (
+                    <ImageLayerView
+                      key={`dishes-img-${index}`}
+                      layer={movableLayer}
+                      index={index}
+                      className={dishKey ? `sakura-dish-swap sakura-dish-current sakura-dish-${route} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
+                    />
+                  );
+                })}
+              <ImageLayerView
+                layer={udonLayer}
+                index={90}
+                className={`sakura-dish-swap sakura-dish-next sakura-dish-top ${showSecondDishes ? "is-home" : "is-away"}`}
+              />
+              <ImageLayerView
+                layer={tempuraLayer}
+                index={91}
+                className={`sakura-dish-swap sakura-dish-next sakura-dish-bottom ${showSecondDishes ? "is-home" : "is-away"}`}
+              />
+              <ImageLayerView
+                layer={yakitoriLayer}
+                index={92}
+                className={`sakura-dish-swap sakura-dish-next sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
+              />
+              <ImageLayerView
+                layer={okonomiyakiLayer}
+                index={93}
+                className={`sakura-dish-swap sakura-dish-next sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
+              />
+              {foregroundTexts
+                .filter((layer) => ["TopDishes", "Follow US!"].includes(layerText(layer)))
+                .map((layer, index) => {
+                  const displayLayer = getDisplayTextLayer(section, layer);
+                  return (
+                    <TextLayerView
+                      key={`dishes-static-text-${index}`}
+                      layer={displayLayer}
+                      index={index}
+                      runs={getDishesTextRuns(layer)}
+                    />
+                  );
+                })}
+              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.first.top.number]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
+              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.first.top.title]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
+              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.first.top.description} visible={showFirstDishes} order="rtl" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
+              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.first.bottom.number]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
+              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.first.bottom.title]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
+              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.first.bottom.description} visible={showFirstDishes} order="rtl" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
+              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.second.top.number]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.second.top.title]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.second.top.description} visible={showSecondDishes} order="ltr" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.second.bottom.number]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.second.bottom.title]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.second.bottom.description} visible={showSecondDishes} order="ltr" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.third.top.number]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.third.top.title]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.third.top.description} visible={showThirdDishes} order="ltr" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.third.bottom.number]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.third.bottom.title]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.third.bottom.description} visible={showThirdDishes} order="ltr" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <div className="sakura-hidden-dishes-content" aria-hidden="true">
+                {section.hotspots.map((hotspot) => {
+                  const displayHotspot = getDisplayHotspot(section, hotspot);
+                  return (
+                    <button
+                      key={`hidden-${hotspot.label}`}
+                      type="button"
+                      tabIndex={-1}
+                      aria-label={hotspot.label}
+                      className="sakura-hotspot absolute cursor-pointer rounded-full outline-none transition duration-300 hover:bg-white/10 focus-visible:ring-4 focus-visible:ring-white/70"
+                      style={{ left: displayHotspot.x, top: displayHotspot.y, width: displayHotspot.w, height: displayHotspot.h }}
+                      onClick={() => {
+                        setActiveNav(hotspotNavId(hotspot));
+                        scrollToSection(safeScrollTarget(hotspot.target));
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <>
+              {baseImages.map((layer, index) => <ImageLayerView key={`base-img-${index}`} layer={getDisplayImageLayer(section, layer, index)} index={index} />)}
+              {heroTitleTexts.map((layer, index) => <TextLayerView key={`hero-title-${index}`} layer={getDisplayTextLayer(section, layer)} index={index} className="sakura-hero-title" />)}
+              {overlayImages.map((layer, index) => <ImageLayerView key={`overlay-img-${index}`} layer={getDisplayImageLayer(section, layer, index + baseImages.length)} index={index + baseImages.length} />)}
+              {foregroundTexts.map((layer, index) => <TextLayerView key={`text-${index}`} layer={getDisplayTextLayer(section, layer)} index={index} />)}
+            </>
+          )}
+          {!showDishesBaseOnly && section.id !== "home" ? section.hotspots.map((hotspot) => {
+            const displayHotspot = getDisplayHotspot(section, hotspot);
+            return (
+            <button
+              key={hotspot.label}
+              type="button"
+              aria-label={hotspot.label}
+              className={`sakura-hotspot absolute cursor-pointer rounded-full outline-none transition duration-300 hover:bg-white/10 focus-visible:ring-4 focus-visible:ring-white/70 ${hotspot.label === "Order Now" ? "sakura-cta-hotspot" : ""}`}
+              style={{ left: displayHotspot.x, top: displayHotspot.y, width: displayHotspot.w, height: displayHotspot.h }}
+              onClick={() => {
+                setActiveNav(hotspotNavId(hotspot));
+                scrollToSection(safeScrollTarget(hotspot.target));
+              }}
+            />
+          )}) : null}
         </div>
       </div>
     </section>
   );
 }
 
-export default function SakuraExperience() { return <main className="w-full bg-black">{sections.map((section) => <DesignStage key={section.id} section={section} />)}</main>; }
+export default function SakuraExperience() {
+  const [activeNav, setActiveNav] = useState("home");
+
+  useEffect(() => {
+    function updateActiveSection() {
+      const viewportAnchor = window.innerHeight * 0.42;
+      let next = sections[0].id;
+
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (!element) continue;
+        if (element.getBoundingClientRect().top <= viewportAnchor) next = section.id;
+      }
+
+      setActiveNav(next);
+    }
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, []);
+
+  return (
+    <main className="w-full bg-black">
+      <FixedSakuraNavbar activeNav={activeNav} setActiveNav={setActiveNav} />
+      {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
+        <DesignStage
+          key={section.id}
+          section={section}
+          activeNav={activeNav}
+          setActiveNav={setActiveNav}
+        />
+      ))}
+    </main>
+  );
+}
