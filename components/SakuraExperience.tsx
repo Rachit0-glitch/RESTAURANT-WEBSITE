@@ -2,6 +2,13 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import SakuraNavbar from "./SakuraNavbar";
+import AevumDisclaimerGate from "./AevumDisclaimerGate";
+import AevumLoadingScreen from "./AevumLoadingScreen";
+import AevumAgencyFooter from "./AevumAgencyFooter";
+import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
+import SakuraDishesEffects from "./SakuraDishesEffects";
+import SakuraTransitionBanner from "./SakuraTransitionBanner";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
 type TextLayer = { x: number; y: number; w: number; h: number; r: number; runs: TextRun[]; style: CSSProperties & { fontSize?: number; lineHeight?: number } };
@@ -9,7 +16,7 @@ type ImageLayer = { x: number; y: number; w: number; h: number; r: number; src: 
 type Hotspot = { label: string; target: string; x: number; y: number; w: number; h: number };
 type Section = { id: string; label: string; width: number; height: number; images: ImageLayer[]; texts: TextLayer[]; hotspots: Hotspot[] };
 type DishesDishKey = "sushi" | "ramen" | "udon" | "tempura" | "yakitori" | "okonomiyaki";
-type DishesPage = "first" | "second" | "third";
+export type DishesPage = "first" | "second" | "third";
 
 const HERO_BOARD_SRC = "/sakura-assets/_assets/media/2cccb1d8bca202e0ae7adde1a1d5d489.png";
 const HERO_NAV_BAR_SRC = "/sakura-assets/_assets/media/cf0278f8f8782ba0c748d3e016aabe40.png";
@@ -39,11 +46,11 @@ const initialDishesCornerPositions = {
 };
 const initialDishesDishPositions = {
   sushi: { x: 80, y: 485 },
-  ramen: { x: 1088, y: 42 },
+  ramen: { x: 1088, y: 60 },
   tempura: { x: 80, y: 500 },
-  udon: { x: 1088, y: 42 },
+  udon: { x: 1088, y: 60 },
   okonomiyaki: { x: 80, y: 500 },
-  yakitori: { x: 1088, y: 42 },
+  yakitori: { x: 1088, y: 60 },
 };
 
 const dishesCopy = {
@@ -207,30 +214,6 @@ const sections = [
         "cropY": 0,
         "cropW": 366.121,
         "cropH": 203.146
-      },
-      {
-        "x": 159.532,
-        "y": 516.472,
-        "w": 389.075,
-        "h": 429.245,
-        "r": 0,
-        "src": "/sakura-assets/_assets/media/515949127f7618a82b5ffae453cbaeaf.png",
-        "cropX": 0,
-        "cropY": 0,
-        "cropW": 389.075,
-        "cropH": 429.245
-      },
-      {
-        "x": 205.441,
-        "y": 562.38,
-        "w": 320.213,
-        "h": 292.667,
-        "r": 0,
-        "src": "/sakura-assets/_assets/media/eff5d7758d8f1b4b72f870abaa7d41d6.png",
-        "cropX": 0,
-        "cropY": 0,
-        "cropW": 320.213,
-        "cropH": 292.667
       },
       {
         "x": 367.333,
@@ -436,91 +419,6 @@ const sections = [
         }
       },
       {
-        "x": 259.062,
-        "y": 598.4472678039999,
-        "w": 203.412,
-        "h": 91.2909,
-        "r": 0,
-        "runs": [
-          {
-            "text": "寿司",
-            "color": "rgb(0, 0, 0)",
-            "fontWeight": "900",
-            "fontStyle": "normal",
-            "textDecorationLine": "none"
-          },
-          {
-            "break": true
-          },
-          {
-            "text": "盛り合わせ",
-            "color": "rgb(0, 0, 0)",
-            "fontWeight": "900",
-            "fontStyle": "normal",
-            "textDecorationLine": "none"
-          }
-        ],
-        "style": {
-          "fontFamily": "YAFdJiHXlcI_0, auto",
-          "fontSize": 40.645470852,
-          "lineHeight": 43.61336,
-          "color": "rgb(0, 0, 0)",
-          "fontWeight": "900",
-          "textTransform": "none",
-          "letterSpacing": "0em"
-        }
-      },
-      {
-        "x": 282.09,
-        "y": 679.2369910599999,
-        "w": 118.977,
-        "h": 143.489,
-        "r": 0,
-        "runs": [
-          {
-            "text": "67",
-            "color": "rgb(0, 0, 0)",
-            "fontWeight": "400",
-            "fontStyle": "normal",
-            "textDecorationLine": "none"
-          }
-        ],
-        "style": {
-          "fontFamily": "YACgEcYqQ-A_0, auto",
-          "fontSize": 120.39008940000001,
-          "lineHeight": 167.56712000000002,
-          "color": "rgb(0, 0, 0)",
-          "fontWeight": "400",
-          "textTransform": "none",
-          "letterSpacing": "0em"
-        }
-      },
-      {
-        "x": 395.31,
-        "y": 714.6837303324,
-        "w": 63.3263,
-        "h": 54.9496,
-        "r": 0,
-        "runs": [
-          {
-            "text": ",90",
-            "color": "rgb(0, 0, 0)",
-            "fontWeight": "400",
-            "fontStyle": "normal",
-            "textDecorationLine": "none"
-          }
-        ],
-        "style": {
-          "fontFamily": "YACgEcYqQ-A_0, auto",
-          "fontSize": 46.612696676000006,
-          "lineHeight": 64.27232000000001,
-          "color": "rgb(0, 0, 0)",
-          "fontWeight": "400",
-          "textTransform": "none",
-          "letterSpacing": "0em"
-        }
-      },
-      {
         "x": 188.06,
         "y": 95.341314054,
         "w": 201.493,
@@ -592,31 +490,6 @@ const sections = [
           "color": "rgb(0, 0, 0)",
           "fontWeight": "400",
           "textTransform": "uppercase",
-          "letterSpacing": "0em"
-        }
-      },
-      {
-        "x": 241.791,
-        "y": 714.6837303324,
-        "w": 38.3796,
-        "h": 54.9496,
-        "r": 0,
-        "runs": [
-          {
-            "text": "¥",
-            "color": "rgb(0, 0, 0)",
-            "fontWeight": "400",
-            "fontStyle": "normal",
-            "textDecorationLine": "none"
-          }
-        ],
-        "style": {
-          "fontFamily": "YACgEcYqQ-A_0, auto",
-          "fontSize": 46.612696676000006,
-          "lineHeight": 64.27232000000001,
-          "color": "rgb(0, 0, 0)",
-          "fontWeight": "400",
-          "textTransform": "none",
           "letterSpacing": "0em"
         }
       }
@@ -749,42 +622,6 @@ const sections = [
         "cropY": 0,
         "cropW": 496.464,
         "cropH": 540.764
-      },
-      {
-        "x": 1279.35,
-        "y": 976.124,
-        "w": 57.2843,
-        "h": 62.6308,
-        "r": 0,
-        "src": "/sakura-assets/_assets/media/dishes/c265f1a62fd8f7b6bfbd4bff02245bb9.png",
-        "cropX": 0,
-        "cropY": 0,
-        "cropW": 57.2843,
-        "cropH": 62.6308
-      },
-      {
-        "x": 1355.73,
-        "y": 976.124,
-        "w": 57.2843,
-        "h": 62.6308,
-        "r": 0,
-        "src": "/sakura-assets/_assets/media/dishes/43d8b1af182cd3dabf32cbe69ebbe7a7.png",
-        "cropX": 0,
-        "cropY": 0,
-        "cropW": 57.2843,
-        "cropH": 62.6308
-      },
-      {
-        "x": 1432.11,
-        "y": 976.124,
-        "w": 57.2843,
-        "h": 62.6308,
-        "r": 0,
-        "src": "/sakura-assets/_assets/media/dishes/3294b8df9be9d0bec5e1a6748b5d4033.png",
-        "cropX": 0,
-        "cropY": 0,
-        "cropW": 57.2843,
-        "cropH": 62.6308
       }
     ],
     "texts": [
@@ -1628,31 +1465,6 @@ const sections = [
           "textTransform": "none",
           "letterSpacing": "0em"
         }
-      },
-      {
-        "x": 1303.77102483492,
-        "y": 935.6375915215101,
-        "w": 131.372,
-        "h": 30.3983,
-        "r": 0,
-        "runs": [
-          {
-            "text": "Follow US!",
-            "color": "rgb(0, 0, 0)",
-            "fontWeight": "700",
-            "fontStyle": "normal",
-            "textDecorationLine": "none"
-          }
-        ],
-        "style": {
-          "fontFamily": "YAEnXEEs5-Q_0, auto",
-          "fontSize": 25.965915215099997,
-          "lineHeight": 25.205103,
-          "color": "rgb(0, 0, 0)",
-          "fontWeight": "700",
-          "textTransform": "none",
-          "letterSpacing": "-0.03em"
-        }
       }
     ],
     "hotspots": []
@@ -1712,7 +1524,7 @@ function getDisplayImageLayer(section: Section, layer: ImageLayer, index: number
   }
 
   if (layer.src === DISHES_TOP_BLACK_BLOCK_SRC) {
-    return { ...layer, x: 1410, y: 35, w: 510, h: 345, cropX: 0, cropY: 0, cropW: 510, cropH: 345 };
+    return { ...layer, x: 1410, y: 50, w: 510, h: 345, cropX: 0, cropY: 0, cropW: 510, cropH: 345 };
   }
 
   if (layer.src === DISHES_SUSHI_PLATTER_SRC) {
@@ -1720,15 +1532,11 @@ function getDisplayImageLayer(section: Section, layer: ImageLayer, index: number
   }
 
   if (layer.src === DISHES_RAMEN_SRC) {
-    return { ...layer, src: DISHES_RAMEN_HQ_SRC, x: 1088, y: 42, w: 640, h: 640, cropX: 0, cropY: 0, cropW: 640, cropH: 640 };
+    return { ...layer, src: DISHES_RAMEN_HQ_SRC, x: 1088, y: 60, w: 640, h: 640, cropX: 0, cropY: 0, cropW: 640, cropH: 640 };
   }
 
   if (index === 3) {
     return { ...layer, x: 520, y: 720, w: 64, h: 140, cropW: 64, cropH: 140 };
-  }
-
-  if (index >= 6) {
-    return { ...layer, x: 1580 + (index - 6) * 86, y: 985, w: 70, h: 76, cropW: 70, cropH: 76 };
   }
 
   return layer;
@@ -1780,7 +1588,6 @@ function getDisplayTextLayer(section: Section, layer: TextLayer): TextLayer {
   if (text === "02.") return { ...layer, x: 1028, y: 690, style: { ...layer.style, fontSize: 64, lineHeight: 64 } };
   if (text === "Sushi Platter") return { ...layer, x: 1028, y: 767, w: 365, style: { ...layer.style, fontSize: 39, lineHeight: 42 } };
   if (text.startsWith("Salmon, tuna")) return { ...layer, x: 1028, y: 842, w: 425, h: 160, style: { ...layer.style, fontSize: 31, lineHeight: 39 } };
-  if (text === "Follow US!") return { ...layer, x: 1585, y: 940, w: 180, style: { ...layer.style, fontSize: 33, lineHeight: 36 } };
 
   return layer;
 }
@@ -1830,27 +1637,112 @@ function isHeroNavText(layer: TextLayer) {
   return ["SAKURA", "RESTAURANT", "HOME", "MENU", "COMBOS", "ABOUT", "CONTACT", "ORDER NOW"].includes(layerText(layer));
 }
 
-function ImageLayerView({
-  layer,
-  index,
-  className = "",
+function HeroTaglineCTA({
+  onExploreMenu,
 }: {
-  layer: ImageLayer;
-  index: number;
-  className?: string;
+  onExploreMenu: () => void;
 }) {
   return (
     <div
-      key={`img-${index}`}
-      className={`absolute overflow-hidden ${layerClass(layer)} ${className}`}
-      style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left" }}
+      className="absolute z-30 pointer-events-auto select-none"
+      style={{
+        left: 85,
+        top: 525,
+        width: 300,
+      }}
     >
-      <img src={layer.src} alt="" draggable={false} className="absolute select-none" style={{ left: layer.cropX, top: layer.cropY, width: layer.cropW, height: layer.cropH }} />
+      <div className="flex flex-col text-left">
+        <h2 className="text-4xl lg:text-[45px] font-black tracking-tight text-neutral-950 uppercase leading-[1.04]">
+          Authentic <br />
+          Japanese <br />
+          <span className="text-red-600">Dining.</span>
+        </h2>
+
+        <p className="text-base text-neutral-700 font-medium leading-relaxed mt-4">
+          Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.
+        </p>
+
+        <div className="pt-6">
+          <button
+            type="button"
+            onClick={onExploreMenu}
+            className="inline-flex items-center gap-3 bg-neutral-950 hover:bg-red-600 text-white text-sm font-bold tracking-[0.16em] uppercase px-8 py-3.5 rounded-full transition-all duration-300 cursor-pointer shadow-lg shadow-black/10 hover:shadow-red-600/30 hover:scale-105 active:scale-95"
+          >
+            <span>Explore Menu</span>
+            <svg
+              className="w-4 h-4 stroke-current stroke-2 fill-none"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-function TextLayerView({ layer, index, className = "", runs }: { layer: TextLayer; index: number; className?: string; runs?: TextRun[] }) {
+function ImageLayerView({
+  layer,
+  index,
+  className = "",
+  style = {},
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel,
+}: {
+  layer: ImageLayer;
+  index: number;
+  className?: string;
+  style?: CSSProperties;
+  onPointerDown?: (e: React.PointerEvent) => void;
+  onPointerMove?: (e: React.PointerEvent) => void;
+  onPointerUp?: (e: React.PointerEvent) => void;
+  onPointerCancel?: (e: React.PointerEvent) => void;
+}) {
+  return (
+    <div
+      key={`img-${index}`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
+      className={`absolute overflow-hidden ${layerClass(layer)} ${className}`}
+      style={{
+        left: layer.x,
+        top: layer.y,
+        width: layer.w,
+        height: layer.h,
+        transform: layer.r ? `rotate(${layer.r}deg)` : undefined,
+        transformOrigin: "top left",
+        ...style,
+      }}
+    >
+      <img
+        src={layer.src}
+        alt=""
+        draggable={false}
+        className="absolute select-none pointer-events-none"
+        style={{ left: layer.cropX, top: layer.cropY, width: layer.cropW, height: layer.cropH }}
+      />
+    </div>
+  );
+}
+
+function TextLayerView({
+  layer,
+  index,
+  className = "",
+  runs,
+  style = {},
+}: {
+  layer: TextLayer;
+  index: number;
+  className?: string;
+  runs?: TextRun[];
+  style?: CSSProperties;
+}) {
   const isCenteredHeroTitle = isHeroSushiTitle(layer);
   const displayRuns = runs ?? layer.runs;
   const heroTitleStyle: CSSProperties = isCenteredHeroTitle
@@ -1869,7 +1761,17 @@ function TextLayerView({ layer, index, className = "", runs }: { layer: TextLaye
     <div
       key={`text-${index}`}
       className={`absolute ${className}`}
-      style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left", ...getTextStyle(layer), ...heroTitleStyle }}
+      style={{
+        left: layer.x,
+        top: layer.y,
+        width: layer.w,
+        height: layer.h,
+        transform: layer.r ? `rotate(${layer.r}deg)` : undefined,
+        transformOrigin: isCenteredHeroTitle ? "center center" : "top left",
+        ...getTextStyle(layer),
+        ...heroTitleStyle,
+        ...style,
+      }}
     >
       {displayRuns.map((run, runIndex) => run.break ? <br key={runIndex} /> : <span key={runIndex} style={{ color: run.color, fontWeight: run.fontWeight, fontStyle: run.fontStyle, textDecorationLine: run.textDecorationLine }}>{run.text}</span>)}
     </div>
@@ -1900,8 +1802,16 @@ function AnimatedDishesText({
 
   return (
     <div
-      className={`sakura-animated-copy absolute ${className}`}
-      style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h, transform: layer.r ? `rotate(${layer.r}deg)` : undefined, transformOrigin: "top left", ...getTextStyle(layer) }}
+      className={`sakura-animated-copy absolute ${visible ? "is-visible" : "is-hidden"} ${className}`}
+      style={{
+        left: layer.x,
+        top: layer.y,
+        width: layer.w,
+        height: layer.h,
+        transform: layer.r ? `rotate(${layer.r}deg)` : undefined,
+        transformOrigin: "top left",
+        ...getTextStyle(layer),
+      }}
       aria-hidden={!visible}
     >
       {chars.map((item, index) => {
@@ -1916,8 +1826,8 @@ function AnimatedDishesText({
             className="sakura-animated-letter"
             style={{
               opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(14px)",
-              transitionDelay: `${baseDelay + visualOrder * 9}ms`,
+              transform: visible ? "translateY(0)" : "translateY(12px)",
+              transitionDelay: visible ? `${baseDelay + visualOrder * 8}ms` : "0ms",
               width: item.char === " " ? "0.34em" : undefined,
             }}
           >
@@ -1934,87 +1844,58 @@ function hotspotNavId(hotspot: Hotspot) {
   return hotspot.target;
 }
 
-const fixedNavItems = sections[0].hotspots.filter((hotspot) => hotspot.label !== "Order Now");
-
-function FixedSakuraNavbar({ activeNav, setActiveNav }: { activeNav: string; setActiveNav: (id: string) => void }) {
-  const underline = navUnderline[activeNav as keyof typeof navUnderline] ?? navUnderline.home;
-
-  return (
-    <nav className="sakura-fixed-nav" aria-label="Primary">
-      <img src={HERO_NAV_BAR_SRC} alt="" className="sakura-fixed-nav-bg" draggable={false} />
-      <div className="sakura-fixed-nav-content">
-        <button
-          type="button"
-          className="sakura-fixed-brand"
-          aria-label="Sakura home"
-          onClick={() => {
-            setActiveNav("home");
-            scrollToSection("home");
-          }}
-        >
-          <img src={HERO_LOGO_SRC} alt="" className="sakura-fixed-logo" draggable={false} />
-          <span className="sakura-fixed-brand-copy">
-            <span>SAKURA</span>
-            <small>RESTAURANT</small>
-          </span>
-        </button>
-
-        <span
-          aria-hidden="true"
-          className="sakura-fixed-nav-underline"
-          style={{ left: navPercent(underline.x), width: `${(underline.w / HERO_NAV_FRAME.w) * 100}%` }}
-        />
-
-        <div className="sakura-fixed-links">
-          {fixedNavItems.map((hotspot) => {
-            const navId = hotspotNavId(hotspot);
-            const target = safeScrollTarget(hotspot.target);
-            const linkPosition = navUnderline[navId as keyof typeof navUnderline] ?? navUnderline.home;
-
-            return (
-              <button
-                key={hotspot.label}
-                type="button"
-                className="sakura-fixed-link"
-                style={{ left: navPercent(linkPosition.x), width: `${(linkPosition.w / HERO_NAV_FRAME.w) * 100}%` }}
-                onClick={() => {
-                  setActiveNav(navId);
-                  scrollToSection(target);
-                }}
-              >
-                {hotspot.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          type="button"
-          className="sakura-fixed-cta"
-          onClick={() => {
-            setActiveNav("dishes-1");
-            scrollToSection("dishes-1");
-          }}
-        >
-          <span>ORDER NOW</span>
-          <span className="sakura-css-arrow" aria-hidden="true">
-            <span />
-          </span>
-        </button>
-      </div>
-    </nav>
-  );
-}
-
-function DesignStage({ section, activeNav, setActiveNav }: { section: Section; activeNav: string; setActiveNav: (id: string) => void }) {
+function DesignStage({
+  section,
+  activeNav,
+  setActiveNav,
+  dishesPage,
+  setDishesPage,
+  isHeroRevealed,
+}: {
+  section: Section;
+  activeNav: string;
+  setActiveNav: (id: string) => void;
+  dishesPage: DishesPage;
+  setDishesPage: React.Dispatch<React.SetStateAction<DishesPage>>;
+  isHeroRevealed: boolean;
+}) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const shellRef = useRef<HTMLDivElement | null>(null);
-  const wheelAccumulatorRef = useRef(0);
-  const wheelGestureLockedRef = useRef(false);
-  const wheelQuietTimerRef = useRef<number | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const isTransitioningRef = useRef(false);
   const [scale, setScale] = useState(1);
-  const [dishesPage, setDishesPage] = useState<DishesPage>("first");
-  const [isDishesAnimating, setIsDishesAnimating] = useState(false);
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (section.id !== "home" && section.id !== "dishes-1") return;
+
+    let rafId: number;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+      targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+
+    const animate = () => {
+      currentX += (targetX - currentX) * 0.05;
+      currentY += (targetY - currentY) * 0.05;
+      setMouseOffset({ x: currentX, y: currentY });
+      rafId = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    rafId = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, [section.id]);
+
   const dishPositions = initialDishesDishPositions;
   const visibleImages = section.id === "home" ? section.images.filter((layer) => !isHeroNavImage(layer)) : section.images;
   const visibleTexts = section.id === "home" ? section.texts.filter((layer) => !isHeroNavText(layer)) : section.texts;
@@ -2026,92 +1907,195 @@ function DesignStage({ section, activeNav, setActiveNav }: { section: Section; a
   const stageRatio = stageSize.width / stageSize.height;
   const showDishesBaseOnly = section.id === "dishes-1";
 
-  useLayoutEffect(() => { const shell = shellRef.current; if (!shell) return; const updateScale = () => setScale(shell.clientWidth / stageSize.width); updateScale(); const observer = new ResizeObserver(updateScale); observer.observe(shell); return () => observer.disconnect(); }, [stageSize.width]);
+  useLayoutEffect(() => {
+    const updateScale = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const scaleX = vw / stageSize.width;
+      const scaleY = vh / stageSize.height;
+      // Full bleed edge-to-edge cover scaling with no side pillars across all screens
+      setScale(Math.max(scaleX, scaleY));
+    };
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, [stageSize.width, stageSize.height]);
 
+  const switchPage = (target: DishesPage) => {
+    if (isTransitioningRef.current || dishesPage === target) return;
+    isTransitioningRef.current = true;
+    setDishesPage(target);
+
+    if (target === "first") setActiveNav("dishes-1");
+    else if (target === "second") setActiveNav("dishes-2");
+    else if (target === "third") setActiveNav("dishes-3");
+
+    if (sectionRef.current) {
+      const topPos = sectionRef.current.offsetTop;
+      if (Math.abs(window.scrollY - topPos) > 4) {
+        window.scrollTo({ top: topPos, behavior: "smooth" });
+      }
+    }
+
+    window.setTimeout(() => {
+      isTransitioningRef.current = false;
+    }, 980);
+  };
+
+  const navigateDishes = (direction: 1 | -1): boolean => {
+    if (isTransitioningRef.current) return true;
+    if (direction > 0) {
+      if (dishesPage === "first") {
+        switchPage("second");
+        return true;
+      }
+      if (dishesPage === "second") {
+        switchPage("third");
+        return true;
+      }
+      return false;
+    } else {
+      if (dishesPage === "third") {
+        switchPage("second");
+        return true;
+      }
+      if (dishesPage === "second") {
+        switchPage("first");
+        return true;
+      }
+      return false;
+    }
+  };
+
+  // Screen perfectly locked until all dishes explored, then smoothly unlocks to other sections
   useEffect(() => {
     if (!showDishesBaseOnly) return;
 
-    function pinDishesFrame(element: HTMLElement) {
-      window.scrollTo({ top: element.offsetTop, left: 0, behavior: "auto" });
-    }
-
-    function resetWheelGesture() {
-      wheelAccumulatorRef.current = 0;
-      wheelGestureLockedRef.current = false;
-      if (wheelQuietTimerRef.current) window.clearTimeout(wheelQuietTimerRef.current);
-      wheelQuietTimerRef.current = null;
-    }
-
-    function holdWheelGesture(element: HTMLElement) {
-      wheelGestureLockedRef.current = true;
-      if (wheelQuietTimerRef.current) window.clearTimeout(wheelQuietTimerRef.current);
-      wheelQuietTimerRef.current = window.setTimeout(() => {
-        wheelQuietTimerRef.current = null;
-        if (!isDishesAnimating) resetWheelGesture();
-        pinDishesFrame(element);
-      }, 260);
-    }
+    let accumulatedDelta = 0;
+    let wheelDebounceTimer: number | null = null;
 
     function onWheel(event: WheelEvent) {
       const element = sectionRef.current;
       if (!element) return;
 
       const rect = element.getBoundingClientRect();
-      const inDishesFrame = rect.top < window.innerHeight * 0.45 && rect.bottom > window.innerHeight * 0.45;
-      if (!inDishesFrame || event.deltaY === 0) return;
+      const inDishesFrame = rect.top <= window.innerHeight * 0.65 && rect.bottom >= window.innerHeight * 0.35;
+      if (!inDishesFrame) return;
 
-      const shouldAdvance = event.deltaY > 0 && dishesPage !== "third";
-      const shouldReverse = event.deltaY < 0 && dishesPage !== "first";
+      const primaryDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if (Math.abs(primaryDelta) < 3) return;
 
-      if (!shouldAdvance && !shouldReverse) {
-        resetWheelGesture();
-        return;
-      }
+      const direction: 1 | -1 = primaryDelta > 0 ? 1 : -1;
 
-      event.preventDefault();
-      pinDishesFrame(element);
-
-      if (isDishesAnimating || wheelGestureLockedRef.current) {
-        holdWheelGesture(element);
-        return;
-      }
-
-      wheelAccumulatorRef.current += event.deltaY;
-      if (Math.abs(wheelAccumulatorRef.current) < 90) {
-        holdWheelGesture(element);
-        return;
-      }
-
-      const direction = wheelAccumulatorRef.current > 0 ? 1 : -1;
-      if ((direction > 0 && !shouldAdvance) || (direction < 0 && !shouldReverse)) {
-        resetWheelGesture();
-        return;
-      }
-
-      if (shouldAdvance || shouldReverse) {
+      // Lock all scroll momentum while dishes are actively transitioning
+      if (isTransitioningRef.current) {
         event.preventDefault();
-        pinDishesFrame(element);
-        wheelGestureLockedRef.current = true;
-        wheelAccumulatorRef.current = 0;
-        setIsDishesAnimating(true);
-        setDishesPage((current) => {
-          if (direction > 0) return current === "first" ? "second" : "third";
-          return current === "third" ? "second" : "first";
-        });
-        [80, 260, 620, 1080, 1450].forEach((delay) => window.setTimeout(() => pinDishesFrame(element), delay));
-        window.setTimeout(() => {
-          setIsDishesAnimating(false);
-          if (!wheelQuietTimerRef.current) resetWheelGesture();
-        }, 1650);
+        return;
+      }
+
+      // If scrolling DOWN and not yet at the final pair (Pair 3): lock and step carousel
+      if (direction > 0 && dishesPage !== "third") {
+        event.preventDefault();
+        accumulatedDelta += primaryDelta;
+        if (wheelDebounceTimer) window.clearTimeout(wheelDebounceTimer);
+        wheelDebounceTimer = window.setTimeout(() => {
+          accumulatedDelta = 0;
+        }, 220);
+
+        if (accumulatedDelta >= 20) {
+          accumulatedDelta = 0;
+          navigateDishes(1);
+        }
+        return;
+      }
+
+      // If scrolling UP and not yet at the start pair (Pair 1): lock and step carousel back
+      if (direction < 0 && dishesPage !== "first") {
+        event.preventDefault();
+        accumulatedDelta += primaryDelta;
+        if (wheelDebounceTimer) window.clearTimeout(wheelDebounceTimer);
+        wheelDebounceTimer = window.setTimeout(() => {
+          accumulatedDelta = 0;
+        }, 220);
+
+        if (accumulatedDelta <= -20) {
+          accumulatedDelta = 0;
+          navigateDishes(-1);
+        }
+        return;
+      }
+
+      // If on Pair 3 and scrolling DOWN: all explored -> smoothly unlock down to footer
+      // If on Pair 1 and scrolling UP: at top -> smoothly unlock up to Hero
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      const element = sectionRef.current;
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const inDishesFrame = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
+      if (!inDishesFrame) return;
+
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+        if (dishesPage !== "third") {
+          if (navigateDishes(1)) event.preventDefault();
+        } else {
+          scrollToSection("aevum-footer");
+        }
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+        if (dishesPage !== "first") {
+          if (navigateDishes(-1)) event.preventDefault();
+        } else {
+          scrollToSection("home");
+        }
       }
     }
 
     window.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    window.addEventListener("keydown", onKeyDown);
+
     return () => {
-      if (wheelQuietTimerRef.current) window.clearTimeout(wheelQuietTimerRef.current);
+      if (wheelDebounceTimer) window.clearTimeout(wheelDebounceTimer);
       window.removeEventListener("wheel", onWheel, { capture: true });
+      window.removeEventListener("keydown", onKeyDown);
     };
-  }, [dishesPage, isDishesAnimating, showDishesBaseOnly]);
+  }, [dishesPage, showDishesBaseOnly]);
+
+  const handleTouchStart = (e: React.TouchEvent | React.PointerEvent) => {
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    touchStartRef.current = { x: clientX, y: clientY, time: Date.now() };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent | React.PointerEvent) => {
+    if (!touchStartRef.current) return;
+    const clientX = "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
+    const clientY = "changedTouches" in e ? e.changedTouches[0].clientY : e.clientY;
+    const deltaX = clientX - touchStartRef.current.x;
+    const deltaY = clientY - touchStartRef.current.y;
+    const elapsed = Date.now() - touchStartRef.current.time;
+    touchStartRef.current = null;
+
+    if (elapsed > 800) return;
+
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) {
+        if (dishesPage !== "third") navigateDishes(1);
+        else scrollToSection("aevum-footer");
+      } else {
+        if (dishesPage !== "first") navigateDishes(-1);
+        else scrollToSection("home");
+      }
+    } else if (Math.abs(deltaY) > 45) {
+      if (deltaY < 0) {
+        if (dishesPage !== "third") navigateDishes(1);
+        else scrollToSection("aevum-footer");
+      } else {
+        if (dishesPage !== "first") navigateDishes(-1);
+        else scrollToSection("home");
+      }
+    }
+  };
 
   const showFirstDishes = dishesPage === "first";
   const showSecondDishes = dishesPage === "second";
@@ -2134,13 +2118,38 @@ function DesignStage({ section, activeNav, setActiveNav }: { section: Section; a
       aria-label={section.label}
       className={`sakura-section relative w-full overflow-hidden ${section.id === "dishes-1" ? "sakura-dishes-section" : ""}`}
       style={{ scrollMarginTop: 0 }}
+      onTouchStart={showDishesBaseOnly ? handleTouchStart : undefined}
+      onTouchEnd={showDishesBaseOnly ? handleTouchEnd : undefined}
+      onPointerDown={showDishesBaseOnly ? handleTouchStart : undefined}
+      onPointerUp={showDishesBaseOnly ? handleTouchEnd : undefined}
     >
+      {section.id === "home" && (
+        <SakuraHeroAtmosphere
+          isRevealed={isHeroRevealed}
+          onExploreScroll={() => {
+            setActiveNav("dishes-1");
+            setDishesPage("first");
+            scrollToSection("dishes-1");
+          }}
+        />
+      )}
       <div
         ref={shellRef}
-        className={`sakura-stage-shell relative mx-auto w-full ${section.id === "dishes-1" ? "sakura-stage-fit-frame" : ""}`}
-        style={{ aspectRatio: `${stageSize.width} / ${stageSize.height}`, "--stage-ratio": stageRatio } as CSSProperties}
+        className="sakura-stage-shell relative mx-auto w-full h-full flex items-center justify-center overflow-hidden"
       >
-        <div className="absolute left-0 top-0 origin-top-left overflow-hidden" style={{ width: stageSize.width, height: stageSize.height, transform: `scale(${scale})` }}>
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            width: stageSize.width,
+            height: stageSize.height,
+            transform: `scale(${scale})`,
+            transformOrigin: "center center",
+            left: "50%",
+            top: "50%",
+            marginLeft: -stageSize.width / 2,
+            marginTop: -stageSize.height / 2,
+          }}
+        >
           {showDishesBaseOnly ? (
             <>
               {baseImages.slice(0, 1).map((layer, index) => (
@@ -2186,32 +2195,40 @@ function DesignStage({ section, activeNav, setActiveNav }: { section: Section; a
                       key={`dishes-img-${index}`}
                       layer={movableLayer}
                       index={index}
-                      className={dishKey ? `sakura-dish-swap sakura-dish-current sakura-dish-${route} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
+                      className={dishKey ? `sakura-dish-swap sakura-dish-top ${route === "bottom" ? "sakura-dish-bottom" : ""} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
                     />
                   );
                 })}
               <ImageLayerView
                 layer={udonLayer}
                 index={90}
-                className={`sakura-dish-swap sakura-dish-next sakura-dish-top ${showSecondDishes ? "is-home" : "is-away"}`}
+                className={`sakura-dish-swap sakura-dish-top ${showSecondDishes ? "is-home" : "is-away"}`}
               />
               <ImageLayerView
                 layer={tempuraLayer}
                 index={91}
-                className={`sakura-dish-swap sakura-dish-next sakura-dish-bottom ${showSecondDishes ? "is-home" : "is-away"}`}
+                className={`sakura-dish-swap sakura-dish-bottom ${showSecondDishes ? "is-home" : "is-away"}`}
               />
               <ImageLayerView
                 layer={yakitoriLayer}
                 index={92}
-                className={`sakura-dish-swap sakura-dish-next sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
+                className={`sakura-dish-swap sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
+                style={showThirdDishes ? {
+                  transform: `translate3d(${mouseOffset.x * 32}px, ${mouseOffset.y * 24}px, 0)`,
+                  willChange: "transform",
+                } : undefined}
               />
               <ImageLayerView
                 layer={okonomiyakiLayer}
                 index={93}
-                className={`sakura-dish-swap sakura-dish-next sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
+                className={`sakura-dish-swap sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
+                style={showThirdDishes ? {
+                  transform: `translate3d(${mouseOffset.x * -24}px, ${mouseOffset.y * -18}px, 0)`,
+                  willChange: "transform",
+                } : undefined}
               />
               {foregroundTexts
-                .filter((layer) => ["TopDishes", "Follow US!"].includes(layerText(layer)))
+                .filter((layer) => layerText(layer) === "TopDishes")
                 .map((layer, index) => {
                   const displayLayer = getDisplayTextLayer(section, layer);
                   return (
@@ -2223,24 +2240,32 @@ function DesignStage({ section, activeNav, setActiveNav }: { section: Section; a
                     />
                   );
                 })}
-              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.first.top.number]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
-              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.first.top.title]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
-              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.first.top.description} visible={showFirstDishes} order="rtl" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
-              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.first.bottom.number]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
-              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.first.bottom.title]} visible={showFirstDishes} order="ltr" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
-              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.first.bottom.description} visible={showFirstDishes} order="rtl" baseDelay={showFirstDishes && isDishesAnimating ? 980 : 0} />
-              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.second.top.number]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.second.top.title]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.second.top.description} visible={showSecondDishes} order="ltr" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.second.bottom.number]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.second.bottom.title]} visible={showSecondDishes} order="rtl" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.second.bottom.description} visible={showSecondDishes} order="ltr" baseDelay={showSecondDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.third.top.number]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.third.top.title]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.third.top.description} visible={showThirdDishes} order="ltr" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.third.bottom.number]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.third.bottom.title]} visible={showThirdDishes} order="rtl" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
-              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.third.bottom.description} visible={showThirdDishes} order="ltr" baseDelay={showThirdDishes && isDishesAnimating ? 980 : 0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.first.top.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.first.top.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.first.top.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
+              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.first.bottom.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.first.bottom.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.first.bottom.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
+
+              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.second.top.number]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.second.top.title]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.second.top.description} visible={showSecondDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.second.bottom.number]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.second.bottom.title]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.second.bottom.description} visible={showSecondDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+
+              <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.third.top.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.third.top.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.third.top.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.third.bottom.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.third.bottom.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+              <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.third.bottom.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+
+              <SakuraDishesEffects
+                page={dishesPage}
+                onSelectPage={(newPage) => setDishesPage(newPage)}
+              />
+
               <div className="sakura-hidden-dishes-content" aria-hidden="true">
                 {section.hotspots.map((hotspot) => {
                   const displayHotspot = getDisplayHotspot(section, hotspot);
@@ -2253,7 +2278,11 @@ function DesignStage({ section, activeNav, setActiveNav }: { section: Section; a
                       className="sakura-hotspot absolute cursor-pointer rounded-full outline-none transition duration-300 hover:bg-white/10 focus-visible:ring-4 focus-visible:ring-white/70"
                       style={{ left: displayHotspot.x, top: displayHotspot.y, width: displayHotspot.w, height: displayHotspot.h }}
                       onClick={() => {
-                        setActiveNav(hotspotNavId(hotspot));
+                        const navId = hotspotNavId(hotspot);
+                        setActiveNav(navId);
+                        if (navId === "dishes-1") switchPage("first");
+                        else if (navId === "dishes-2") switchPage("second");
+                        else if (navId === "dishes-3") switchPage("third");
                         scrollToSection(safeScrollTarget(hotspot.target));
                       }}
                     />
@@ -2263,10 +2292,97 @@ function DesignStage({ section, activeNav, setActiveNav }: { section: Section; a
             </>
           ) : (
             <>
-              {baseImages.map((layer, index) => <ImageLayerView key={`base-img-${index}`} layer={getDisplayImageLayer(section, layer, index)} index={index} />)}
-              {heroTitleTexts.map((layer, index) => <TextLayerView key={`hero-title-${index}`} layer={getDisplayTextLayer(section, layer)} index={index} className="sakura-hero-title" />)}
-              {overlayImages.map((layer, index) => <ImageLayerView key={`overlay-img-${index}`} layer={getDisplayImageLayer(section, layer, index + baseImages.length)} index={index + baseImages.length} />)}
-              {foregroundTexts.map((layer, index) => <TextLayerView key={`text-${index}`} layer={getDisplayTextLayer(section, layer)} index={index} />)}
+              {baseImages.map((layer, index) => (
+                <ImageLayerView
+                  key={`base-img-${index}`}
+                  layer={getDisplayImageLayer(section, layer, index)}
+                  index={index}
+                />
+              ))}
+              {heroTitleTexts.map((layer, index) => (
+                <div
+                  key={`hero-title-wrap-${index}`}
+                  className="absolute inset-0 pointer-events-none"
+                >
+                  <TextLayerView
+                    key={`hero-title-${index}`}
+                    layer={getDisplayTextLayer(section, layer)}
+                    index={index}
+                    className={`sakura-hero-title ${isHeroRevealed ? "hero-animate-title" : "opacity-0"}`}
+                  />
+                </div>
+              ))}
+              {overlayImages.map((layer, index) => {
+                const isPlatter = index === overlayImages.length - 1 || layer.src.includes("2cccb1d8");
+                const isFloating1 = index === 1;
+                const isFloating2 = index === 2;
+                const isFloating3 = index === 3;
+
+                let animationClass = isHeroRevealed ? "" : "opacity-0";
+                let parallaxStyle: CSSProperties = {};
+
+                if (isHeroRevealed) {
+                  if (isPlatter) {
+                    animationClass = "hero-animate-platter";
+                    parallaxStyle = {
+                      transform: `translate3d(${mouseOffset.x * 24}px, ${mouseOffset.y * 18}px, 0)`,
+                      transformOrigin: "center center",
+                    };
+                  } else if (isFloating1) {
+                    animationClass = "hero-floating-1";
+                    parallaxStyle = {
+                      transform: `translate3d(${mouseOffset.x * 38}px, ${mouseOffset.y * 28}px, 0)`,
+                    };
+                  } else if (isFloating2) {
+                    animationClass = "hero-floating-2";
+                    parallaxStyle = {
+                      transform: `translate3d(${mouseOffset.x * -32}px, ${mouseOffset.y * -24}px, 0)`,
+                    };
+                  } else if (isFloating3) {
+                    animationClass = "hero-floating-3";
+                    parallaxStyle = {
+                      transform: `translate3d(${mouseOffset.x * 42}px, ${mouseOffset.y * 32}px, 0)`,
+                    };
+                  } else {
+                    parallaxStyle = {
+                      transform: `translate3d(${mouseOffset.x * -6}px, ${mouseOffset.y * -4}px, 0)`,
+                    };
+                  }
+                }
+
+                return (
+                  <ImageLayerView
+                    key={`overlay-img-${index}`}
+                    layer={getDisplayImageLayer(section, layer, index + baseImages.length)}
+                    index={index + baseImages.length}
+                    className={animationClass}
+                    style={parallaxStyle}
+                  />
+                );
+              })}
+              {foregroundTexts.map((layer, index) => (
+                <TextLayerView
+                  key={`text-${index}`}
+                  layer={getDisplayTextLayer(section, layer)}
+                  index={index}
+                />
+              ))}
+              {section.id === "home" && (
+                <div
+                  className={isHeroRevealed ? "hero-animate-tagline" : "opacity-0"}
+                  style={{
+                    transform: isHeroRevealed ? `translate3d(${mouseOffset.x * 12}px, ${mouseOffset.y * 10}px, 0)` : undefined,
+                  }}
+                >
+                  <HeroTaglineCTA
+                    onExploreMenu={() => {
+                      setActiveNav("dishes-1");
+                      setDishesPage("first");
+                      scrollToSection("dishes-1");
+                    }}
+                  />
+                </div>
+              )}
             </>
           )}
           {!showDishesBaseOnly && section.id !== "home" ? section.hotspots.map((hotspot) => {
@@ -2292,6 +2408,50 @@ function DesignStage({ section, activeNav, setActiveNav }: { section: Section; a
 
 export default function SakuraExperience() {
   const [activeNav, setActiveNav] = useState("home");
+  const [dishesPage, setDishesPage] = useState<DishesPage>("first");
+  const [isDisclaimerAccepted, setIsDisclaimerAccepted] = useState(true);
+  const [isLoadingActive, setIsLoadingActive] = useState(true);
+  const [isHeroRevealed, setIsHeroRevealed] = useState(false);
+
+  useEffect(() => {
+    // Disable browser automatic scroll restoration to ensure fresh start at Hero
+    if (typeof window !== "undefined") {
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      window.scrollTo(0, 0);
+
+      // Clear any URL hashes that might jump down the page
+      if (window.location.hash) {
+        history.replaceState(null, "", window.location.pathname);
+      }
+
+      // Always trigger loading screen on every fresh mount / refresh
+      setIsLoadingActive(true);
+      setIsHeroRevealed(false);
+
+      const handleBeforeUnload = () => {
+        window.scrollTo(0, 0);
+      };
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
+    }
+  }, []);
+
+  const handleDisclaimerAccept = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    setIsDisclaimerAccepted(true);
+    setIsLoadingActive(true);
+  };
+
+  const handleLoadingComplete = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    setIsLoadingActive(false);
+    setIsHeroRevealed(true);
+  };
 
   useEffect(() => {
     function updateActiveSection() {
@@ -2304,6 +2464,12 @@ export default function SakuraExperience() {
         if (element.getBoundingClientRect().top <= viewportAnchor) next = section.id;
       }
 
+      if (next === "dishes-1") {
+        if (dishesPage === "first") next = "dishes-1";
+        else if (dishesPage === "second") next = "dishes-2";
+        else if (dishesPage === "third") next = "dishes-3";
+      }
+
       setActiveNav(next);
     }
 
@@ -2314,19 +2480,37 @@ export default function SakuraExperience() {
       window.removeEventListener("scroll", updateActiveSection);
       window.removeEventListener("resize", updateActiveSection);
     };
-  }, []);
+  }, [dishesPage]);
 
   return (
-    <main className="w-full bg-black">
-      <FixedSakuraNavbar activeNav={activeNav} setActiveNav={setActiveNav} />
+    <main className="w-full bg-[#f1dfcf]">
+      {!isDisclaimerAccepted && (
+        <AevumDisclaimerGate onAccept={handleDisclaimerAccept} />
+      )}
+      {isLoadingActive && (
+        <AevumLoadingScreen onComplete={handleLoadingComplete} />
+      )}
+      <SakuraNavbar
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        dishesPage={dishesPage}
+        setDishesPage={setDishesPage}
+      />
       {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
-        <DesignStage
-          key={section.id}
-          section={section}
-          activeNav={activeNav}
-          setActiveNav={setActiveNav}
-        />
+        <div key={section.id}>
+          <DesignStage
+            section={section}
+            activeNav={activeNav}
+            setActiveNav={setActiveNav}
+            dishesPage={dishesPage}
+            setDishesPage={setDishesPage}
+            isHeroRevealed={isHeroRevealed}
+          />
+          {section.id === "home" && <SakuraTransitionBanner />}
+        </div>
       ))}
+      <AevumAgencyFooter />
     </main>
   );
 }
+
