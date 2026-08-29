@@ -2524,6 +2524,17 @@ export default function SakuraExperience() {
         </div>
       ))}
       <AevumAgencyFooter />
+
+      {/* Floating Multi-Device Visual Studio Button */}
+      <div className="fixed bottom-5 left-5 z-40 pointer-events-auto">
+        <a
+          href="/studio"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/90 hover:bg-black text-white text-xs font-black tracking-wider uppercase shadow-2xl border border-white/20 backdrop-blur-md active:scale-95 transition-all hover:scale-105"
+        >
+          <span className="text-red-500 animate-pulse">⚡</span>
+          <span>Device Studio</span>
+        </a>
+      </div>
     </main>
   );
 }
