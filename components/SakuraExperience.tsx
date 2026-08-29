@@ -1914,8 +1914,13 @@ function DesignStage({
       const vh = window.innerHeight;
       const scaleX = vw / stageSize.width;
       const scaleY = vh / stageSize.height;
-      // Full bleed edge-to-edge cover scaling with no side pillars across all screens
-      setScale(Math.max(scaleX, scaleY));
+      const aspect = vw / vh;
+      // On widescreen (aspect >= 1.55), scale cover; on tablets and boxy displays, fit perfectly so all elements and floating pieces remain visible
+      if (aspect < 1.55) {
+        setScale(Math.min(scaleX, scaleY) * 1.02);
+      } else {
+        setScale(Math.max(scaleX, scaleY));
+      }
     };
     updateScale();
     window.addEventListener("resize", updateScale);
@@ -2506,7 +2511,7 @@ export default function SakuraExperience() {
               isHeroRevealed={isHeroRevealed}
             />
           )}
-          <div className={section.id === "home" ? "hidden md:block" : "block"}>
+          <div className={section.id === "home" ? "hidden lg:block" : "block"}>
             <DesignStage
               section={section}
               activeNav={activeNav}

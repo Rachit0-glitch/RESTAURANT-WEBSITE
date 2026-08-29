@@ -207,7 +207,7 @@ export default function SakuraMobileHero({
     <section
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      className="relative w-full min-h-[100dvh] bg-[#f4eee5] overflow-hidden flex flex-col justify-between md:hidden select-none font-sans touch-none"
+      className="relative w-full min-h-[100dvh] bg-[#f4eee5] overflow-hidden flex flex-col justify-between lg:hidden select-none font-sans touch-none"
       style={{ touchAction: isDragModeEnabled ? "none" : "auto" }}
     >
       {/* Toast Notification */}
