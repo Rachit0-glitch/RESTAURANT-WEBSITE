@@ -2490,12 +2490,6 @@ export default function SakuraExperience() {
       {isLoadingActive && (
         <AevumLoadingScreen onComplete={handleLoadingComplete} />
       )}
-      <SakuraNavbar
-        activeNav={activeNav}
-        setActiveNav={setActiveNav}
-        dishesPage={dishesPage}
-        setDishesPage={setDishesPage}
-      />
       {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
         <div key={section.id}>
           <DesignStage
@@ -2506,7 +2500,6 @@ export default function SakuraExperience() {
             setDishesPage={setDishesPage}
             isHeroRevealed={isHeroRevealed}
           />
-          {section.id === "home" && <SakuraTransitionBanner />}
         </div>
       ))}
       <AevumAgencyFooter />
