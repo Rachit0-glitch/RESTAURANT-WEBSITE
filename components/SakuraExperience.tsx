@@ -10,6 +10,8 @@ import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
 import SakuraDishesEffects from "./SakuraDishesEffects";
 import SakuraTransitionBanner from "./SakuraTransitionBanner";
 import SakuraMobileHero from "./SakuraMobileHero";
+import SakuraMobileDishes from "./SakuraMobileDishes";
+import SakuraZenAudio from "./SakuraZenAudio";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
 type TextLayer = { x: number; y: number; w: number; h: number; r: number; runs: TextRun[]; style: CSSProperties & { fontSize?: number; lineHeight?: number } };
@@ -2496,6 +2498,7 @@ export default function SakuraExperience() {
       {isLoadingActive && (
         <AevumLoadingScreen onComplete={handleLoadingComplete} />
       )}
+      <SakuraZenAudio />
       {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
         <div key={section.id} id={section.id}>
           {section.id === "home" && (
@@ -2511,7 +2514,18 @@ export default function SakuraExperience() {
               isHeroRevealed={isHeroRevealed}
             />
           )}
-          <div className={section.id === "home" ? "hidden lg:block" : "block"}>
+          {section.id === "dishes-1" && (
+            <SakuraMobileDishes
+              currentPage={dishesPage}
+              onPageChange={(page) => {
+                setDishesPage(page);
+                if (page === "first") setActiveNav("dishes-1");
+                else if (page === "second") setActiveNav("dishes-2");
+                else if (page === "third") setActiveNav("dishes-3");
+              }}
+            />
+          )}
+          <div className="hidden lg:block">
             <DesignStage
               section={section}
               activeNav={activeNav}
