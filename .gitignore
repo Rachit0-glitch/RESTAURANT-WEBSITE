@@ -1,17 +1,20 @@
 # dependencies
+node_modules
 /node_modules
+node_modules/
 
-# next.js
+# Next.js build
+.next
+.next/
 /.next/
 /.next-stale-*/
+out
 /out/
-
-# production
+build
 /build
 
-# misc
-.DS_Store
-*.pem
+# production
+/dist
 
 # debug
 npm-debug.log*
@@ -20,8 +23,15 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.local
+.env
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-public/*.zip  
+
+# misc
+.DS_Store
+*.pem
+public/*.zip
+*.zip
