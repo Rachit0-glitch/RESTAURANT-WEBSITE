@@ -11,6 +11,9 @@ export type MobileElementKey =
   | "watermark"
   | "sealStamp"
   | "sushiPlatter"
+  | "tunaPieceLeft"
+  | "tunaPieceRight"
+  | "tunaPieceBottom"
   | "bgArtwork"
   | "floatingPetals";
 
@@ -23,25 +26,32 @@ export interface MobileElementState {
   fontSize?: number;
   width?: number;
   height?: number;
+  visible?: boolean;
 }
 
 export type MobileHeroConfig = Record<MobileElementKey, MobileElementState>;
 
 const DEFAULT_CONFIG: MobileHeroConfig = {
-  header: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 },
-  tagline: { x: 0, y: 0, scale: 1, rotate: -2.5, opacity: 1 },
-  headline: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, fontSize: 54 },
-  subtitle: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 },
-  ctaButton: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 },
-  watermark: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 0.95, fontSize: 120 },
-  sealStamp: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 },
-  sushiPlatter: { x: 0, y: 0, scale: 1.15, rotate: 0, opacity: 1 },
-  bgArtwork: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 0.35 },
-  floatingPetals: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 0.8 },
+  header: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, visible: true },
+  tagline: { x: 0, y: 0, scale: 1, rotate: -2.5, opacity: 1, visible: true },
+  headline: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, fontSize: 54, visible: true },
+  subtitle: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, visible: true },
+  ctaButton: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, visible: true },
+  watermark: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 0.95, fontSize: 120, visible: true },
+  sealStamp: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, visible: true },
+  sushiPlatter: { x: 0, y: 0, scale: 1.15, rotate: 0, opacity: 1, visible: true },
+  tunaPieceLeft: { x: -20, y: 140, scale: 0.7, rotate: 12, opacity: 0.95, visible: true },
+  tunaPieceRight: { x: 260, y: 220, scale: 0.65, rotate: -15, opacity: 0.95, visible: true },
+  tunaPieceBottom: { x: -10, y: 520, scale: 0.6, rotate: 5, opacity: 0.9, visible: true },
+  bgArtwork: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 0.35, visible: true },
+  floatingPetals: { x: 0, y: 0, scale: 1, rotate: 0, opacity: 0.8, visible: true },
 };
 
 const ELEMENT_LABELS: Record<MobileElementKey, { label: string; icon: string }> = {
   sushiPlatter: { label: "Sushi Platter", icon: "🍱" },
+  tunaPieceLeft: { label: "Floating Tuna (Left)", icon: "🐟" },
+  tunaPieceRight: { label: "Floating Tuna (Right)", icon: "🍣" },
+  tunaPieceBottom: { label: "Floating Tuna (Bottom)", icon: "🥢" },
   headline: { label: "Headline (AUTHENTIC...)", icon: "✍️" },
   tagline: { label: "Tagline Badge (最高の...)", icon: "🏷️" },
   subtitle: { label: "Subtitle Description", icon: "📄" },
@@ -64,7 +74,7 @@ export default function SakuraMobileHero({
   const [selectedKey, setSelectedKey] = useState<MobileElementKey>("sushiPlatter");
   const [isCalibratorOpen, setIsCalibratorOpen] = useState(false);
   const [isDragModeEnabled, setIsDragModeEnabled] = useState(true);
-  const [activeTab, setActiveTab] = useState<"position" | "animations" | "css">("position");
+  const [activeTab, setActiveTab] = useState<"position" | "animations" | "hierarchy">("position");
   const [ambientAnimation, setAmbientAnimation] = useState(true);
   const [animStage, setAnimStage] = useState<"idle" | "playing">("playing");
   const [copiedToast, setCopiedToast] = useState<string | null>(null);
@@ -73,9 +83,9 @@ export default function SakuraMobileHero({
   // Load saved config from localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("sakura_mobile_hero_calibrator_v2");
+      const saved = localStorage.getItem("sakura_mobile_hero_calibrator_v3");
       if (saved) {
-        setConfig(JSON.parse(saved));
+        setConfig((prev) => ({ ...prev, ...JSON.parse(saved) }));
       }
     } catch {
       // ignore
@@ -109,9 +119,19 @@ export default function SakuraMobileHero({
     }));
   };
 
+  const toggleVisibility = (key: MobileElementKey) => {
+    setConfig((prev) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        visible: prev[key].visible === false ? true : false,
+      },
+    }));
+  };
+
   const saveConfig = () => {
     try {
-      localStorage.setItem("sakura_mobile_hero_calibrator_v2", JSON.stringify(config));
+      localStorage.setItem("sakura_mobile_hero_calibrator_v3", JSON.stringify(config));
       showToast("✓ Layout Saved to LocalStorage!");
     } catch {
       // ignore
@@ -121,14 +141,14 @@ export default function SakuraMobileHero({
   const resetConfig = () => {
     setConfig(DEFAULT_CONFIG);
     try {
-      localStorage.removeItem("sakura_mobile_hero_calibrator_v2");
+      localStorage.removeItem("sakura_mobile_hero_calibrator_v3");
       showToast("↺ Layout Reset to Defaults");
     } catch {
       // ignore
     }
   };
 
-  // Drag handling with pointer events (works for mouse and touch)
+  // Pointer drag handling for touch and mouse
   const dragStateRef = useRef<{
     key: MobileElementKey | null;
     startX: number;
@@ -148,7 +168,6 @@ export default function SakuraMobileHero({
     e.stopPropagation();
     setSelectedKey(key);
 
-    // Capture pointer
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
 
     dragStateRef.current = {
@@ -176,7 +195,7 @@ export default function SakuraMobileHero({
     }));
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = () => {
     if (dragStateRef.current.key) {
       dragStateRef.current.key = null;
     }
@@ -184,23 +203,11 @@ export default function SakuraMobileHero({
 
   const current = config[selectedKey];
 
-  // Helper for generating CSS snippet
-  const generatedCSS = `/* Mobile Hero Layout Coordinates */
-.sushi-header      { transform: translate(${config.header.x}px, ${config.header.y}px) scale(${config.header.scale}); }
-.sushi-tagline     { transform: translate(${config.tagline.x}px, ${config.tagline.y}px) scale(${config.tagline.scale}) rotate(${config.tagline.rotate}deg); }
-.sushi-headline    { transform: translate(${config.headline.x}px, ${config.headline.y}px) scale(${config.headline.scale}); font-size: ${config.headline.fontSize}px; }
-.sushi-subtitle    { transform: translate(${config.subtitle.x}px, ${config.subtitle.y}px) scale(${config.subtitle.scale}); }
-.sushi-cta         { transform: translate(${config.ctaButton.x}px, ${config.ctaButton.y}px) scale(${config.ctaButton.scale}); }
-.sushi-watermark   { transform: translate(${config.watermark.x}px, ${config.watermark.y}px) scale(${config.watermark.scale}); font-size: ${config.watermark.fontSize}px; }
-.sushi-seal-stamp  { transform: translate(${config.sealStamp.x}px, ${config.sealStamp.y}px) scale(${config.sealStamp.scale}); }
-.sushi-platter     { transform: translate(${config.sushiPlatter.x}px, ${config.sushiPlatter.y}px) scale(${config.sushiPlatter.scale}); }
-.sushi-bg-artwork  { transform: translate(${config.bgArtwork.x}px, ${config.bgArtwork.y}px) scale(${config.bgArtwork.scale}); opacity: ${config.bgArtwork.opacity}; }`;
-
   return (
     <section
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      className="relative w-full min-h-[100dvh] bg-[#f4eee5] overflow-hidden flex flex-col justify-between md:hidden select-none font-sans touch-none landscape:min-h-screen"
+      className="relative w-full min-h-[100dvh] bg-[#f4eee5] overflow-hidden flex flex-col justify-between md:hidden select-none font-sans touch-none"
       style={{ touchAction: isDragModeEnabled ? "none" : "auto" }}
     >
       {/* Toast Notification */}
@@ -210,7 +217,7 @@ export default function SakuraMobileHero({
         </div>
       )}
 
-      {/* Real-time Position HUD (Shows currently dragged element) */}
+      {/* Real-time Position HUD */}
       {isDragModeEnabled && (
         <div className="fixed top-2 left-1/2 -translate-x-1/2 z-40 bg-black/80 backdrop-blur-md text-white px-3.5 py-1 rounded-full text-[10px] font-mono flex items-center gap-2 shadow-lg border border-white/10 pointer-events-none">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
@@ -221,229 +228,296 @@ export default function SakuraMobileHero({
       )}
 
       {/* --- 1. Background Artwork: Pagoda & Koi Sketch --- */}
-      <div
-        onPointerDown={(e) => onPointerDown("bgArtwork", e)}
-        className={`absolute inset-0 pointer-events-auto z-0 overflow-hidden cursor-grab active:cursor-grabbing transition-opacity duration-700 ${animStage === "playing" ? "opacity-100" : "opacity-0"}`}
-        style={{
-          transform: `translate(${config.bgArtwork.x}px, ${config.bgArtwork.y}px) scale(${config.bgArtwork.scale}) rotate(${config.bgArtwork.rotate}deg)`,
-          opacity: config.bgArtwork.opacity,
-        }}
-      >
+      {config.bgArtwork.visible !== false && (
         <div
-          className="absolute top-0 right-0 w-[340px] h-[480px] bg-no-repeat bg-contain bg-right-top"
+          onPointerDown={(e) => onPointerDown("bgArtwork", e)}
+          className={`absolute inset-0 pointer-events-auto z-0 overflow-hidden cursor-grab active:cursor-grabbing transition-opacity duration-700 ${animStage === "playing" ? "opacity-100" : "opacity-0"}`}
           style={{
-            backgroundImage: "url('/sakura-assets/_assets/media/ba78b4a30520331745a674cd7d48884f.png')",
-            backgroundPosition: "85% 5%",
-            backgroundSize: "260%",
-          }}
-        />
-        <div
-          className="absolute bottom-32 left-0 w-[240px] h-[240px] bg-no-repeat bg-contain bg-left-bottom opacity-40"
-          style={{
-            backgroundImage: "url('/sakura-assets/_assets/media/ba78b4a30520331745a674cd7d48884f.png')",
-            backgroundPosition: "5% 85%",
-            backgroundSize: "300%",
-          }}
-        />
-      </div>
-
-      {/* --- 2. Floating Animated Cherry Blossom Petals --- */}
-      <div
-        onPointerDown={(e) => onPointerDown("floatingPetals", e)}
-        className="absolute inset-0 pointer-events-none z-10 overflow-hidden"
-        style={{
-          transform: `translate(${config.floatingPetals.x}px, ${config.floatingPetals.y}px) scale(${config.floatingPetals.scale})`,
-          opacity: config.floatingPetals.opacity,
-        }}
-      >
-        <div className={`absolute top-16 right-16 w-4 h-3 bg-pink-300/70 rounded-full rotate-45 blur-[0.3px] ${ambientAnimation ? "animate-float-petal-1" : ""}`} />
-        <div className={`absolute top-44 right-8 w-5 h-3.5 bg-pink-400/60 rounded-full -rotate-12 blur-[0.2px] ${ambientAnimation ? "animate-float-petal-2" : ""}`} />
-        <div className={`absolute top-[380px] right-20 w-4 h-2.5 bg-pink-300/60 rounded-full rotate-[30deg] ${ambientAnimation ? "animate-float-petal-3" : ""}`} />
-        <div className={`absolute top-[480px] left-8 w-4 h-3 bg-pink-400/50 rounded-full -rotate-45 ${ambientAnimation ? "animate-float-petal-1" : ""}`} />
-      </div>
-
-      {/* --- 3. Top Mobile Header Logo & Menu --- */}
-      <header
-        onPointerDown={(e) => onPointerDown("header", e)}
-        className={`relative z-30 flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-7 pb-2 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "header" ? "ring-2 ring-red-500/80 ring-offset-2 rounded-xl bg-red-500/10" : ""}`}
-        style={{
-          transform: `translate(${config.header.x}px, ${config.header.y}px) scale(${config.header.scale}) rotate(${config.header.rotate}deg)`,
-          opacity: config.header.opacity,
-          transition: dragStateRef.current.key === "header" ? "none" : "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
-        <div className="flex items-center">
-          <span className="text-[28px] sm:text-[32px] font-black tracking-[-0.04em] uppercase text-black font-sans leading-none">
-            SUSHI
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setMobileMenuOpen(!mobileMenuOpen);
-          }}
-          aria-label="Toggle menu"
-          className="flex flex-col justify-center items-end gap-[5px] p-2 cursor-pointer focus:outline-none"
-        >
-          <span className={`w-7 h-[2.5px] bg-black rounded-full transition-transform duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-[7.5px]" : ""}`} />
-          <span className={`w-7 h-[2.5px] bg-black rounded-full transition-opacity duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`} />
-          <span className={`w-7 h-[2.5px] bg-black rounded-full transition-transform duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-[7.5px]" : ""}`} />
-        </button>
-      </header>
-
-      {/* --- 4. Main Hero Typography & Content --- */}
-      <div className="relative z-20 flex flex-col px-4 sm:px-6 pt-1 sm:pt-2 pb-0 pointer-events-auto">
-        {/* Japanese Tagline Badge / Sticker */}
-        <div
-          onPointerDown={(e) => onPointerDown("tagline", e)}
-          className={`self-start mb-2 sm:mb-3 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "tagline" ? "ring-2 ring-red-500 ring-offset-2 rounded bg-red-500/10" : ""}`}
-          style={{
-            transform: `translate(${config.tagline.x}px, ${config.tagline.y}px) scale(${config.tagline.scale}) rotate(${config.tagline.rotate}deg)`,
-            opacity: config.tagline.opacity,
-            transition: dragStateRef.current.key === "tagline" ? "none" : "transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            transform: `translate(${config.bgArtwork.x}px, ${config.bgArtwork.y}px) scale(${config.bgArtwork.scale}) rotate(${config.bgArtwork.rotate}deg)`,
+            opacity: config.bgArtwork.opacity,
           }}
         >
           <div
-            className={`inline-flex items-center bg-[#fffdfa] px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-[2px] shadow-[0_4px_14px_rgba(0,0,0,0.09)] border border-black/5 ${ambientAnimation ? "hover:rotate-0 transition-transform duration-300" : ""}`}
-            style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.06))" }}
-          >
-            <span className="text-[13px] sm:text-[14px] font-bold tracking-wider text-black">
-              最高の<span className="text-[#e60012] font-black">寿司</span>盛り合わせ
+            className="absolute top-0 right-0 w-[340px] h-[480px] bg-no-repeat bg-contain bg-right-top"
+            style={{
+              backgroundImage: "url('/sakura-assets/_assets/media/ba78b4a30520331745a674cd7d48884f.png')",
+              backgroundPosition: "85% 5%",
+              backgroundSize: "260%",
+            }}
+          />
+          <div
+            className="absolute bottom-32 left-0 w-[240px] h-[240px] bg-no-repeat bg-contain bg-left-bottom opacity-40"
+            style={{
+              backgroundImage: "url('/sakura-assets/_assets/media/ba78b4a30520331745a674cd7d48884f.png')",
+              backgroundPosition: "5% 85%",
+              backgroundSize: "300%",
+            }}
+          />
+        </div>
+      )}
+
+      {/* --- 2. Floating Animated Cherry Blossom Petals --- */}
+      {config.floatingPetals.visible !== false && (
+        <div
+          onPointerDown={(e) => onPointerDown("floatingPetals", e)}
+          className="absolute inset-0 pointer-events-none z-10 overflow-hidden"
+          style={{
+            transform: `translate(${config.floatingPetals.x}px, ${config.floatingPetals.y}px) scale(${config.floatingPetals.scale})`,
+            opacity: config.floatingPetals.opacity,
+          }}
+        >
+          <div className={`absolute top-16 right-16 w-4 h-3 bg-pink-300/70 rounded-full rotate-45 blur-[0.3px] ${ambientAnimation ? "animate-float-petal-1" : ""}`} />
+          <div className={`absolute top-44 right-8 w-5 h-3.5 bg-pink-400/60 rounded-full -rotate-12 blur-[0.2px] ${ambientAnimation ? "animate-float-petal-2" : ""}`} />
+          <div className={`absolute top-[380px] right-20 w-4 h-2.5 bg-pink-300/60 rounded-full rotate-[30deg] ${ambientAnimation ? "animate-float-petal-3" : ""}`} />
+          <div className={`absolute top-[480px] left-8 w-4 h-3 bg-pink-400/50 rounded-full -rotate-45 ${ambientAnimation ? "animate-float-petal-1" : ""}`} />
+        </div>
+      )}
+
+      {/* --- 3. FLOATING TUNA PIECES (Interactive Floating Fresh Tuna Nigiri Elements) --- */}
+      {/* Floating Tuna Left */}
+      {config.tunaPieceLeft.visible !== false && (
+        <div
+          onPointerDown={(e) => onPointerDown("tunaPieceLeft", e)}
+          className={`absolute top-0 left-0 z-25 cursor-grab active:cursor-grabbing pointer-events-auto transition-all ${selectedKey === "tunaPieceLeft" ? "ring-2 ring-red-500 ring-offset-2 rounded-2xl bg-red-500/10 p-1" : ""}`}
+          style={{
+            transform: `translate(${config.tunaPieceLeft.x}px, ${config.tunaPieceLeft.y}px) scale(${config.tunaPieceLeft.scale}) rotate(${config.tunaPieceLeft.rotate}deg)`,
+            opacity: config.tunaPieceLeft.opacity,
+          }}
+        >
+          <img
+            src="/sakura-assets/_assets/media/b04f0772236c0166269f504ed52d6aa2.png"
+            alt="Floating Fresh Tuna"
+            className={`w-[180px] pointer-events-none drop-shadow-[0_18px_25px_rgba(0,0,0,0.28)] ${ambientAnimation ? "animate-float-petal-1" : ""}`}
+          />
+        </div>
+      )}
+
+      {/* Floating Tuna Right */}
+      {config.tunaPieceRight.visible !== false && (
+        <div
+          onPointerDown={(e) => onPointerDown("tunaPieceRight", e)}
+          className={`absolute top-0 left-0 z-25 cursor-grab active:cursor-grabbing pointer-events-auto transition-all ${selectedKey === "tunaPieceRight" ? "ring-2 ring-red-500 ring-offset-2 rounded-2xl bg-red-500/10 p-1" : ""}`}
+          style={{
+            transform: `translate(${config.tunaPieceRight.x}px, ${config.tunaPieceRight.y}px) scale(${config.tunaPieceRight.scale}) rotate(${config.tunaPieceRight.rotate}deg)`,
+            opacity: config.tunaPieceRight.opacity,
+          }}
+        >
+          <img
+            src="/sakura-assets/_assets/media/93855b7c7aeeca97d67876867446a9b1.png"
+            alt="Floating Salmon & Tuna"
+            className={`w-[160px] pointer-events-none drop-shadow-[0_20px_28px_rgba(0,0,0,0.3)] ${ambientAnimation ? "animate-float-petal-2" : ""}`}
+          />
+        </div>
+      )}
+
+      {/* Floating Tuna Bottom */}
+      {config.tunaPieceBottom.visible !== false && (
+        <div
+          onPointerDown={(e) => onPointerDown("tunaPieceBottom", e)}
+          className={`absolute top-0 left-0 z-25 cursor-grab active:cursor-grabbing pointer-events-auto transition-all ${selectedKey === "tunaPieceBottom" ? "ring-2 ring-red-500 ring-offset-2 rounded-2xl bg-red-500/10 p-1" : ""}`}
+          style={{
+            transform: `translate(${config.tunaPieceBottom.x}px, ${config.tunaPieceBottom.y}px) scale(${config.tunaPieceBottom.scale}) rotate(${config.tunaPieceBottom.rotate}deg)`,
+            opacity: config.tunaPieceBottom.opacity,
+          }}
+        >
+          <img
+            src="/sakura-assets/_assets/media/2036415e6c26b3751795e13146e6af46.png"
+            alt="Floating Nigiri Piece"
+            className={`w-[150px] pointer-events-none drop-shadow-[0_16px_22px_rgba(0,0,0,0.25)] ${ambientAnimation ? "animate-float-petal-3" : ""}`}
+          />
+        </div>
+      )}
+
+      {/* --- 4. Top Mobile Header Logo & Menu --- */}
+      {config.header.visible !== false && (
+        <header
+          onPointerDown={(e) => onPointerDown("header", e)}
+          className={`relative z-30 flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-7 pb-2 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "header" ? "ring-2 ring-red-500/80 ring-offset-2 rounded-xl bg-red-500/10" : ""}`}
+          style={{
+            transform: `translate(${config.header.x}px, ${config.header.y}px) scale(${config.header.scale}) rotate(${config.header.rotate}deg)`,
+            opacity: config.header.opacity,
+          }}
+        >
+          <div className="flex items-center">
+            <span className="text-[28px] sm:text-[32px] font-black tracking-[-0.04em] uppercase text-black font-sans leading-none">
+              SUSHI
             </span>
           </div>
-        </div>
 
-        {/* Massive Bold Hero Headline */}
-        <div
-          onPointerDown={(e) => onPointerDown("headline", e)}
-          className={`flex flex-col select-none cursor-grab active:cursor-grabbing transition-all ${selectedKey === "headline" ? "ring-2 ring-red-500 ring-offset-2 rounded-lg bg-red-500/10 p-1" : ""}`}
-          style={{
-            transform: `translate(${config.headline.x}px, ${config.headline.y}px) scale(${config.headline.scale}) rotate(${config.headline.rotate}deg)`,
-            opacity: config.headline.opacity,
-            transition: dragStateRef.current.key === "headline" ? "none" : "transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <h1
-            className="flex flex-col font-black uppercase tracking-[-0.035em] leading-[0.88] text-black"
-            style={{ fontSize: `clamp(36px, 11.5vw, ${config.headline.fontSize || 54}px)` }}
-          >
-            <span className={`inline-block transition-transform duration-500 ${animStage === "playing" ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}>
-              AUTHENTIC
-            </span>
-            <span className={`inline-block transition-transform duration-500 delay-100 ${animStage === "playing" ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}>
-              JAPANESE
-            </span>
-            <span className={`inline-block text-[#e60012] transition-transform duration-500 delay-200 ${animStage === "playing" ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}>
-              DINING.
-            </span>
-          </h1>
-        </div>
-
-        {/* Subtitle Description */}
-        <div
-          onPointerDown={(e) => onPointerDown("subtitle", e)}
-          className={`mt-3 sm:mt-4 max-w-[280px] sm:max-w-[320px] cursor-grab active:cursor-grabbing transition-all ${selectedKey === "subtitle" ? "ring-2 ring-red-500 ring-offset-2 rounded-md bg-red-500/10 p-1" : ""}`}
-          style={{
-            transform: `translate(${config.subtitle.x}px, ${config.subtitle.y}px) scale(${config.subtitle.scale}) rotate(${config.subtitle.rotate}deg)`,
-            opacity: config.subtitle.opacity,
-            transition: dragStateRef.current.key === "subtitle" ? "none" : "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <p className="text-[#4a4a4a] text-[13.5px] sm:text-[15px] leading-snug font-medium">
-            Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.
-          </p>
-        </div>
-
-        {/* Explore Menu CTA Button */}
-        <div
-          onPointerDown={(e) => onPointerDown("ctaButton", e)}
-          className={`mt-4 sm:mt-5 self-start cursor-grab active:cursor-grabbing transition-all ${selectedKey === "ctaButton" ? "ring-2 ring-red-500 ring-offset-4 rounded-full" : ""}`}
-          style={{
-            transform: `translate(${config.ctaButton.x}px, ${config.ctaButton.y}px) scale(${config.ctaButton.scale}) rotate(${config.ctaButton.rotate}deg)`,
-            opacity: config.ctaButton.opacity,
-            transition: dragStateRef.current.key === "ctaButton" ? "none" : "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onExploreMenu();
+              setMobileMenuOpen(!mobileMenuOpen);
             }}
-            className="inline-flex items-center gap-2.5 sm:gap-3 bg-black hover:bg-neutral-900 active:scale-95 text-white rounded-full px-6 sm:px-7 py-3 sm:py-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-all duration-200 cursor-pointer"
+            aria-label="Toggle menu"
+            className="flex flex-col justify-center items-end gap-[5px] p-2 cursor-pointer focus:outline-none"
           >
-            <span className="text-[11px] sm:text-[12px] font-black tracking-[0.2em] uppercase text-white">
-              EXPLORE MENU
-            </span>
-            <svg
-              className="w-4 h-4 stroke-current stroke-[2.5] fill-none animate-pulse"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            <span className={`w-7 h-[2.5px] bg-black rounded-full transition-transform duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-[7.5px]" : ""}`} />
+            <span className={`w-7 h-[2.5px] bg-black rounded-full transition-opacity duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`} />
+            <span className={`w-7 h-[2.5px] bg-black rounded-full transition-transform duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-[7.5px]" : ""}`} />
           </button>
-        </div>
+        </header>
+      )}
+
+      {/* --- 5. Main Hero Typography & Content --- */}
+      <div className="relative z-20 flex flex-col px-4 sm:px-6 pt-1 sm:pt-2 pb-0 pointer-events-auto">
+        {/* Japanese Tagline Badge / Sticker */}
+        {config.tagline.visible !== false && (
+          <div
+            onPointerDown={(e) => onPointerDown("tagline", e)}
+            className={`self-start mb-2 sm:mb-3 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "tagline" ? "ring-2 ring-red-500 ring-offset-2 rounded bg-red-500/10" : ""}`}
+            style={{
+              transform: `translate(${config.tagline.x}px, ${config.tagline.y}px) scale(${config.tagline.scale}) rotate(${config.tagline.rotate}deg)`,
+              opacity: config.tagline.opacity,
+            }}
+          >
+            <div
+              className="inline-flex items-center bg-[#fffdfa] px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-[2px] shadow-[0_4px_14px_rgba(0,0,0,0.09)] border border-black/5"
+              style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.06))" }}
+            >
+              <span className="text-[13px] sm:text-[14px] font-bold tracking-wider text-black">
+                最高の<span className="text-[#e60012] font-black">寿司</span>盛り合わせ
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Massive Bold Hero Headline */}
+        {config.headline.visible !== false && (
+          <div
+            onPointerDown={(e) => onPointerDown("headline", e)}
+            className={`flex flex-col select-none cursor-grab active:cursor-grabbing transition-all ${selectedKey === "headline" ? "ring-2 ring-red-500 ring-offset-2 rounded-lg bg-red-500/10 p-1" : ""}`}
+            style={{
+              transform: `translate(${config.headline.x}px, ${config.headline.y}px) scale(${config.headline.scale}) rotate(${config.headline.rotate}deg)`,
+              opacity: config.headline.opacity,
+            }}
+          >
+            <h1
+              className="flex flex-col font-black uppercase tracking-[-0.035em] leading-[0.88] text-black"
+              style={{ fontSize: `clamp(36px, 11.5vw, ${config.headline.fontSize || 54}px)` }}
+            >
+              <span className={`inline-block transition-transform duration-500 ${animStage === "playing" ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}>
+                AUTHENTIC
+              </span>
+              <span className={`inline-block transition-transform duration-500 delay-100 ${animStage === "playing" ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}>
+                JAPANESE
+              </span>
+              <span className={`inline-block text-[#e60012] transition-transform duration-500 delay-200 ${animStage === "playing" ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}>
+                DINING.
+              </span>
+            </h1>
+          </div>
+        )}
+
+        {/* Subtitle Description */}
+        {config.subtitle.visible !== false && (
+          <div
+            onPointerDown={(e) => onPointerDown("subtitle", e)}
+            className={`mt-3 sm:mt-4 max-w-[280px] sm:max-w-[320px] cursor-grab active:cursor-grabbing transition-all ${selectedKey === "subtitle" ? "ring-2 ring-red-500 ring-offset-2 rounded-md bg-red-500/10 p-1" : ""}`}
+            style={{
+              transform: `translate(${config.subtitle.x}px, ${config.subtitle.y}px) scale(${config.subtitle.scale}) rotate(${config.subtitle.rotate}deg)`,
+              opacity: config.subtitle.opacity,
+            }}
+          >
+            <p className="text-[#4a4a4a] text-[13.5px] sm:text-[15px] leading-snug font-medium">
+              Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.
+            </p>
+          </div>
+        )}
+
+        {/* Explore Menu CTA Button */}
+        {config.ctaButton.visible !== false && (
+          <div
+            onPointerDown={(e) => onPointerDown("ctaButton", e)}
+            className={`mt-4 sm:mt-5 self-start cursor-grab active:cursor-grabbing transition-all ${selectedKey === "ctaButton" ? "ring-2 ring-red-500 ring-offset-4 rounded-full" : ""}`}
+            style={{
+              transform: `translate(${config.ctaButton.x}px, ${config.ctaButton.y}px) scale(${config.ctaButton.scale}) rotate(${config.ctaButton.rotate}deg)`,
+              opacity: config.ctaButton.opacity,
+            }}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onExploreMenu();
+              }}
+              className="inline-flex items-center gap-2.5 sm:gap-3 bg-black hover:bg-neutral-900 active:scale-95 text-white rounded-full px-6 sm:px-7 py-3 sm:py-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-all duration-200 cursor-pointer"
+            >
+              <span className="text-[11px] sm:text-[12px] font-black tracking-[0.2em] uppercase text-white">
+                EXPLORE MENU
+              </span>
+              <svg
+                className="w-4 h-4 stroke-current stroke-[2.5] fill-none animate-pulse"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* --- 5. Lower Stage: SUSHI Watermark + Seal Stamp + Platter --- */}
+      {/* --- 6. Lower Stage: SUSHI Watermark + Seal Stamp + Platter --- */}
       <div className="relative z-10 w-full mt-2 flex flex-col justify-end overflow-visible">
         {/* Giant "SUSHI" Watermark Typography */}
-        <div
-          onPointerDown={(e) => onPointerDown("watermark", e)}
-          className={`absolute right-2 top-0 z-0 select-none cursor-grab active:cursor-grabbing transition-all ${selectedKey === "watermark" ? "ring-2 ring-red-500 ring-offset-2 rounded-lg" : ""}`}
-          style={{
-            transform: `translate(${config.watermark.x}px, ${config.watermark.y - 18}%) scale(${config.watermark.scale}) rotate(${config.watermark.rotate}deg)`,
-            opacity: config.watermark.opacity,
-            transition: dragStateRef.current.key === "watermark" ? "none" : "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <span
-            className="font-black uppercase tracking-[-0.04em] text-[#1c1c1c] leading-none block"
-            style={{ fontSize: `${config.watermark.fontSize || 120}px` }}
+        {config.watermark.visible !== false && (
+          <div
+            onPointerDown={(e) => onPointerDown("watermark", e)}
+            className={`absolute right-2 top-0 z-0 select-none cursor-grab active:cursor-grabbing transition-all ${selectedKey === "watermark" ? "ring-2 ring-red-500 ring-offset-2 rounded-lg" : ""}`}
+            style={{
+              transform: `translate(${config.watermark.x}px, ${config.watermark.y - 18}%) scale(${config.watermark.scale}) rotate(${config.watermark.rotate}deg)`,
+              opacity: config.watermark.opacity,
+            }}
           >
-            SUSHI
-          </span>
-        </div>
-
-        {/* Traditional Japanese Seal Stamp on Left */}
-        <div
-          onPointerDown={(e) => onPointerDown("sealStamp", e)}
-          className={`absolute left-5 top-12 z-20 flex flex-col items-center select-none cursor-grab active:cursor-grabbing transition-all ${selectedKey === "sealStamp" ? "ring-2 ring-red-500 ring-offset-2 rounded-md bg-red-500/10 p-1" : ""}`}
-          style={{
-            transform: `translate(${config.sealStamp.x}px, ${config.sealStamp.y}px) scale(${config.sealStamp.scale}) rotate(${config.sealStamp.rotate}deg)`,
-            opacity: config.sealStamp.opacity,
-            transition: dragStateRef.current.key === "sealStamp" ? "none" : "transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)",
-          }}
-        >
-          <div className="border-[1.5px] border-[#cc0012] rounded-[3px] px-1.5 py-2 bg-[#f4eee5]/80 backdrop-blur-xs flex flex-col items-center shadow-sm">
-            <span className="text-[11px] font-serif font-black text-[#cc0012] [writing-mode:vertical-rl] tracking-[0.3em] leading-tight">
-              極上 鮨処
+            <span
+              className="font-black uppercase tracking-[-0.04em] text-[#1c1c1c] leading-none block"
+              style={{ fontSize: `${config.watermark.fontSize || 120}px` }}
+            >
+              SUSHI
             </span>
           </div>
-          <span className="text-[8px] font-mono font-bold tracking-widest text-[#cc0012] mt-1">
-            EST. 1998
-          </span>
-        </div>
+        )}
+
+        {/* Traditional Japanese Seal Stamp on Left */}
+        {config.sealStamp.visible !== false && (
+          <div
+            onPointerDown={(e) => onPointerDown("sealStamp", e)}
+            className={`absolute left-5 top-12 z-20 flex flex-col items-center select-none cursor-grab active:cursor-grabbing transition-all ${selectedKey === "sealStamp" ? "ring-2 ring-red-500 ring-offset-2 rounded-md bg-red-500/10 p-1" : ""}`}
+            style={{
+              transform: `translate(${config.sealStamp.x}px, ${config.sealStamp.y}px) scale(${config.sealStamp.scale}) rotate(${config.sealStamp.rotate}deg)`,
+              opacity: config.sealStamp.opacity,
+            }}
+          >
+            <div className="border-[1.5px] border-[#cc0012] rounded-[3px] px-1.5 py-2 bg-[#f4eee5]/80 backdrop-blur-xs flex flex-col items-center shadow-sm">
+              <span className="text-[11px] font-serif font-black text-[#cc0012] [writing-mode:vertical-rl] tracking-[0.3em] leading-tight">
+                極上 鮨処
+              </span>
+            </div>
+            <span className="text-[8px] font-mono font-bold tracking-widest text-[#cc0012] mt-1">
+              EST. 1998
+            </span>
+          </div>
+        )}
 
         {/* High-Resolution Sushi Platter on Wooden Board */}
-        <div
-          onPointerDown={(e) => onPointerDown("sushiPlatter", e)}
-          className={`relative z-10 w-full overflow-visible cursor-grab active:cursor-grabbing transition-all ${selectedKey === "sushiPlatter" ? "ring-4 ring-red-500/80 ring-offset-4 rounded-3xl" : ""}`}
-          style={{
-            transform: `translate(${config.sushiPlatter.x}px, ${config.sushiPlatter.y + 12}px) scale(${config.sushiPlatter.scale}) rotate(${config.sushiPlatter.rotate}deg)`,
-            opacity: config.sushiPlatter.opacity,
-            transition: dragStateRef.current.key === "sushiPlatter" ? "none" : "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <img
-            src="/sakura-assets/_assets/media/2cccb1d8bca202e0ae7adde1a1d5d489.png"
-            alt="Authentic Sushi Platter"
-            className={`w-full origin-bottom-left object-cover pointer-events-none drop-shadow-[0_24px_40px_rgba(0,0,0,0.42)] ${ambientAnimation ? "hover:scale-[1.02] transition-transform duration-500" : ""}`}
-            loading="eager"
-          />
-        </div>
+        {config.sushiPlatter.visible !== false && (
+          <div
+            onPointerDown={(e) => onPointerDown("sushiPlatter", e)}
+            className={`relative z-10 w-full overflow-visible cursor-grab active:cursor-grabbing transition-all ${selectedKey === "sushiPlatter" ? "ring-4 ring-red-500/80 ring-offset-4 rounded-3xl" : ""}`}
+            style={{
+              transform: `translate(${config.sushiPlatter.x}px, ${config.sushiPlatter.y + 12}px) scale(${config.sushiPlatter.scale}) rotate(${config.sushiPlatter.rotate}deg)`,
+              opacity: config.sushiPlatter.opacity,
+            }}
+          >
+            <img
+              src="/sakura-assets/_assets/media/2cccb1d8bca202e0ae7adde1a1d5d489.png"
+              alt="Authentic Sushi Platter"
+              className={`w-full origin-bottom-left object-cover pointer-events-none drop-shadow-[0_24px_40px_rgba(0,0,0,0.42)] ${ambientAnimation ? "hover:scale-[1.02] transition-transform duration-500" : ""}`}
+              loading="eager"
+            />
+          </div>
+        )}
       </div>
 
       {/* --- FLOATING CONTROLLER DOCK --- */}
@@ -474,7 +548,7 @@ export default function SakuraMobileHero({
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
               <h3 className="text-xs font-black tracking-widest uppercase text-white">
-                Mobile Layout & Motion Calibrator
+                Mobile Layout & Tuna Calibrator
               </h3>
             </div>
             <div className="flex items-center gap-2">
@@ -506,17 +580,17 @@ export default function SakuraMobileHero({
             </button>
             <button
               type="button"
+              onClick={() => setActiveTab("hierarchy")}
+              className={`py-1.5 rounded-lg text-xs font-bold transition-colors ${activeTab === "hierarchy" ? "bg-red-600 text-white" : "text-neutral-400"}`}
+            >
+              👁️ Show / Hide Elements
+            </button>
+            <button
+              type="button"
               onClick={() => setActiveTab("animations")}
               className={`py-1.5 rounded-lg text-xs font-bold transition-colors ${activeTab === "animations" ? "bg-red-600 text-white" : "text-neutral-400"}`}
             >
               ✨ Animations
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("css")}
-              className={`py-1.5 rounded-lg text-xs font-bold transition-colors ${activeTab === "css" ? "bg-red-600 text-white" : "text-neutral-400"}`}
-            >
-              📋 Code & CSS
             </button>
           </div>
 
@@ -586,7 +660,7 @@ export default function SakuraMobileHero({
                     <input
                       type="range"
                       min="-200"
-                      max="200"
+                      max="350"
                       step="1"
                       value={current.x}
                       onChange={(e) => updateSelected({ x: Number(e.target.value) })}
@@ -618,8 +692,8 @@ export default function SakuraMobileHero({
                     </button>
                     <input
                       type="range"
-                      min="-250"
-                      max="250"
+                      min="-200"
+                      max="700"
                       step="1"
                       value={current.y}
                       onChange={(e) => updateSelected({ y: Number(e.target.value) })}
@@ -644,14 +718,14 @@ export default function SakuraMobileHero({
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => updateSelected({ scale: Math.max(0.3, current.scale - 0.02) })}
+                      onClick={() => updateSelected({ scale: Math.max(0.2, current.scale - 0.02) })}
                       className="w-8 h-8 rounded-lg bg-neutral-800 active:bg-red-600 font-black text-sm flex items-center justify-center"
                     >
                       -
                     </button>
                     <input
                       type="range"
-                      min="0.3"
+                      min="0.2"
                       max="2.5"
                       step="0.01"
                       value={current.scale}
@@ -700,52 +774,46 @@ export default function SakuraMobileHero({
                     </button>
                   </div>
                 </div>
-
-                {/* Font Size (if applicable) */}
-                {current.fontSize !== undefined && (
-                  <div className="flex flex-col gap-1">
-                    <div className="flex justify-between text-[11px] font-mono">
-                      <span className="text-neutral-400">Font Size:</span>
-                      <span className="font-bold text-white">{current.fontSize}px</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => updateSelected({ fontSize: (current.fontSize || 50) - 1 })}
-                        className="w-8 h-8 rounded-lg bg-neutral-800 active:bg-red-600 font-black text-sm flex items-center justify-center"
-                      >
-                        -
-                      </button>
-                      <input
-                        type="range"
-                        min="30"
-                        max="160"
-                        step="1"
-                        value={current.fontSize}
-                        onChange={(e) => updateSelected({ fontSize: Number(e.target.value) })}
-                        className="flex-1 accent-red-600 cursor-pointer h-2 bg-neutral-800 rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => updateSelected({ fontSize: (current.fontSize || 50) + 1 })}
-                        className="w-8 h-8 rounded-lg bg-neutral-800 active:bg-red-600 font-black text-sm flex items-center justify-center"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}
 
-          {/* TAB 2: Animation Settings */}
+          {/* TAB 2: Hierarchy & Element Toggles (Remove/Show Unwanted Elements) */}
+          {activeTab === "hierarchy" && (
+            <div className="flex flex-col gap-2.5">
+              <span className="text-xs text-neutral-300">
+                Toggle elements ON or OFF to clean up mobile hierarchy:
+              </span>
+              <div className="grid grid-cols-1 gap-2">
+                {(Object.keys(ELEMENT_LABELS) as MobileElementKey[]).map((k) => (
+                  <div
+                    key={k}
+                    className="flex items-center justify-between bg-white/5 px-3 py-2.5 rounded-xl border border-white/10"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>{ELEMENT_LABELS[k].icon}</span>
+                      <span className="text-xs font-bold text-white">{ELEMENT_LABELS[k].label}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toggleVisibility(k)}
+                      className={`px-3 py-1 rounded-lg text-xs font-black transition-colors ${config[k].visible !== false ? "bg-emerald-600 text-white" : "bg-neutral-800 text-neutral-500"}`}
+                    >
+                      {config[k].visible !== false ? "VISIBLE" : "HIDDEN"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: Animation Settings */}
           {activeTab === "animations" && (
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/10">
                 <div className="flex flex-col">
-                  <span className="text-xs font-bold text-white">🌸 Continuous Petal Drift & Ambient Motion</span>
-                  <span className="text-[10px] text-neutral-400">Live floating petals and subtle breathing depth</span>
+                  <span className="text-xs font-bold text-white">🌸 Floating Tuna & Petals Motion</span>
+                  <span className="text-[10px] text-neutral-400">Continuous gentle floating & breeze physics</span>
                 </div>
                 <button
                   type="button"
@@ -757,7 +825,7 @@ export default function SakuraMobileHero({
               </div>
 
               <div className="bg-neutral-900 p-4 rounded-xl flex flex-col gap-3">
-                <span className="text-xs font-bold text-white">🎬 Test Entrance Sequence</span>
+                <span className="text-xs font-bold text-white">🎬 Replay Entrance Sequence</span>
                 <button
                   type="button"
                   onClick={replayAnimation}
@@ -766,28 +834,6 @@ export default function SakuraMobileHero({
                   <span>▶️ Trigger Full Entrance Animation</span>
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* TAB 3: Code & CSS Export */}
-          {activeTab === "css" && (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-neutral-300">Live Generated CSS:</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(generatedCSS);
-                    showToast("✓ Copied Clean CSS to Clipboard!");
-                  }}
-                  className="px-3 py-1 bg-red-600 rounded-lg text-xs font-bold text-white active:scale-95"
-                >
-                  📋 Copy CSS
-                </button>
-              </div>
-              <pre className="bg-black/80 p-3 rounded-xl text-[10px] font-mono text-emerald-400 overflow-x-auto border border-white/10 max-h-48">
-                {generatedCSS}
-              </pre>
             </div>
           )}
 
