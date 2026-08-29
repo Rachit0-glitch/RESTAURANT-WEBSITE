@@ -9,8 +9,6 @@ import AevumAgencyFooter from "./AevumAgencyFooter";
 import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
 import SakuraDishesEffects from "./SakuraDishesEffects";
 import SakuraTransitionBanner from "./SakuraTransitionBanner";
-import SakuraMobileHero from "./SakuraMobileHero";
-import SakuraMobileDishes from "./SakuraMobileDishes";
 import SakuraZenAudio from "./SakuraZenAudio";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
@@ -2498,57 +2496,26 @@ export default function SakuraExperience() {
       {isLoadingActive && (
         <AevumLoadingScreen onComplete={handleLoadingComplete} />
       )}
+      <SakuraNavbar
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        dishesPage={dishesPage}
+        setDishesPage={setDishesPage}
+      />
       <SakuraZenAudio />
       {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
         <div key={section.id} id={section.id}>
-          {section.id === "home" && (
-            <SakuraMobileHero
-              onExploreMenu={() => {
-                setActiveNav("dishes-1");
-                setDishesPage("first");
-                const dishesEl = document.getElementById("dishes-1");
-                if (dishesEl) {
-                  dishesEl.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              isHeroRevealed={isHeroRevealed}
-            />
-          )}
-          {section.id === "dishes-1" && (
-            <SakuraMobileDishes
-              currentPage={dishesPage}
-              onPageChange={(page) => {
-                setDishesPage(page);
-                if (page === "first") setActiveNav("dishes-1");
-                else if (page === "second") setActiveNav("dishes-2");
-                else if (page === "third") setActiveNav("dishes-3");
-              }}
-            />
-          )}
-          <div className="hidden lg:block">
-            <DesignStage
-              section={section}
-              activeNav={activeNav}
-              setActiveNav={setActiveNav}
-              dishesPage={dishesPage}
-              setDishesPage={setDishesPage}
-              isHeroRevealed={isHeroRevealed}
-            />
-          </div>
+          <DesignStage
+            section={section}
+            activeNav={activeNav}
+            setActiveNav={setActiveNav}
+            dishesPage={dishesPage}
+            setDishesPage={setDishesPage}
+            isHeroRevealed={isHeroRevealed}
+          />
         </div>
       ))}
       <AevumAgencyFooter />
-
-      {/* Floating Multi-Device Visual Studio Button */}
-      <div className="fixed bottom-5 left-5 z-40 pointer-events-auto">
-        <a
-          href="/studio"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/90 hover:bg-black text-white text-xs font-black tracking-wider uppercase shadow-2xl border border-white/20 backdrop-blur-md active:scale-95 transition-all hover:scale-105"
-        >
-          <span className="text-red-500 animate-pulse">⚡</span>
-          <span>Device Studio</span>
-        </a>
-      </div>
     </main>
   );
 }
