@@ -200,7 +200,7 @@ export default function SakuraMobileHero({
     <section
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      className="relative w-full min-h-screen bg-[#f4eee5] overflow-hidden flex flex-col justify-between md:hidden select-none font-sans touch-none"
+      className="relative w-full min-h-[100dvh] bg-[#f4eee5] overflow-hidden flex flex-col justify-between md:hidden select-none font-sans touch-none landscape:min-h-screen"
       style={{ touchAction: isDragModeEnabled ? "none" : "auto" }}
     >
       {/* Toast Notification */}
@@ -212,7 +212,7 @@ export default function SakuraMobileHero({
 
       {/* Real-time Position HUD (Shows currently dragged element) */}
       {isDragModeEnabled && (
-        <div className="fixed top-2 left-1/2 -translate-x-1/2 z-40 bg-black/75 backdrop-blur-md text-white px-3.5 py-1 rounded-full text-[10px] font-mono flex items-center gap-2 shadow-lg border border-white/10 pointer-events-none">
+        <div className="fixed top-2 left-1/2 -translate-x-1/2 z-40 bg-black/80 backdrop-blur-md text-white px-3.5 py-1 rounded-full text-[10px] font-mono flex items-center gap-2 shadow-lg border border-white/10 pointer-events-none">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
           <span>
             {ELEMENT_LABELS[selectedKey].icon} {ELEMENT_LABELS[selectedKey].label}: <b>X:{current.x}px</b>, <b>Y:{current.y}px</b>, <b>Scale:{current.scale}x</b>
@@ -265,7 +265,7 @@ export default function SakuraMobileHero({
       {/* --- 3. Top Mobile Header Logo & Menu --- */}
       <header
         onPointerDown={(e) => onPointerDown("header", e)}
-        className={`relative z-30 flex items-center justify-between px-6 pt-7 pb-2 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "header" ? "ring-2 ring-red-500/80 ring-offset-2 rounded-xl bg-red-500/10" : ""}`}
+        className={`relative z-30 flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-7 pb-2 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "header" ? "ring-2 ring-red-500/80 ring-offset-2 rounded-xl bg-red-500/10" : ""}`}
         style={{
           transform: `translate(${config.header.x}px, ${config.header.y}px) scale(${config.header.scale}) rotate(${config.header.rotate}deg)`,
           opacity: config.header.opacity,
@@ -273,7 +273,7 @@ export default function SakuraMobileHero({
         }}
       >
         <div className="flex items-center">
-          <span className="text-[32px] font-black tracking-[-0.04em] uppercase text-black font-sans leading-none">
+          <span className="text-[28px] sm:text-[32px] font-black tracking-[-0.04em] uppercase text-black font-sans leading-none">
             SUSHI
           </span>
         </div>
@@ -294,11 +294,11 @@ export default function SakuraMobileHero({
       </header>
 
       {/* --- 4. Main Hero Typography & Content --- */}
-      <div className="relative z-20 flex flex-col px-6 pt-2 pb-0 pointer-events-auto">
+      <div className="relative z-20 flex flex-col px-4 sm:px-6 pt-1 sm:pt-2 pb-0 pointer-events-auto">
         {/* Japanese Tagline Badge / Sticker */}
         <div
           onPointerDown={(e) => onPointerDown("tagline", e)}
-          className={`self-start mb-3 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "tagline" ? "ring-2 ring-red-500 ring-offset-2 rounded bg-red-500/10" : ""}`}
+          className={`self-start mb-2 sm:mb-3 cursor-grab active:cursor-grabbing transition-all ${selectedKey === "tagline" ? "ring-2 ring-red-500 ring-offset-2 rounded bg-red-500/10" : ""}`}
           style={{
             transform: `translate(${config.tagline.x}px, ${config.tagline.y}px) scale(${config.tagline.scale}) rotate(${config.tagline.rotate}deg)`,
             opacity: config.tagline.opacity,
@@ -306,10 +306,10 @@ export default function SakuraMobileHero({
           }}
         >
           <div
-            className={`inline-flex items-center bg-[#fffdfa] px-3.5 py-1.5 rounded-[2px] shadow-[0_4px_14px_rgba(0,0,0,0.09)] border border-black/5 ${ambientAnimation ? "hover:rotate-0 transition-transform duration-300" : ""}`}
+            className={`inline-flex items-center bg-[#fffdfa] px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-[2px] shadow-[0_4px_14px_rgba(0,0,0,0.09)] border border-black/5 ${ambientAnimation ? "hover:rotate-0 transition-transform duration-300" : ""}`}
             style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.06))" }}
           >
-            <span className="text-[14px] font-bold tracking-wider text-black">
+            <span className="text-[13px] sm:text-[14px] font-bold tracking-wider text-black">
               最高の<span className="text-[#e60012] font-black">寿司</span>盛り合わせ
             </span>
           </div>
@@ -327,7 +327,7 @@ export default function SakuraMobileHero({
         >
           <h1
             className="flex flex-col font-black uppercase tracking-[-0.035em] leading-[0.88] text-black"
-            style={{ fontSize: `${config.headline.fontSize || 54}px` }}
+            style={{ fontSize: `clamp(36px, 11.5vw, ${config.headline.fontSize || 54}px)` }}
           >
             <span className={`inline-block transition-transform duration-500 ${animStage === "playing" ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}>
               AUTHENTIC
@@ -344,14 +344,14 @@ export default function SakuraMobileHero({
         {/* Subtitle Description */}
         <div
           onPointerDown={(e) => onPointerDown("subtitle", e)}
-          className={`mt-4 max-w-[280px] cursor-grab active:cursor-grabbing transition-all ${selectedKey === "subtitle" ? "ring-2 ring-red-500 ring-offset-2 rounded-md bg-red-500/10 p-1" : ""}`}
+          className={`mt-3 sm:mt-4 max-w-[280px] sm:max-w-[320px] cursor-grab active:cursor-grabbing transition-all ${selectedKey === "subtitle" ? "ring-2 ring-red-500 ring-offset-2 rounded-md bg-red-500/10 p-1" : ""}`}
           style={{
             transform: `translate(${config.subtitle.x}px, ${config.subtitle.y}px) scale(${config.subtitle.scale}) rotate(${config.subtitle.rotate}deg)`,
             opacity: config.subtitle.opacity,
             transition: dragStateRef.current.key === "subtitle" ? "none" : "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <p className="text-[#4a4a4a] text-[15px] leading-snug font-medium">
+          <p className="text-[#4a4a4a] text-[13.5px] sm:text-[15px] leading-snug font-medium">
             Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.
           </p>
         </div>
@@ -359,7 +359,7 @@ export default function SakuraMobileHero({
         {/* Explore Menu CTA Button */}
         <div
           onPointerDown={(e) => onPointerDown("ctaButton", e)}
-          className={`mt-5 self-start cursor-grab active:cursor-grabbing transition-all ${selectedKey === "ctaButton" ? "ring-2 ring-red-500 ring-offset-4 rounded-full" : ""}`}
+          className={`mt-4 sm:mt-5 self-start cursor-grab active:cursor-grabbing transition-all ${selectedKey === "ctaButton" ? "ring-2 ring-red-500 ring-offset-4 rounded-full" : ""}`}
           style={{
             transform: `translate(${config.ctaButton.x}px, ${config.ctaButton.y}px) scale(${config.ctaButton.scale}) rotate(${config.ctaButton.rotate}deg)`,
             opacity: config.ctaButton.opacity,
@@ -372,9 +372,9 @@ export default function SakuraMobileHero({
               e.stopPropagation();
               onExploreMenu();
             }}
-            className="inline-flex items-center gap-3 bg-black hover:bg-neutral-900 active:scale-95 text-white rounded-full px-7 py-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-all duration-200 cursor-pointer"
+            className="inline-flex items-center gap-2.5 sm:gap-3 bg-black hover:bg-neutral-900 active:scale-95 text-white rounded-full px-6 sm:px-7 py-3 sm:py-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-all duration-200 cursor-pointer"
           >
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase text-white">
+            <span className="text-[11px] sm:text-[12px] font-black tracking-[0.2em] uppercase text-white">
               EXPLORE MENU
             </span>
             <svg
