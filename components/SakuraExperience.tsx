@@ -9,6 +9,7 @@ import AevumAgencyFooter from "./AevumAgencyFooter";
 import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
 import SakuraDishesEffects from "./SakuraDishesEffects";
 import SakuraTransitionBanner from "./SakuraTransitionBanner";
+import SakuraMobileHero from "./SakuraMobileHero";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
 type TextLayer = { x: number; y: number; w: number; h: number; r: number; runs: TextRun[]; style: CSSProperties & { fontSize?: number; lineHeight?: number } };
@@ -2491,15 +2492,30 @@ export default function SakuraExperience() {
         <AevumLoadingScreen onComplete={handleLoadingComplete} />
       )}
       {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
-        <div key={section.id}>
-          <DesignStage
-            section={section}
-            activeNav={activeNav}
-            setActiveNav={setActiveNav}
-            dishesPage={dishesPage}
-            setDishesPage={setDishesPage}
-            isHeroRevealed={isHeroRevealed}
-          />
+        <div key={section.id} id={section.id}>
+          {section.id === "home" && (
+            <SakuraMobileHero
+              onExploreMenu={() => {
+                setActiveNav("dishes-1");
+                setDishesPage("first");
+                const dishesEl = document.getElementById("dishes-1");
+                if (dishesEl) {
+                  dishesEl.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              isHeroRevealed={isHeroRevealed}
+            />
+          )}
+          <div className={section.id === "home" ? "hidden md:block" : "block"}>
+            <DesignStage
+              section={section}
+              activeNav={activeNav}
+              setActiveNav={setActiveNav}
+              dishesPage={dishesPage}
+              setDishesPage={setDishesPage}
+              isHeroRevealed={isHeroRevealed}
+            />
+          </div>
         </div>
       ))}
       <AevumAgencyFooter />
