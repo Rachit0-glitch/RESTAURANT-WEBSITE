@@ -244,26 +244,6 @@ export default function SakuraHeroAtmosphere({
           Est. 1988
         </span>
       </div>
-
-      {/* 4. Interactive Floating "Scroll to Explore" Beacon */}
-      <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 pointer-events-auto flex flex-col items-center gap-2 select-none group cursor-pointer z-40">
-        <button
-          type="button"
-          onClick={onExploreScroll}
-          className="flex items-center gap-3 px-6 py-2.5 rounded-full backdrop-blur-xl bg-black/40 hover:bg-black/60 border border-white/30 hover:border-white/60 text-white transition-all duration-300 shadow-[0_12px_32px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95"
-        >
-          <span className="w-2.5 h-2.5 rounded-full bg-[#e60012] animate-ping" />
-          <span className="text-xs font-black tracking-[0.22em] uppercase text-white">
-            Scroll to Explore
-          </span>
-          <svg
-            className="w-4 h-4 stroke-current stroke-2 fill-none animate-bounce"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 }
