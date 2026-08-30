@@ -30,19 +30,20 @@ const dishPairs = {
 } as const;
 
 const pages: DishesPage[] = ["first", "second", "third"];
+type DishPhase = "settled" | "exiting" | "entering";
 
 export default function SakuraMobileExperience() {
   const [activeNav, setActiveNav] = useState("home");
   const [dishesPage, setDishesPage] = useState<DishesPage>("first");
+  const [displayPage, setDisplayPage] = useState<DishesPage>("first");
   const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [heroRevealed, setHeroRevealed] = useState(false);
   const [heroStage, setHeroStage] = useState(0);
-  const [outgoingPage, setOutgoingPage] = useState<DishesPage | null>(null);
   const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
-  const [dishTransitioning, setDishTransitioning] = useState(false);
+  const [dishPhase, setDishPhase] = useState<DishPhase>("settled");
   const touchStart = useRef<number | null>(null);
-  const transitionTimer = useRef<number | null>(null);
+  const transitionTimers = useRef<number[]>([]);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("aevum_disclaimer_accepted");
@@ -58,17 +59,17 @@ export default function SakuraMobileExperience() {
       return;
     }
     const timers = [
-      window.setTimeout(() => setHeroStage(1), 40),
-      window.setTimeout(() => setHeroStage(2), 210),
-      window.setTimeout(() => setHeroStage(3), 430),
-      window.setTimeout(() => setHeroStage(4), 660),
-      window.setTimeout(() => setHeroStage(5), 900),
+      window.setTimeout(() => setHeroStage(1), 60),
+      window.setTimeout(() => setHeroStage(2), 520),
+      window.setTimeout(() => setHeroStage(3), 760),
+      window.setTimeout(() => setHeroStage(4), 980),
+      window.setTimeout(() => setHeroStage(5), 1260),
     ];
     return () => timers.forEach(window.clearTimeout);
   }, [heroRevealed]);
 
   useEffect(() => () => {
-    if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
+    transitionTimers.current.forEach(window.clearTimeout);
   }, []);
 
   const accept = () => {
@@ -83,19 +84,33 @@ export default function SakuraMobileExperience() {
     document.getElementById("dishes-1")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const clearDishTimers = () => {
+    transitionTimers.current.forEach(window.clearTimeout);
+    transitionTimers.current = [];
+  };
+
   const changePage = (page: DishesPage) => {
-    if (page === dishesPage || dishTransitioning) return;
+    if (page === dishesPage || dishPhase !== "settled") return;
+
+    clearDishTimers();
     const direction: 1 | -1 = pages.indexOf(page) > pages.indexOf(dishesPage) ? 1 : -1;
     setTransitionDirection(direction);
-    setOutgoingPage(dishesPage);
-    setDishTransitioning(true);
     setDishesPage(page);
     setActiveNav(page === "first" ? "dishes-1" : page === "second" ? "dishes-2" : "dishes-3");
-    if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
-    transitionTimer.current = window.setTimeout(() => {
-      setOutgoingPage(null);
-      setDishTransitioning(false);
-    }, 920);
+
+    // 1) Animate the currently visible pair fully out.
+    setDishPhase("exiting");
+
+    // 2) Only after the exit is readable, swap the content off-screen.
+    transitionTimers.current.push(window.setTimeout(() => {
+      setDisplayPage(page);
+      setDishPhase("entering");
+    }, 500));
+
+    // 3) Let the incoming pair finish, then restore ambient floating motion.
+    transitionTimers.current.push(window.setTimeout(() => {
+      setDishPhase("settled");
+    }, 1280));
   };
 
   const step = (direction: 1 | -1) => {
@@ -104,31 +119,9 @@ export default function SakuraMobileExperience() {
     if (next !== i) changePage(pages[next]);
   };
 
-  const renderPair = (page: DishesPage, mode: "current" | "outgoing") => {
-    const pair = dishPairs[page];
-    const dirClass = transitionDirection > 0 ? "is-forward" : "is-backward";
-    const stateClass = mode === "outgoing" ? "is-exiting" : dishTransitioning ? "is-entering" : "is-settled";
-    return (
-      <div key={`${page}-${mode}`} className={`sakura-mobile-dish-pair ${stateClass} ${dirClass}`} aria-hidden={mode === "outgoing"}>
-        <article className="sakura-mobile-dish sakura-mobile-dish-top">
-          <img src={pair.top.image} alt={pair.top.title} />
-          <div className="sakura-mobile-dish-copy">
-            <strong>{pair.top.no}</strong>
-            <h3>{pair.top.title}</h3>
-            <p>{pair.top.text}</p>
-          </div>
-        </article>
-        <article className="sakura-mobile-dish sakura-mobile-dish-bottom">
-          <img src={pair.bottom.image} alt={pair.bottom.title} />
-          <div className="sakura-mobile-dish-copy">
-            <strong>{pair.bottom.no}</strong>
-            <h3>{pair.bottom.title}</h3>
-            <p>{pair.bottom.text}</p>
-          </div>
-        </article>
-      </div>
-    );
-  };
+  const pair = dishPairs[displayPage];
+  const dirClass = transitionDirection > 0 ? "is-forward" : "is-backward";
+  const phaseClass = dishPhase === "exiting" ? "is-exiting" : dishPhase === "entering" ? "is-entering" : "is-settled";
 
   return (
     <main className="sakura-mobile-root bg-[#f1dfcf]">
@@ -142,6 +135,8 @@ export default function SakuraMobileExperience() {
         <SakuraHeroAtmosphere isRevealed={heroRevealed} onExploreScroll={goMenu} />
         <div className={`sakura-mobile-pattern ${heroStage >= 1 ? "is-in" : ""}`} aria-hidden="true" />
         <div className={`sakura-mobile-kicker ${heroStage >= 3 ? "is-in" : ""}`}>最高の寿司盛り合わせ</div>
+
+        {/* The word starts below the platter line, then rises out from behind it. */}
         <div className={`sakura-mobile-sushi-word ${heroStage >= 2 ? "is-in" : ""}`} aria-hidden="true">SUSHI</div>
 
         <div className={`sakura-mobile-copy ${heroStage >= 4 ? "is-in" : ""}`}>
@@ -165,7 +160,7 @@ export default function SakuraMobileExperience() {
 
       <section
         id="dishes-1"
-        className="sakura-mobile-dishes"
+        className={`sakura-mobile-dishes ${dishPhase !== "settled" ? "is-transitioning" : ""}`}
         aria-label="Top dishes"
         onTouchStart={(e) => { touchStart.current = e.touches[0]?.clientX ?? null; }}
         onTouchEnd={(e) => {
@@ -180,11 +175,27 @@ export default function SakuraMobileExperience() {
         <div className="sakura-mobile-black-band sakura-mobile-black-band-bottom" aria-hidden="true" />
         <h2 className="sakura-mobile-dishes-title"><span>Top</span><span>Dishes</span></h2>
 
-        {outgoingPage && renderPair(outgoingPage, "outgoing")}
-        {renderPair(dishesPage, "current")}
+        <div key={`${displayPage}-${dishPhase}`} className={`sakura-mobile-dish-pair ${phaseClass} ${dirClass}`}>
+          <article className="sakura-mobile-dish sakura-mobile-dish-top">
+            <img src={pair.top.image} alt={pair.top.title} />
+            <div className="sakura-mobile-dish-copy">
+              <strong>{pair.top.no}</strong>
+              <h3>{pair.top.title}</h3>
+              <p>{pair.top.text}</p>
+            </div>
+          </article>
+          <article className="sakura-mobile-dish sakura-mobile-dish-bottom">
+            <img src={pair.bottom.image} alt={pair.bottom.title} />
+            <div className="sakura-mobile-dish-copy">
+              <strong>{pair.bottom.no}</strong>
+              <h3>{pair.bottom.title}</h3>
+              <p>{pair.bottom.text}</p>
+            </div>
+          </article>
+        </div>
 
         <div className="sakura-mobile-pagination" aria-label="Dish pages">
-          {pages.map((page, i) => <button key={page} type="button" onClick={() => changePage(page)} className={page === dishesPage ? "is-active" : ""} aria-label={`Show dish pair ${i + 1}`}>{String(i + 1).padStart(2, "0")}</button>)}
+          {pages.map((page, i) => <button key={page} type="button" disabled={dishPhase !== "settled"} onClick={() => changePage(page)} className={page === dishesPage ? "is-active" : ""} aria-label={`Show dish pair ${i + 1}`}>{String(i + 1).padStart(2, "0")}</button>)}
         </div>
         <div className="sakura-mobile-swipe-label">SWIPE TO EXPLORE <span>↔</span></div>
       </section>
