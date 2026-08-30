@@ -1,5 +1,5 @@
-import SakuraExperience from "@/components/SakuraExperience";
+import SakuraResponsiveExperience from "@/components/SakuraResponsiveExperience";
 
 export default function Page() {
-  return <SakuraExperience />;
+  return <SakuraResponsiveExperience />;
 }
