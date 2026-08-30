@@ -188,74 +188,77 @@ export default function SakuraMobileExperience() {
             line-height: 1.38 !important;
           }
 
-          /* Preserve the approved left-swipe slide-out exactly. */
-          .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-top { animation: mobile-dish-exit-top-f .52s cubic-bezier(.4,0,.2,1) both !important; }
-          .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-bottom { animation: mobile-dish-exit-bottom-f .52s cubic-bezier(.4,0,.2,1) .035s both !important; }
-          .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-top { animation: mobile-dish-exit-top-b .52s cubic-bezier(.4,0,.2,1) both !important; }
-          .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-bottom { animation: mobile-dish-exit-bottom-b .52s cubic-bezier(.4,0,.2,1) .035s both !important; }
+          /* Every dish now moves on the same -31deg rails as the black bands. */
+          .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-top { animation: rail-exit-top-forward .52s cubic-bezier(.4,0,.2,1) both !important; }
+          .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-bottom { animation: rail-exit-bottom-forward .52s cubic-bezier(.4,0,.2,1) .035s both !important; }
+          .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-top { animation: rail-exit-top-backward .52s cubic-bezier(.4,0,.2,1) both !important; }
+          .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-bottom { animation: rail-exit-bottom-backward .52s cubic-bezier(.4,0,.2,1) .035s both !important; }
           .sakura-mobile-dish-pair.is-exiting .sakura-mobile-dish-copy { animation: mobile-copy-out .3s ease both !important; }
 
           .sakura-mobile-dish-pair.is-preenter .sakura-mobile-dish,
           .sakura-mobile-dish-pair.is-preenter .sakura-mobile-dish-copy {
             transition: none !important;
           }
-          .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-top,
-          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-top,
-          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-top,
-          .sakura-mobile-dish-pair.is-entering.is-backward .sakura-mobile-dish-top {
-            transform-origin: 70% 55%;
+
+          /* Forward: top rail travels up-right; bottom rail travels down-left. */
+          .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-top {
+            opacity: 0;
+            transform: translate3d(-38vw, 23vw, 0);
           }
-          .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-bottom,
-          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-bottom,
-          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-bottom,
-          .sakura-mobile-dish-pair.is-entering.is-backward .sakura-mobile-dish-bottom {
-            transform-origin: 30% 45%;
+          .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-bottom {
+            opacity: 0;
+            transform: translate3d(38vw, -23vw, 0);
           }
 
-          /* Forward entry remains untouched. */
-          .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-top { opacity:0; transform:translate3d(-32vw,15vh,0) rotate(-12deg) scale(.88); filter:blur(6px); }
-          .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-bottom { opacity:0; transform:translate3d(34vw,-15vh,0) rotate(12deg) scale(.88); filter:blur(6px); }
-
-          /* Backward entry is the exact reverse of the approved forward exit path. */
-          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-top { opacity:0; transform:translate3d(35vw,-17vh,0) rotate(13deg) scale(.86); filter:blur(6px); }
-          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-bottom { opacity:0; transform:translate3d(-37vw,17vh,0) rotate(-13deg) scale(.86); filter:blur(6px); }
-          .sakura-mobile-dish-pair.is-preenter .sakura-mobile-dish-copy { opacity:0; transform:translateY(12px); filter:blur(3px); }
+          /* Backward is the exact inverse on those same rails. */
+          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-top {
+            opacity: 0;
+            transform: translate3d(38vw, -23vw, 0);
+          }
+          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-bottom {
+            opacity: 0;
+            transform: translate3d(-38vw, 23vw, 0);
+          }
+          .sakura-mobile-dish-pair.is-preenter .sakura-mobile-dish-copy {
+            opacity:0;
+            transform:translateY(10px);
+          }
 
           .sakura-mobile-dish-pair.is-entering .sakura-mobile-dish {
-            opacity:1;
-            transform:translate3d(0,0,0) rotate(0) scale(1);
-            filter:blur(0);
-            transition: transform .64s cubic-bezier(.12,.98,.22,1), opacity .42s ease, filter .5s ease !important;
+            opacity: 1;
+            transform: translate3d(0,0,0);
+            filter: none !important;
+            transition: transform .64s cubic-bezier(.12,.98,.22,1), opacity .36s ease !important;
           }
           .sakura-mobile-dish-pair.is-entering .sakura-mobile-dish-bottom {
-            transition-delay:.055s !important;
+            transition-delay: .045s !important;
           }
           .sakura-mobile-dish-pair.is-entering .sakura-mobile-dish-copy {
             opacity:1;
             transform:translateY(0);
-            filter:blur(0);
-            transition: transform .5s cubic-bezier(.16,1,.3,1) .12s, opacity .42s ease .12s, filter .42s ease .12s !important;
+            filter:none !important;
+            transition:transform .45s cubic-bezier(.16,1,.3,1) .10s, opacity .34s ease .10s !important;
           }
 
-          @keyframes mobile-dish-exit-top-f {
-            0% { opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:blur(0); }
-            100% { opacity:0; transform:translate3d(35vw,-17vh,0) rotate(13deg) scale(.86); filter:blur(6px); }
+          @keyframes rail-exit-top-forward {
+            from { opacity:1; transform:translate3d(0,0,0); }
+            to { opacity:0; transform:translate3d(38vw,-23vw,0); }
           }
-          @keyframes mobile-dish-exit-bottom-f {
-            0% { opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:blur(0); }
-            100% { opacity:0; transform:translate3d(-37vw,17vh,0) rotate(-13deg) scale(.86); filter:blur(6px); }
+          @keyframes rail-exit-bottom-forward {
+            from { opacity:1; transform:translate3d(0,0,0); }
+            to { opacity:0; transform:translate3d(-38vw,23vw,0); }
           }
-
-          /* Backward exit is the exact reverse of the approved forward entry path. */
-          @keyframes mobile-dish-exit-top-b {
-            0% { opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:blur(0); }
-            100% { opacity:0; transform:translate3d(-32vw,15vh,0) rotate(-12deg) scale(.88); filter:blur(6px); }
+          @keyframes rail-exit-top-backward {
+            from { opacity:1; transform:translate3d(0,0,0); }
+            to { opacity:0; transform:translate3d(-38vw,23vw,0); }
           }
-          @keyframes mobile-dish-exit-bottom-b {
-            0% { opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:blur(0); }
-            100% { opacity:0; transform:translate3d(34vw,-15vh,0) rotate(12deg) scale(.88); filter:blur(6px); }
+          @keyframes rail-exit-bottom-backward {
+            from { opacity:1; transform:translate3d(0,0,0); }
+            to { opacity:0; transform:translate3d(38vw,-23vw,0); }
           }
-          @keyframes mobile-copy-out { to { opacity:0; transform:translateY(10px); filter:blur(3px); } }
+          @keyframes mobile-copy-out {
+            to { opacity:0; transform:translateY(8px); }
+          }
 
           .sakura-mobile-dish-pair.is-settled .sakura-mobile-dish-top img { animation: sakura-mobile-dish-float 5.8s ease-in-out infinite !important; }
           .sakura-mobile-dish-pair.is-settled .sakura-mobile-dish-bottom img { animation: sakura-mobile-dish-float 6.2s ease-in-out .38s infinite reverse !important; }
