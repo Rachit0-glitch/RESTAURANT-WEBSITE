@@ -37,7 +37,12 @@ export default function SakuraMobileExperience() {
   const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [heroRevealed, setHeroRevealed] = useState(false);
+  const [heroStage, setHeroStage] = useState(0);
+  const [outgoingPage, setOutgoingPage] = useState<DishesPage | null>(null);
+  const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
+  const [dishTransitioning, setDishTransitioning] = useState(false);
   const touchStart = useRef<number | null>(null);
+  const transitionTimer = useRef<number | null>(null);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("aevum_disclaimer_accepted");
@@ -48,11 +53,23 @@ export default function SakuraMobileExperience() {
   }, []);
 
   useEffect(() => {
-    if (!loading && accepted) {
-      const id = window.setTimeout(() => setHeroRevealed(true), 80);
-      return () => window.clearTimeout(id);
+    if (!heroRevealed) {
+      setHeroStage(0);
+      return;
     }
-  }, [loading, accepted]);
+    const timers = [
+      window.setTimeout(() => setHeroStage(1), 40),
+      window.setTimeout(() => setHeroStage(2), 210),
+      window.setTimeout(() => setHeroStage(3), 430),
+      window.setTimeout(() => setHeroStage(4), 660),
+      window.setTimeout(() => setHeroStage(5), 900),
+    ];
+    return () => timers.forEach(window.clearTimeout);
+  }, [heroRevealed]);
+
+  useEffect(() => () => {
+    if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
+  }, []);
 
   const accept = () => {
     window.localStorage.setItem("aevum_disclaimer_accepted", "true");
@@ -62,54 +79,88 @@ export default function SakuraMobileExperience() {
 
   const goMenu = () => {
     setActiveNav("dishes-1");
-    setDishesPage("first");
+    if (dishesPage !== "first") changePage("first");
     document.getElementById("dishes-1")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const setPage = (page: DishesPage) => {
+  const changePage = (page: DishesPage) => {
+    if (page === dishesPage || dishTransitioning) return;
+    const direction: 1 | -1 = pages.indexOf(page) > pages.indexOf(dishesPage) ? 1 : -1;
+    setTransitionDirection(direction);
+    setOutgoingPage(dishesPage);
+    setDishTransitioning(true);
     setDishesPage(page);
     setActiveNav(page === "first" ? "dishes-1" : page === "second" ? "dishes-2" : "dishes-3");
+    if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
+    transitionTimer.current = window.setTimeout(() => {
+      setOutgoingPage(null);
+      setDishTransitioning(false);
+    }, 920);
   };
 
   const step = (direction: 1 | -1) => {
     const i = pages.indexOf(dishesPage);
     const next = Math.min(pages.length - 1, Math.max(0, i + direction));
-    setPage(pages[next]);
+    if (next !== i) changePage(pages[next]);
   };
 
-  const pair = dishPairs[dishesPage];
+  const renderPair = (page: DishesPage, mode: "current" | "outgoing") => {
+    const pair = dishPairs[page];
+    const dirClass = transitionDirection > 0 ? "is-forward" : "is-backward";
+    const stateClass = mode === "outgoing" ? "is-exiting" : dishTransitioning ? "is-entering" : "is-settled";
+    return (
+      <div key={`${page}-${mode}`} className={`sakura-mobile-dish-pair ${stateClass} ${dirClass}`} aria-hidden={mode === "outgoing"}>
+        <article className="sakura-mobile-dish sakura-mobile-dish-top">
+          <img src={pair.top.image} alt={pair.top.title} />
+          <div className="sakura-mobile-dish-copy">
+            <strong>{pair.top.no}</strong>
+            <h3>{pair.top.title}</h3>
+            <p>{pair.top.text}</p>
+          </div>
+        </article>
+        <article className="sakura-mobile-dish sakura-mobile-dish-bottom">
+          <img src={pair.bottom.image} alt={pair.bottom.title} />
+          <div className="sakura-mobile-dish-copy">
+            <strong>{pair.bottom.no}</strong>
+            <h3>{pair.bottom.title}</h3>
+            <p>{pair.bottom.text}</p>
+          </div>
+        </article>
+      </div>
+    );
+  };
 
   return (
     <main className="sakura-mobile-root bg-[#f1dfcf]">
       {!accepted && <AevumDisclaimerGate onAccept={accept} />}
       {loading && <AevumLoadingScreen onComplete={() => { setLoading(false); setHeroRevealed(true); }} />}
 
-      <SakuraNavbar activeNav={activeNav} setActiveNav={setActiveNav} dishesPage={dishesPage} setDishesPage={setDishesPage} />
+      <SakuraNavbar activeNav={activeNav} setActiveNav={setActiveNav} dishesPage={dishesPage} setDishesPage={changePage} />
       <SakuraZenAudio />
 
-      <section id="home" className="sakura-mobile-hero" aria-label="Sakura hero">
+      <section id="home" className={`sakura-mobile-hero hero-stage-${heroStage}`} aria-label="Sakura hero">
         <SakuraHeroAtmosphere isRevealed={heroRevealed} onExploreScroll={goMenu} />
-        <div className="sakura-mobile-pattern" aria-hidden="true" />
-        <div className={`sakura-mobile-kicker ${heroRevealed ? "is-in" : ""}`}>最高の寿司盛り合わせ</div>
-        <div className={`sakura-mobile-sushi-word ${heroRevealed ? "is-in" : ""}`} aria-hidden="true">SUSHI</div>
+        <div className={`sakura-mobile-pattern ${heroStage >= 1 ? "is-in" : ""}`} aria-hidden="true" />
+        <div className={`sakura-mobile-kicker ${heroStage >= 3 ? "is-in" : ""}`}>最高の寿司盛り合わせ</div>
+        <div className={`sakura-mobile-sushi-word ${heroStage >= 2 ? "is-in" : ""}`} aria-hidden="true">SUSHI</div>
 
-        <div className={`sakura-mobile-copy ${heroRevealed ? "is-in" : ""}`}>
+        <div className={`sakura-mobile-copy ${heroStage >= 4 ? "is-in" : ""}`}>
           <p className="sakura-mobile-eyebrow">SAKURA CULINARY · TOKYO</p>
-          <h1>Authentic<br />Japanese<br /><span>Dining.</span></h1>
+          <h1><span className="hero-copy-line hero-copy-line-1">Authentic</span><br /><span className="hero-copy-line hero-copy-line-2">Japanese</span><br /><span className="hero-copy-line hero-copy-line-3 hero-copy-accent">Dining.</span></h1>
           <p className="sakura-mobile-description">Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.</p>
           <button type="button" onClick={goMenu} className="sakura-mobile-cta">
-            <span>Explore Menu</span><span aria-hidden="true">→</span>
+            <span>Explore Menu</span><span className="sakura-mobile-cta-arrow" aria-hidden="true">→</span>
           </button>
         </div>
 
-        <div className={`sakura-mobile-platter ${heroRevealed ? "is-in" : ""}`}>
+        <div className={`sakura-mobile-platter ${heroStage >= 1 ? "is-in" : ""}`}>
           <img src={HERO_PLATTER} alt="Sakura sushi platter" />
         </div>
-        <img className={`sakura-mobile-float sakura-mobile-float-a ${heroRevealed ? "is-in" : ""}`} src={FLOAT_LEFT} alt="" />
-        <img className={`sakura-mobile-float sakura-mobile-float-b ${heroRevealed ? "is-in" : ""}`} src={FLOAT_RIGHT} alt="" />
-        <img className={`sakura-mobile-float sakura-mobile-float-c ${heroRevealed ? "is-in" : ""}`} src={FLOAT_BOTTOM} alt="" />
-        <div className="sakura-mobile-seal" aria-hidden="true"><span>極上</span><span>鮨処</span></div>
-        <button type="button" onClick={goMenu} className="sakura-mobile-scroll-cue" aria-label="Scroll to dishes"><span>SCROLL</span><i /></button>
+        <img className={`sakura-mobile-float sakura-mobile-float-a ${heroStage >= 5 ? "is-in" : ""}`} src={FLOAT_LEFT} alt="" />
+        <img className={`sakura-mobile-float sakura-mobile-float-b ${heroStage >= 5 ? "is-in" : ""}`} src={FLOAT_RIGHT} alt="" />
+        <img className={`sakura-mobile-float sakura-mobile-float-c ${heroStage >= 5 ? "is-in" : ""}`} src={FLOAT_BOTTOM} alt="" />
+        <div className={`sakura-mobile-seal ${heroStage >= 5 ? "is-in" : ""}`} aria-hidden="true"><span>極上</span><span>鮨処</span></div>
+        <button type="button" onClick={goMenu} className={`sakura-mobile-scroll-cue ${heroStage >= 5 ? "is-in" : ""}`} aria-label="Scroll to dishes"><span>SCROLL</span><i /></button>
       </section>
 
       <section
@@ -129,26 +180,11 @@ export default function SakuraMobileExperience() {
         <div className="sakura-mobile-black-band sakura-mobile-black-band-bottom" aria-hidden="true" />
         <h2 className="sakura-mobile-dishes-title"><span>Top</span><span>Dishes</span></h2>
 
-        <article key={`${dishesPage}-top`} className="sakura-mobile-dish sakura-mobile-dish-top">
-          <img src={pair.top.image} alt={pair.top.title} />
-          <div className="sakura-mobile-dish-copy">
-            <strong>{pair.top.no}</strong>
-            <h3>{pair.top.title}</h3>
-            <p>{pair.top.text}</p>
-          </div>
-        </article>
-
-        <article key={`${dishesPage}-bottom`} className="sakura-mobile-dish sakura-mobile-dish-bottom">
-          <img src={pair.bottom.image} alt={pair.bottom.title} />
-          <div className="sakura-mobile-dish-copy">
-            <strong>{pair.bottom.no}</strong>
-            <h3>{pair.bottom.title}</h3>
-            <p>{pair.bottom.text}</p>
-          </div>
-        </article>
+        {outgoingPage && renderPair(outgoingPage, "outgoing")}
+        {renderPair(dishesPage, "current")}
 
         <div className="sakura-mobile-pagination" aria-label="Dish pages">
-          {pages.map((page, i) => <button key={page} type="button" onClick={() => setPage(page)} className={page === dishesPage ? "is-active" : ""} aria-label={`Show dish pair ${i + 1}`}>{String(i + 1).padStart(2, "0")}</button>)}
+          {pages.map((page, i) => <button key={page} type="button" onClick={() => changePage(page)} className={page === dishesPage ? "is-active" : ""} aria-label={`Show dish pair ${i + 1}`}>{String(i + 1).padStart(2, "0")}</button>)}
         </div>
         <div className="sakura-mobile-swipe-label">SWIPE TO EXPLORE <span>↔</span></div>
       </section>
