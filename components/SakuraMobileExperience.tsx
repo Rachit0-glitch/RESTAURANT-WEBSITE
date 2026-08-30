@@ -188,39 +188,37 @@ export default function SakuraMobileExperience() {
             line-height: 1.38 !important;
           }
 
-          /* Preserve the approved slide-out exactly. */
+          /* Preserve the approved left-swipe slide-out exactly. */
           .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-top { animation: mobile-dish-exit-top-f .52s cubic-bezier(.4,0,.2,1) both !important; }
           .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-bottom { animation: mobile-dish-exit-bottom-f .52s cubic-bezier(.4,0,.2,1) .035s both !important; }
           .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-top { animation: mobile-dish-exit-top-b .52s cubic-bezier(.4,0,.2,1) both !important; }
           .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-bottom { animation: mobile-dish-exit-bottom-b .52s cubic-bezier(.4,0,.2,1) .035s both !important; }
           .sakura-mobile-dish-pair.is-exiting .sakura-mobile-dish-copy { animation: mobile-copy-out .3s ease both !important; }
 
-          /* New pair is mounted off-screen first, then transitioned in on the next painted frame. */
           .sakura-mobile-dish-pair.is-preenter .sakura-mobile-dish,
           .sakura-mobile-dish-pair.is-preenter .sakura-mobile-dish-copy {
             transition: none !important;
           }
           .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-top,
-          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-top {
+          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-top,
+          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-top,
+          .sakura-mobile-dish-pair.is-entering.is-backward .sakura-mobile-dish-top {
             transform-origin: 70% 55%;
           }
           .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-bottom,
-          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-bottom {
-            transform-origin: 30% 45%;
-          }
-          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-top,
-          .sakura-mobile-dish-pair.is-entering.is-backward .sakura-mobile-dish-top {
-            transform-origin: 30% 55%;
-          }
+          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-bottom,
           .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-bottom,
           .sakura-mobile-dish-pair.is-entering.is-backward .sakura-mobile-dish-bottom {
-            transform-origin: 70% 45%;
+            transform-origin: 30% 45%;
           }
 
+          /* Forward entry remains untouched. */
           .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-top { opacity:0; transform:translate3d(-32vw,15vh,0) rotate(-12deg) scale(.88); filter:blur(6px); }
           .sakura-mobile-dish-pair.is-preenter.is-forward .sakura-mobile-dish-bottom { opacity:0; transform:translate3d(34vw,-15vh,0) rotate(12deg) scale(.88); filter:blur(6px); }
-          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-top { opacity:0; transform:translate3d(32vw,15vh,0) rotate(12deg) scale(.88); filter:blur(6px); }
-          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-bottom { opacity:0; transform:translate3d(-34vw,-15vh,0) rotate(-12deg) scale(.88); filter:blur(6px); }
+
+          /* Backward entry is the exact reverse of the approved forward exit path. */
+          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-top { opacity:0; transform:translate3d(35vw,-17vh,0) rotate(13deg) scale(.86); filter:blur(6px); }
+          .sakura-mobile-dish-pair.is-preenter.is-backward .sakura-mobile-dish-bottom { opacity:0; transform:translate3d(-37vw,17vh,0) rotate(-13deg) scale(.86); filter:blur(6px); }
           .sakura-mobile-dish-pair.is-preenter .sakura-mobile-dish-copy { opacity:0; transform:translateY(12px); filter:blur(3px); }
 
           .sakura-mobile-dish-pair.is-entering .sakura-mobile-dish {
@@ -247,13 +245,15 @@ export default function SakuraMobileExperience() {
             0% { opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:blur(0); }
             100% { opacity:0; transform:translate3d(-37vw,17vh,0) rotate(-13deg) scale(.86); filter:blur(6px); }
           }
+
+          /* Backward exit is the exact reverse of the approved forward entry path. */
           @keyframes mobile-dish-exit-top-b {
             0% { opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:blur(0); }
-            100% { opacity:0; transform:translate3d(-35vw,-17vh,0) rotate(-13deg) scale(.86); filter:blur(6px); }
+            100% { opacity:0; transform:translate3d(-32vw,15vh,0) rotate(-12deg) scale(.88); filter:blur(6px); }
           }
           @keyframes mobile-dish-exit-bottom-b {
             0% { opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:blur(0); }
-            100% { opacity:0; transform:translate3d(37vw,17vh,0) rotate(13deg) scale(.86); filter:blur(6px); }
+            100% { opacity:0; transform:translate3d(34vw,-15vh,0) rotate(12deg) scale(.88); filter:blur(6px); }
           }
           @keyframes mobile-copy-out { to { opacity:0; transform:translateY(10px); filter:blur(3px); } }
 
