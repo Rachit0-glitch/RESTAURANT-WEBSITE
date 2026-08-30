@@ -1,0 +1,162 @@
+/* Responsive layer for Sakura.
+   Desktop composition (>= 1200px) is intentionally untouched. */
+
+:root {
+  --sakura-mobile-gutter: clamp(12px, 4vw, 24px);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  width: 100%;
+  overscroll-behavior-x: none;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+@media (max-width: 1199px) {
+  .sakura-section,
+  .sakura-dishes-section {
+    width: 100%;
+    min-height: 100svh;
+    height: 100svh;
+    max-height: none;
+  }
+
+  .sakura-stage-shell {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  /* Keep the authored 1920x1080 composition intact and fit it as one artboard. */
+  .sakura-stage-shell > div {
+    max-width: none;
+  }
+
+  .sakura-dishes-band {
+    width: 680px;
+    height: 225px;
+  }
+
+  .sakura-dish-swap.sakura-dish-top.is-away {
+    transform: translate3d(720px, -480px, 0) rotate(16deg) scale(0.8);
+  }
+
+  .sakura-dish-swap.sakura-dish-bottom.is-away {
+    transform: translate3d(-720px, 480px, 0) rotate(-16deg) scale(0.8);
+  }
+
+  .sakura-animated-copy {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 767px) {
+  html {
+    scroll-snap-type: none;
+  }
+
+  .sakura-section,
+  .sakura-dishes-section {
+    min-height: 100svh;
+    height: 100svh;
+    touch-action: pan-y;
+  }
+
+  /* The design remains an art-directed composition rather than becoming a generic stack. */
+  .sakura-stage-shell {
+    isolation: isolate;
+  }
+
+  .sakura-dishes-band {
+    width: 600px;
+    height: 205px;
+  }
+
+  .sakura-dish-swap.sakura-dish-top.is-away {
+    transform: translate3d(560px, -400px, 0) rotate(14deg) scale(0.82);
+    filter: blur(6px);
+  }
+
+  .sakura-dish-swap.sakura-dish-bottom.is-away {
+    transform: translate3d(-560px, 400px, 0) rotate(-14deg) scale(0.82);
+    filter: blur(6px);
+  }
+
+  .sakura-cta-plate,
+  .sakura-cta-arrow {
+    animation-duration: 2.8s;
+  }
+
+  .hero-floating-1,
+  .hero-floating-2,
+  .hero-floating-3 {
+    animation-duration: 7s;
+  }
+}
+
+@media (max-width: 479px) {
+  .sakura-section,
+  .sakura-dishes-section {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+
+  .sakura-dishes-band {
+    width: 560px;
+    height: 190px;
+  }
+}
+
+/* Landscape phones: use the available short height without cropping controls. */
+@media (max-width: 932px) and (orientation: landscape) {
+  .sakura-section,
+  .sakura-dishes-section {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  button,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sakura-cta-hotspot:hover ~ .sakura-cta-plate,
+  .sakura-cta-hotspot:focus-visible ~ .sakura-cta-plate {
+    animation-duration: 2.4s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero-animate-platter,
+  .hero-animate-title,
+  .hero-animate-tagline,
+  .hero-floating-1,
+  .hero-floating-2,
+  .hero-floating-3,
+  .sakura-dish-swap > img,
+  .sakura-cta-plate,
+  .sakura-cta-arrow {
+    animation: none !important;
+  }
+
+  .sakura-dish-swap,
+  .sakura-animated-letter {
+    transition-duration: 1ms !important;
+  }
+}
