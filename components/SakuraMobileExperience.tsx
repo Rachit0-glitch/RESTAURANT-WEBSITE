@@ -60,10 +60,10 @@ export default function SakuraMobileExperience() {
     }
     const timers = [
       window.setTimeout(() => setHeroStage(1), 60),
-      window.setTimeout(() => setHeroStage(2), 520),
-      window.setTimeout(() => setHeroStage(3), 760),
-      window.setTimeout(() => setHeroStage(4), 980),
-      window.setTimeout(() => setHeroStage(5), 1260),
+      window.setTimeout(() => setHeroStage(2), 560),
+      window.setTimeout(() => setHeroStage(3), 820),
+      window.setTimeout(() => setHeroStage(4), 1040),
+      window.setTimeout(() => setHeroStage(5), 1320),
     ];
     return () => timers.forEach(window.clearTimeout);
   }, [heroRevealed]);
@@ -91,26 +91,22 @@ export default function SakuraMobileExperience() {
 
   const changePage = (page: DishesPage) => {
     if (page === dishesPage || dishPhase !== "settled") return;
-
     clearDishTimers();
+
     const direction: 1 | -1 = pages.indexOf(page) > pages.indexOf(dishesPage) ? 1 : -1;
     setTransitionDirection(direction);
     setDishesPage(page);
     setActiveNav(page === "first" ? "dishes-1" : page === "second" ? "dishes-2" : "dishes-3");
-
-    // 1) Animate the currently visible pair fully out.
     setDishPhase("exiting");
 
-    // 2) Only after the exit is readable, swap the content off-screen.
     transitionTimers.current.push(window.setTimeout(() => {
       setDisplayPage(page);
       setDishPhase("entering");
-    }, 500));
+    }, 720));
 
-    // 3) Let the incoming pair finish, then restore ambient floating motion.
     transitionTimers.current.push(window.setTimeout(() => {
       setDishPhase("settled");
-    }, 1280));
+    }, 1600));
   };
 
   const step = (direction: 1 | -1) => {
@@ -125,6 +121,55 @@ export default function SakuraMobileExperience() {
 
   return (
     <main className="sakura-mobile-root bg-[#f1dfcf]">
+      <style jsx global>{`
+        @media (max-width: 767px) {
+          .sakura-mobile-sushi-word {
+            z-index: 8 !important;
+            transform: translate(-50%, 72%) scale(.68) !important;
+            opacity: 0 !important;
+            filter: blur(10px) !important;
+            transform-origin: 50% 100%;
+          }
+          .sakura-mobile-sushi-word.is-in {
+            animation: mobile-sushi-emerge 1.05s cubic-bezier(.12,.98,.2,1) both !important;
+          }
+          .sakura-mobile-platter { z-index: 14 !important; }
+
+          @keyframes mobile-sushi-emerge {
+            0% { opacity:0; transform:translate(-50%,72%) scale(.68); filter:blur(10px); }
+            22% { opacity:.36; }
+            62% { opacity:.98; transform:translate(-50%,-34%) scale(1.045); filter:blur(0); }
+            100% { opacity:.97; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
+          }
+
+          .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-top { animation: mobile-dish-exit-top-f .72s cubic-bezier(.42,0,.2,1) both !important; }
+          .sakura-mobile-dish-pair.is-exiting.is-forward .sakura-mobile-dish-bottom { animation: mobile-dish-exit-bottom-f .72s cubic-bezier(.42,0,.2,1) both !important; }
+          .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-top { animation: mobile-dish-exit-top-b .72s cubic-bezier(.42,0,.2,1) both !important; }
+          .sakura-mobile-dish-pair.is-exiting.is-backward .sakura-mobile-dish-bottom { animation: mobile-dish-exit-bottom-b .72s cubic-bezier(.42,0,.2,1) both !important; }
+
+          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-top { animation: mobile-dish-enter-top-f .86s cubic-bezier(.12,.98,.22,1) both !important; }
+          .sakura-mobile-dish-pair.is-entering.is-forward .sakura-mobile-dish-bottom { animation: mobile-dish-enter-bottom-f .86s cubic-bezier(.12,.98,.22,1) .06s both !important; }
+          .sakura-mobile-dish-pair.is-entering.is-backward .sakura-mobile-dish-top { animation: mobile-dish-enter-top-b .86s cubic-bezier(.12,.98,.22,1) both !important; }
+          .sakura-mobile-dish-pair.is-entering.is-backward .sakura-mobile-dish-bottom { animation: mobile-dish-enter-bottom-b .86s cubic-bezier(.12,.98,.22,1) .06s both !important; }
+
+          .sakura-mobile-dish-pair.is-exiting .sakura-mobile-dish-copy { animation: mobile-copy-out .42s ease both !important; }
+          .sakura-mobile-dish-pair.is-entering .sakura-mobile-dish-copy { animation: mobile-copy-in .66s cubic-bezier(.16,1,.3,1) .18s both !important; }
+
+          @keyframes mobile-dish-exit-top-f { to { opacity:0; transform:translate3d(54vw,-34vh,0) rotate(18deg) scale(.76); filter:blur(9px); } }
+          @keyframes mobile-dish-exit-bottom-f { to { opacity:0; transform:translate3d(-56vw,34vh,0) rotate(-18deg) scale(.76); filter:blur(9px); } }
+          @keyframes mobile-dish-exit-top-b { to { opacity:0; transform:translate3d(-54vw,-34vh,0) rotate(-18deg) scale(.76); filter:blur(9px); } }
+          @keyframes mobile-dish-exit-bottom-b { to { opacity:0; transform:translate3d(56vw,34vh,0) rotate(18deg) scale(.76); filter:blur(9px); } }
+
+          @keyframes mobile-dish-enter-top-f { from { opacity:0; transform:translate3d(-52vw,34vh,0) rotate(-18deg) scale(.78); filter:blur(9px); } to { opacity:1; transform:none; filter:blur(0); } }
+          @keyframes mobile-dish-enter-bottom-f { from { opacity:0; transform:translate3d(54vw,-34vh,0) rotate(18deg) scale(.78); filter:blur(9px); } to { opacity:1; transform:none; filter:blur(0); } }
+          @keyframes mobile-dish-enter-top-b { from { opacity:0; transform:translate3d(52vw,34vh,0) rotate(18deg) scale(.78); filter:blur(9px); } to { opacity:1; transform:none; filter:blur(0); } }
+          @keyframes mobile-dish-enter-bottom-b { from { opacity:0; transform:translate3d(-54vw,-34vh,0) rotate(-18deg) scale(.78); filter:blur(9px); } to { opacity:1; transform:none; filter:blur(0); } }
+
+          @keyframes mobile-copy-out { to { opacity:0; transform:translateY(16px); filter:blur(4px); } }
+          @keyframes mobile-copy-in { from { opacity:0; transform:translateY(18px); filter:blur(4px); } to { opacity:1; transform:none; filter:blur(0); } }
+        }
+      `}</style>
+
       {!accepted && <AevumDisclaimerGate onAccept={accept} />}
       {loading && <AevumLoadingScreen onComplete={() => { setLoading(false); setHeroRevealed(true); }} />}
 
@@ -135,8 +180,6 @@ export default function SakuraMobileExperience() {
         <SakuraHeroAtmosphere isRevealed={heroRevealed} onExploreScroll={goMenu} />
         <div className={`sakura-mobile-pattern ${heroStage >= 1 ? "is-in" : ""}`} aria-hidden="true" />
         <div className={`sakura-mobile-kicker ${heroStage >= 3 ? "is-in" : ""}`}>最高の寿司盛り合わせ</div>
-
-        {/* The word starts below the platter line, then rises out from behind it. */}
         <div className={`sakura-mobile-sushi-word ${heroStage >= 2 ? "is-in" : ""}`} aria-hidden="true">SUSHI</div>
 
         <div className={`sakura-mobile-copy ${heroStage >= 4 ? "is-in" : ""}`}>
