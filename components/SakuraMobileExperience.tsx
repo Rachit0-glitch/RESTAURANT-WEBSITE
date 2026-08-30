@@ -125,20 +125,20 @@ export default function SakuraMobileExperience() {
         @media (max-width: 767px) {
           .sakura-mobile-sushi-word {
             z-index: 8 !important;
-            transform: translate(-50%, 72%) scale(.68) !important;
-            opacity: 0 !important;
-            filter: blur(10px) !important;
+            transform: translate(-50%, 46%) scale(.72);
+            opacity: 0;
+            filter: blur(8px);
             transform-origin: 50% 100%;
           }
           .sakura-mobile-sushi-word.is-in {
-            animation: mobile-sushi-emerge 1.05s cubic-bezier(.12,.98,.2,1) both !important;
+            animation: mobile-sushi-emerge 1.08s cubic-bezier(.12,.98,.2,1) both;
           }
           .sakura-mobile-platter { z-index: 14 !important; }
 
           @keyframes mobile-sushi-emerge {
-            0% { opacity:0; transform:translate(-50%,72%) scale(.68); filter:blur(10px); }
-            22% { opacity:.36; }
-            62% { opacity:.98; transform:translate(-50%,-34%) scale(1.045); filter:blur(0); }
+            0% { opacity:0; transform:translate(-50%,46%) scale(.72); filter:blur(8px); }
+            20% { opacity:.28; }
+            58% { opacity:.98; transform:translate(-50%,-42%) scale(1.045); filter:blur(0); }
             100% { opacity:.97; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
           }
 
