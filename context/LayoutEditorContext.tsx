@@ -9,7 +9,7 @@ import type {
   DraggableItemMeta,
 } from "../types/layoutEditor";
 
-const STORAGE_KEY = "sakura_custom_layout_v12";
+const STORAGE_KEY = "sakura_custom_layout_v13";
 
 export const REGISTERED_ELEMENTS: DraggableItemMeta[] = [
   // Hero Section Elements
@@ -69,12 +69,16 @@ const DEFAULT_STORE: FullLayoutStore = {
     "hero-top-ribbon": { x: -10, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   mobile: {
-    "hero-title": { x: 0, y: -150, scale: 1.05, rotate: 0, opacity: 1, fontSizeScale: 0.95, zIndex: 6 },
-    "hero-sushi-platter": { x: 0, y: -15, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-cta-button": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
-    "hero-top-ribbon": { x: 0, y: -235, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-seal-stamp": { x: 128, y: -205, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
-    "zen-audio-player": { x: -105, y: 355, scale: 0.9, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-top-ribbon": { x: 0, y: -260, scale: 0.65, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-seal-stamp": { x: 100, y: -240, scale: 0.6, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: 0, y: -170, scale: 0.6, rotate: 0, opacity: 1, fontSizeScale: 0.75, zIndex: 6 },
+    "hero-sushi-platter": { x: 0, y: 0, scale: 0.65, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-cta-button": { x: 0, y: 180, scale: 0.65, rotate: 0, opacity: 1, zIndex: 12 },
+    "zen-audio-player": { x: 0, y: 290, scale: 0.75, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-floating-salmon": { x: -100, y: -100, scale: 0.5, rotate: -10, opacity: 1, zIndex: 11 },
+    "hero-floating-avocado": { x: 100, y: -80, scale: 0.5, rotate: 15, opacity: 1, zIndex: 11 },
+    "hero-floating-leaf": { x: -100, y: 90, scale: 0.5, rotate: -20, opacity: 1, zIndex: 11 },
+    "hero-floating-ginger": { x: 100, y: 90, scale: 0.5, rotate: 10, opacity: 1, zIndex: 11 },
   },
 };
 

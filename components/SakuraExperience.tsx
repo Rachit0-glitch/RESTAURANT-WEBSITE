@@ -2481,7 +2481,7 @@ function DesignStage({
                   }
                 }
 
-                const responsiveClass = isPlatter ? "" : "hidden min-[1025px]:inline-block";
+                const responsiveClass = "";
 
                 return (
                   <DraggableWrapper key={`overlay-img-${index}`} id={dragId} label={dragLabel} className={responsiveClass}>
