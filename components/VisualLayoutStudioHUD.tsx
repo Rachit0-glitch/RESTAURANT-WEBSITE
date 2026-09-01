@@ -202,20 +202,71 @@ export default function VisualLayoutStudioHUD() {
 
           {/* Drawer Body */}
           <div className="p-3.5 space-y-3.5 overflow-y-auto text-xs custom-scrollbar">
-            {/* Selected Element Quick Details */}
-            {selectedElementId && transform ? (
-              <div className="space-y-3 bg-black/40 p-3 rounded-xl border border-white/10">
-                <div className="flex items-center justify-between pb-1 border-b border-white/10">
-                  <span className="font-bold text-amber-300 truncate">
-                    {selectedItemMeta?.name || selectedElementId}
-                  </span>
+            {/* Element Selector Dropdown (Categorized by Section) */}
+            <div className="space-y-1.5 bg-black/50 p-2.5 rounded-xl border border-white/10">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                  <span>🎯</span>
+                  <span>Select Element to Edit:</span>
+                </label>
+                {selectedElementId && (
                   <button
                     type="button"
                     onClick={() => resetElement(selectedElementId)}
-                    className="text-[10px] text-rose-400 hover:text-rose-300 underline"
+                    className="text-[10px] text-rose-400 hover:text-rose-300 underline cursor-pointer"
                   >
-                    Reset
+                    Reset Element
                   </button>
+                )}
+              </div>
+
+              <div className="relative">
+                <select
+                  value={selectedElementId || ""}
+                  onChange={(e) => setSelectedElementId(e.target.value || null)}
+                  className="w-full bg-[#18181b] hover:bg-[#27272a] text-amber-200 font-bold border border-white/20 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-400 transition-all cursor-pointer appearance-none shadow-inner"
+                >
+                  <option value="" className="text-zinc-500 font-normal">
+                    -- Choose Element from List --
+                  </option>
+                  <optgroup label="🏯 Hero Section" className="bg-[#121214] text-white font-bold">
+                    {REGISTERED_ELEMENTS.filter((el) => el.category === "Hero").map((el) => (
+                      <option key={el.id} value={el.id} className="text-amber-200 py-1">
+                        {el.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="🍱 Dishes Menu Section" className="bg-[#121214] text-white font-bold">
+                    {REGISTERED_ELEMENTS.filter((el) => el.category === "Dishes").map((el) => (
+                      <option key={el.id} value={el.id} className="text-amber-200 py-1">
+                        {el.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="🧭 Navigation & Controls" className="bg-[#121214] text-white font-bold">
+                    {REGISTERED_ELEMENTS.filter((el) => el.category === "Navigation").map((el) => (
+                      <option key={el.id} value={el.id} className="text-amber-200 py-1">
+                        {el.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-xs">
+                  ▼
+                </div>
+              </div>
+            </div>
+
+            {/* Selected Element Quick Controls */}
+            {selectedElementId && transform ? (
+              <div className="space-y-3 bg-black/40 p-3 rounded-xl border border-white/10">
+                <div className="flex items-center justify-between pb-1 border-b border-white/10">
+                  <span className="font-bold text-amber-300 truncate text-[11px]">
+                    {selectedItemMeta?.name || selectedElementId}
+                  </span>
+                  <span className="text-[10px] text-zinc-400 font-mono">
+                    ({transform.x}px, {transform.y}px)
+                  </span>
                 </div>
 
                 {/* Size / Scale */}
@@ -295,7 +346,7 @@ export default function VisualLayoutStudioHUD() {
               </div>
             ) : (
               <div className="bg-black/30 border border-dashed border-white/20 rounded-xl p-3 text-center text-zinc-400 text-[11px]">
-                💡 Click any element on screen to drag, resize with corner handles or mouse wheel.
+                💡 Pick any element from the dropdown above or click on the screen to start editing.
               </div>
             )}
 
