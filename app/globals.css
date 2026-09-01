@@ -630,10 +630,6 @@ body.sakura-editor-active [data-layout-id] {
     transform: translate3d(-10px, 18px, 0) scale(1) rotate(0deg);
     z-index: 10;
   }
-  [data-layout-id="dishes-tempura-dish"] {
-    transform: translate3d(400px, -421px, 0) scale(1) rotate(0deg);
-    z-index: 10;
-  }
   [data-layout-id="hero-floating-salmon"],
   [data-layout-id="hero-floating-avocado"],
   [data-layout-id="hero-floating-leaf"],
