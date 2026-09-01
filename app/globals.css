@@ -132,9 +132,9 @@ button.absolute:focus-visible {
   background: #000000 !important;
   width: 880px !important;
   height: 280px !important;
-  transform: rotate(-32deg) !important;
-  transform-origin: center center !important;
-  pointer-events: none;
+  transform: rotate(-32deg);
+  transform-origin: center center;
+  pointer-events: auto;
   z-index: 5;
 }
 
@@ -144,6 +144,15 @@ button.absolute:focus-visible {
   visibility: visible !important;
   opacity: 1 !important;
   z-index: 5 !important;
+}
+
+/* Editor Active Override - Eliminates all transition lag & trembling during drag */
+body.sakura-editor-active .sakura-dish-swap,
+body.sakura-editor-active .sakura-dishes-band,
+body.sakura-editor-active .sakura-hero-title,
+body.sakura-editor-active [data-layout-id] {
+  transition: none !important;
+  animation-play-state: paused !important;
 }
 
 .sakura-hidden-dishes-content {

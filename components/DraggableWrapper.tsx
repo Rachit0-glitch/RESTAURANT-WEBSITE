@@ -179,6 +179,7 @@ export default function DraggableWrapper({
     zIndex: transform.zIndex !== undefined ? transform.zIndex : style.zIndex,
     filter: filterStyle ? `${style.filter || ""} ${filterStyle}`.trim() : style.filter,
     fontSize: transform.fontSizeScale && transform.fontSizeScale !== 1 ? `calc(1em * ${transform.fontSizeScale})` : style.fontSize,
+    transition: isDragging || isResizing || isEditorActive ? "none !important" : undefined,
     cursor: isEditorActive ? (isDragging ? "grabbing" : "grab") : undefined,
     userSelect: isEditorActive ? "none" : undefined,
     touchAction: isEditorActive ? "none" : undefined,

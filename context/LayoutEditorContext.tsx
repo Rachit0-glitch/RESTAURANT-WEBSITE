@@ -181,6 +181,12 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
     } catch {}
   }, []);
 
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.body.classList.toggle("sakura-editor-active", isEditorActive);
+    }
+  }, [isEditorActive]);
+
   // Persist to localStorage
   useEffect(() => {
     if (isHydrated) {
