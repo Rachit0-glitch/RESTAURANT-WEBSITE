@@ -6,6 +6,10 @@ import { useLayoutEditor } from "../context/LayoutEditorContext";
 export default function DeviceFrameWrapper({ children }: { children: React.ReactNode }) {
   const { activeDevice } = useLayoutEditor();
   const [isInsideIframe, setIsInsideIframe] = useState<boolean>(false);
+  const [viewportSize, setViewportSize] = useState<{ width: number; height: number }>({
+    width: 1440,
+    height: 900,
+  });
 
   useEffect(() => {
     try {
@@ -15,6 +19,18 @@ export default function DeviceFrameWrapper({ children }: { children: React.React
     } catch {
       setIsInsideIframe(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Inside the simulated iframe, render content directly with real device media queries
@@ -30,25 +46,42 @@ export default function DeviceFrameWrapper({ children }: { children: React.React
   const isTablet = activeDevice === "tablet";
   const frameWidth = isTablet ? 820 : 390;
   const frameHeight = isTablet ? 1100 : 844;
-  const activeZoom = isTablet ? 0.65 : 0.85;
+
+  // Auto-fit calculations so tablet & mobile frames fit 100% within laptop viewport without scrolling
+  const bezelPadding = 28;
+  const totalFrameWidth = frameWidth + bezelPadding;
+  const totalFrameHeight = frameHeight + bezelPadding;
+
+  const availableHeight = Math.max(400, viewportSize.height - 110);
+  const availableWidth = Math.max(300, viewportSize.width - 80);
+
+  const maxScaleByHeight = availableHeight / totalFrameHeight;
+  const maxScaleByWidth = availableWidth / totalFrameWidth;
+
+  const calculatedZoom = Math.min(
+    isTablet ? 0.75 : 0.9,
+    maxScaleByHeight,
+    maxScaleByWidth
+  );
+  const activeZoom = Math.max(0.35, Math.min(1.0, Number(calculatedZoom.toFixed(2))));
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex flex-col items-center py-6 px-4 select-none overflow-x-hidden">
+    <div className="h-screen w-screen bg-neutral-950 flex items-center justify-center p-4 select-none overflow-hidden fixed inset-0">
       {/* Scaled Device Container */}
       <div
-        className="flex items-start justify-center transition-all duration-300 relative"
+        className="flex items-center justify-center transition-all duration-300 relative"
         style={{
-          width: `${(frameWidth + 32) * activeZoom}px`,
-          height: `${(frameHeight + 80) * activeZoom}px`,
+          width: `${totalFrameWidth * activeZoom}px`,
+          height: `${totalFrameHeight * activeZoom}px`,
         }}
       >
         {/* Device Hardware Bezel */}
         <div
-          className="relative bg-neutral-900 rounded-[48px] p-3.5 shadow-[0_30px_90px_rgba(0,0,0,0.95)] border-[5px] border-neutral-700/80 transition-all duration-300"
+          className="relative bg-neutral-900 rounded-[48px] p-3.5 shadow-[0_30px_90px_rgba(0,0,0,0.95)] border-[5px] border-neutral-700/80 transition-all duration-300 origin-center"
           style={{
-            width: `${frameWidth + 28}px`,
+            width: `${totalFrameWidth}px`,
+            height: `${totalFrameHeight}px`,
             transform: `scale(${activeZoom})`,
-            transformOrigin: "top center",
           }}
         >
           {/* Device Camera / Speaker Notch */}
@@ -59,11 +92,10 @@ export default function DeviceFrameWrapper({ children }: { children: React.React
 
           {/* Screen Content via Iframe for True Viewport Media Queries */}
           <div
-            className="relative bg-white rounded-[36px] overflow-hidden shadow-inner"
+            className="relative bg-white rounded-[36px] overflow-hidden shadow-inner w-full h-full"
             style={{
               width: `${frameWidth}px`,
               height: `${frameHeight}px`,
-              maxWidth: "100%",
             }}
           >
             <iframe
