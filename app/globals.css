@@ -687,7 +687,7 @@ button.absolute:focus-visible {
   }
   .sakura-dishes-band {
     width: 100% !important;
-    transform: scale(1.08);
+    transform: scale(0.90) !important;
   }
 }
 
@@ -698,7 +698,7 @@ button.absolute:focus-visible {
   }
   .sakura-dishes-band {
     width: 100% !important;
-    transform: scale(1.18);
+    transform: scale(0.80) !important;
   }
 }
 

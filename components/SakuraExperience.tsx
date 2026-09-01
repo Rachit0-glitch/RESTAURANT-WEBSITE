@@ -1999,10 +1999,18 @@ function DesignStage({
       } else {
         if (vw <= 768) {
           // Mobile portrait
-          setScale(Math.max(scaleX * 1.55, scaleY * 0.75));
+          if (isDishes) {
+            setScale(Math.min(scaleX, scaleY) * 0.95);
+          } else {
+            setScale(Math.max(scaleX * 1.55, scaleY * 0.75));
+          }
         } else if (vw <= 1024 || aspect < 1.55) {
-          // Tablet - exact scale factor matching user dragged coordinates
-          setScale(Math.min(scaleX, scaleY) * 1.02);
+          // Tablet
+          if (isDishes) {
+            setScale(Math.min(scaleX, scaleY) * 0.85);
+          } else {
+            setScale(Math.min(scaleX, scaleY) * 1.02);
+          }
         } else {
           // Desktop widescreen
           setScale(Math.max(scaleX, scaleY));
