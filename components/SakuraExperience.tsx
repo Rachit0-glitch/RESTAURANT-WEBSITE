@@ -1990,29 +1990,23 @@ function DesignStage({
       const aspect = vw / vh;
       if (section.id === "dishes-1") {
         if (vw <= 768) {
-          setScale(Math.max(scaleX * 1.35, scaleY * 0.72));
+          // Mobile dishes scaled down
+          setScale(Math.min(scaleX, scaleY) * 0.95);
         } else if (vw <= 1024) {
-          setScale(Math.max(scaleX * 1.15, scaleY * 0.95));
+          // Tablet dishes scaled down
+          setScale(Math.min(scaleX, scaleY) * 0.85);
         } else {
           setScale(Math.max(scaleX, scaleY));
         }
       } else {
         if (vw <= 768) {
-          // Mobile portrait
-          if (isDishes) {
-            setScale(Math.min(scaleX, scaleY) * 0.95);
-          } else {
-            setScale(Math.max(scaleX * 1.55, scaleY * 0.75));
-          }
+          // Mobile portrait hero
+          setScale(Math.max(scaleX * 1.55, scaleY * 0.75));
         } else if (vw <= 1024 || aspect < 1.55) {
-          // Tablet
-          if (isDishes) {
-            setScale(Math.min(scaleX, scaleY) * 0.85);
-          } else {
-            setScale(Math.min(scaleX, scaleY) * 1.02);
-          }
+          // Tablet hero (exact factor matching user coordinates)
+          setScale(Math.min(scaleX, scaleY) * 1.02);
         } else {
-          // Desktop widescreen
+          // Desktop widescreen hero
           setScale(Math.max(scaleX, scaleY));
         }
       }
