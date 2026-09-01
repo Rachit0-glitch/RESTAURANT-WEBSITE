@@ -155,6 +155,30 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Persist to localStorage and sync across frames
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          setLayouts(parsed);
+        } catch {}
+      }
+      if (e.key === "sakura_layout_editor_mode_active") {
+        setIsEditorActive(e.newValue === "true");
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  const setIsEditorActiveWithSync = useCallback((active: boolean) => {
+    setIsEditorActive(active);
+    try {
+      localStorage.setItem("sakura_layout_editor_mode_active", active ? "true" : "false");
+    } catch {}
+  }, []);
+
   // Persist to localStorage
   useEffect(() => {
     if (isHydrated) {
@@ -399,13 +423,20 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
     }
   }, [resetAll]);
 
+  const setActiveDeviceWithSync = useCallback((device: DeviceMode) => {
+    setActiveDeviceState(device);
+    try {
+      localStorage.setItem("sakura_active_sim_device", device);
+    } catch {}
+  }, []);
+
   return (
     <LayoutEditorContext.Provider
       value={{
         isEditorActive,
-        setIsEditorActive,
+        setIsEditorActive: setIsEditorActiveWithSync,
         activeDevice,
-        setActiveDevice,
+        setActiveDevice: setActiveDeviceWithSync,
         viewportWidth,
         selectedElementId,
         setSelectedElementId,

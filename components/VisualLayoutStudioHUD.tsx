@@ -28,16 +28,30 @@ export default function VisualLayoutStudioHUD() {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [copiedNotification, setCopiedNotification] = useState<string | null>(null);
+  const [isInsideIframe, setIsInsideIframe] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined" && window.self !== window.top) {
+        setIsInsideIframe(true);
+      }
+    } catch {
+      setIsInsideIframe(true);
+    }
+  }, []);
+
   const selectedItemMeta = REGISTERED_ELEMENTS.find((el) => el.id === selectedElementId);
   const transform = selectedElementId ? getTransform(selectedElementId) : null;
+
+  if (isInsideIframe) {
+    return null;
+  }
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     setCopiedNotification(label);
     setTimeout(() => setCopiedNotification(null), 2500);
   };
-
-  const deviceIcon = activeDevice === "mobile" ? "📱" : activeDevice === "tablet" ? "📟" : "💻";
 
   return (
     <>
@@ -48,37 +62,37 @@ export default function VisualLayoutStudioHUD() {
         </div>
       )}
 
-      {/* Floating Lightweight Bottom Control Pill */}
-      <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-2 pointer-events-auto select-none">
-        <div className="flex items-center gap-2 bg-[#121214]/95 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-2xl text-white">
+      {/* Floating Single Unified Studio Tool Pill */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex flex-col items-center gap-2 pointer-events-auto select-none">
+        <div className="flex items-center gap-2 bg-[#121214]/95 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.85)] text-white">
           {/* Quick Profile Target Switcher */}
-          <div className="flex items-center bg-black/50 rounded-full p-0.5 border border-white/10 text-xs">
+          <div className="flex items-center bg-black/60 rounded-full p-1 border border-white/10 text-xs">
             <button
               type="button"
               onClick={() => setActiveDevice("desktop")}
-              className={`px-3 py-1 rounded-full transition-all font-bold cursor-pointer ${
-                activeDevice === "desktop" ? "bg-[#e16b5c] text-white shadow" : "text-zinc-400 hover:text-white"
+              className={`px-3.5 py-1.5 rounded-full transition-all font-bold cursor-pointer flex items-center gap-1.5 ${
+                activeDevice === "desktop" ? "bg-[#e16b5c] text-white shadow-md" : "text-zinc-400 hover:text-white"
               }`}
             >
-              💻 Desktop
+              <span>💻</span> <span>Desktop</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveDevice("tablet")}
-              className={`px-3 py-1 rounded-full transition-all font-bold cursor-pointer ${
-                activeDevice === "tablet" ? "bg-[#e16b5c] text-white shadow" : "text-zinc-400 hover:text-white"
+              className={`px-3.5 py-1.5 rounded-full transition-all font-bold cursor-pointer flex items-center gap-1.5 ${
+                activeDevice === "tablet" ? "bg-[#e16b5c] text-white shadow-md" : "text-zinc-400 hover:text-white"
               }`}
             >
-              📟 Tablet
+              <span>📟</span> <span>Tablet</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveDevice("mobile")}
-              className={`px-3 py-1 rounded-full transition-all font-bold cursor-pointer ${
-                activeDevice === "mobile" ? "bg-[#e16b5c] text-white shadow" : "text-zinc-400 hover:text-white"
+              className={`px-3.5 py-1.5 rounded-full transition-all font-bold cursor-pointer flex items-center gap-1.5 ${
+                activeDevice === "mobile" ? "bg-[#e16b5c] text-white shadow-md" : "text-zinc-400 hover:text-white"
               }`}
             >
-              📱 Mobile
+              <span>📱</span> <span>Mobile</span>
             </button>
           </div>
 
@@ -114,14 +128,14 @@ export default function VisualLayoutStudioHUD() {
             </div>
           )}
 
-          {/* Master Drag Mode Toggle Button */}
+          {/* Master Drag & Edit Mode Button */}
           <button
             type="button"
             onClick={() => setIsEditorActive(!isEditorActive)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all shadow-lg flex items-center gap-1.5 cursor-pointer ${
+            className={`px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all shadow-lg flex items-center gap-2 cursor-pointer ${
               isEditorActive
-                ? "bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-rose-500/30"
-                : "bg-white/15 text-white hover:bg-white/25"
+                ? "bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 text-white shadow-rose-500/40"
+                : "bg-[#27272a] text-zinc-200 hover:bg-[#3f3f46] hover:text-white border border-white/10"
             }`}
           >
             <span>{isEditorActive ? "🎯 Dragging Active" : "✨ Drag & Edit Mode"}</span>
@@ -132,7 +146,7 @@ export default function VisualLayoutStudioHUD() {
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors cursor-pointer ${
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs transition-colors cursor-pointer ${
                 isExpanded ? "bg-white/30 text-white" : "bg-white/10 hover:bg-white/20 text-zinc-300"
               }`}
               title="Toggle Fine-Tuning Drawer"
