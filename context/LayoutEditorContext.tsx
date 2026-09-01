@@ -9,7 +9,7 @@ import type {
   DraggableItemMeta,
 } from "../types/layoutEditor";
 
-const STORAGE_KEY = "sakura_custom_layout_v10";
+const STORAGE_KEY = "sakura_custom_layout_v11";
 
 export const REGISTERED_ELEMENTS: DraggableItemMeta[] = [
   // Hero Section Elements
@@ -69,11 +69,11 @@ const DEFAULT_STORE: FullLayoutStore = {
     "hero-top-ribbon": { x: -10, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   mobile: {
-    "hero-title": { x: 0, y: -120, scale: 0.9, rotate: 0, opacity: 1, fontSizeScale: 0.85, zIndex: 10 },
-    "hero-sushi-platter": { x: 0, y: 10, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-cta-button": { x: 0, y: 60, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
-    "hero-top-ribbon": { x: 0, y: 6, scale: 0.9, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-seal-stamp": { x: 0, y: 6, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: 0, y: -135, scale: 0.98, rotate: 0, opacity: 1, fontSizeScale: 0.95, zIndex: 6 },
+    "hero-sushi-platter": { x: 0, y: -15, scale: 1.15, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-cta-button": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
+    "hero-top-ribbon": { x: 0, y: 0, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-seal-stamp": { x: 0, y: 0, scale: 0.9, rotate: 0, opacity: 1, zIndex: 10 },
   },
 };
 
