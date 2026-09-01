@@ -2257,14 +2257,6 @@ function DesignStage({
         >
           {showDishesBaseOnly ? (
             <>
-              {baseImages.slice(0, 1).map((layer, index) => (
-                <DraggableWrapper key={`dishes-bg-${index}`} id="dishes-bg" label="Dishes Carousel Background">
-                  <ImageLayerView
-                    layer={getDisplayImageLayer(section, layer, index)}
-                    index={index}
-                  />
-                </DraggableWrapper>
-              ))}
               <DraggableWrapper id="dishes-top-black-band" label="Dishes Top Black Line">
                 <div
                   aria-hidden="true"
