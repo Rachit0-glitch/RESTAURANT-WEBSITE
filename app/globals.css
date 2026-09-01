@@ -357,29 +357,33 @@ button.absolute:focus-visible {
   }
 }
 
-@keyframes hero-sushi-shimmer {
-  0%, 100% {
-    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.06));
-  }
-  50% {
-    filter: drop-shadow(0 25px 50px rgba(230, 0, 18, 0.15));
-  }
-}
-
-.hero-animate-platter {
-  animation:
-    hero-platter-reveal 1.05s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both,
-    hero-platter-float 6s ease-in-out 1.2s infinite;
-  will-change: transform, opacity, filter;
-  z-index: 10;
+/* Razor Sharp Hero SUSHI Typography */
+.sakura-hero-title,
+[data-layout-id="hero-title"] {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  filter: none !important;
+  transform-style: flat !important;
+  backface-visibility: hidden !important;
 }
 
 .hero-animate-title {
-  animation:
-    hero-sushi-speed-ramp 0.95s cubic-bezier(0.08, 0.98, 0.2, 1) 0.82s both,
-    hero-sushi-shimmer 5s ease-in-out 1.8s infinite;
-  will-change: transform, opacity, filter;
+  animation: hero-title-crisp-reveal 0.95s cubic-bezier(0.08, 0.98, 0.2, 1) 0.25s both !important;
+  will-change: transform, opacity !important;
+  filter: none !important;
   z-index: 4;
+}
+
+@keyframes hero-title-crisp-reveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .hero-animate-tagline {
