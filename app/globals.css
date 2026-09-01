@@ -646,25 +646,11 @@ button.absolute:focus-visible {
     z-index: 10;
     display: block !important;
   }
-  [data-layout-id="hero-floating-salmon"] {
-    transform: translate3d(-100px, -100px, 0) scale(0.5) rotate(-10deg);
-    z-index: 11;
-    display: inline-block !important;
-  }
-  [data-layout-id="hero-floating-avocado"] {
-    transform: translate3d(100px, -80px, 0) scale(0.5) rotate(15deg);
-    z-index: 11;
-    display: inline-block !important;
-  }
-  [data-layout-id="hero-floating-leaf"] {
-    transform: translate3d(-100px, 90px, 0) scale(0.5) rotate(-20deg);
-    z-index: 11;
-    display: inline-block !important;
-  }
+  [data-layout-id="hero-floating-salmon"],
+  [data-layout-id="hero-floating-avocado"],
+  [data-layout-id="hero-floating-leaf"],
   [data-layout-id="hero-floating-ginger"] {
-    transform: translate3d(100px, 90px, 0) scale(0.5) rotate(10deg);
-    z-index: 11;
-    display: inline-block !important;
+    display: none !important;
   }
 }
 
