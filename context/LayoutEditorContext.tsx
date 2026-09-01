@@ -9,7 +9,7 @@ import type {
   DraggableItemMeta,
 } from "../types/layoutEditor";
 
-const STORAGE_KEY = "sakura_custom_layout_v14";
+const STORAGE_KEY = "sakura_custom_layout_v15";
 
 export const REGISTERED_ELEMENTS: DraggableItemMeta[] = [
   // Hero Section Elements
@@ -59,8 +59,9 @@ export const DEFAULT_TRANSFORM: ElementTransform = {
 
 const DEFAULT_STORE: FullLayoutStore = {
   desktop: {
-    "hero-sushi-platter": { x: -67, y: -257, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-title": { x: -12, y: -150, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-sushi-platter": { x: -115, y: -285, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: -185, y: -133, scale: 1.2, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-cta-button": { x: -48, y: -141, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
   },
   tablet: {
     "hero-title": { x: -577, y: -659, scale: 1.55, rotate: 0, opacity: 1, zIndex: 6 },

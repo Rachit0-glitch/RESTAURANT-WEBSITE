@@ -555,11 +555,15 @@ button.absolute:focus-visible {
     background-size: cover !important;
   }
   [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(-67px, -257px, 0) scale(1.25) rotate(0deg);
+    transform: translate3d(-115px, -285px, 0) scale(1.25) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-title"] {
-    transform: translate3d(-12px, -150px, 0) scale(1) rotate(0deg);
+    transform: translate3d(-185px, -133px, 0) scale(1.2) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="hero-cta-button"] {
+    transform: translate3d(-48px, -141px, 0) scale(1.25) rotate(0deg);
     z-index: 10;
   }
 }
