@@ -9,7 +9,8 @@ import AevumAgencyFooter from "./AevumAgencyFooter";
 import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
 import SakuraDishesEffects from "./SakuraDishesEffects";
 import SakuraTransitionBanner from "./SakuraTransitionBanner";
-import { LayoutEditorProvider } from "../context/LayoutEditorContext";
+import SakuraZenAudio from "./SakuraZenAudio";
+import { LayoutEditorProvider, useLayoutEditor } from "../context/LayoutEditorContext";
 import VisualLayoutStudioHUD from "./VisualLayoutStudioHUD";
 import DeviceFrameWrapper from "./DeviceFrameWrapper";
 import DraggableWrapper from "./DraggableWrapper";
@@ -1718,6 +1719,7 @@ function ImageLayerView({
   onPointerCancel?: (e: React.PointerEvent) => void;
 }) {
   const isBackground = layer.src.includes("ba78b4a3") || layer.src.includes("bg.png");
+  const isDishesBackground = (layer.src.includes("328fb685") || layer.src.includes("c2d746e5") || index === 0) && (layer.w >= 1200 || layer.cropW >= 1200);
 
   if (isBackground) {
     return (
@@ -1747,6 +1749,22 @@ function ImageLayerView({
           alt="Sakura Mobile Background"
           draggable={false}
           className="block max-[768px]:block min-[769px]:hidden absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
+        />
+      </div>
+    );
+  }
+
+  if (isDishesBackground) {
+    return (
+      <div
+        key={`img-${index}`}
+        className="sakura-dishes-responsive-bg absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0"
+      >
+        <img
+          src={layer.src}
+          alt="Sakura Dishes Carousel Background"
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
         />
       </div>
     );
@@ -1958,24 +1976,48 @@ function DesignStage({
   const stageRatio = stageSize.width / stageSize.height;
   const showDishesBaseOnly = section.id === "dishes-1";
 
+  const { activeDevice } = useLayoutEditor();
+
   useLayoutEffect(() => {
     const updateScale = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      let vw = window.innerWidth;
+      let vh = window.innerHeight;
+      if (activeDevice === "tablet") {
+        vw = 820;
+        vh = 1100;
+      } else if (activeDevice === "mobile") {
+        vw = 390;
+        vh = 844;
+      }
+
       const scaleX = vw / stageSize.width;
       const scaleY = vh / stageSize.height;
       const aspect = vw / vh;
-      // On widescreen (aspect >= 1.55), scale cover; on tablets and boxy displays, fit perfectly so all elements and floating pieces remain visible
-      if (aspect < 1.55) {
-        setScale(Math.min(scaleX, scaleY) * 1.02);
+      if (section.id === "dishes-1") {
+        if (vw <= 768) {
+          setScale(Math.max(scaleX * 1.35, scaleY * 0.72));
+        } else if (vw <= 1024) {
+          setScale(Math.max(scaleX * 1.15, scaleY * 0.95));
+        } else {
+          setScale(Math.max(scaleX, scaleY));
+        }
       } else {
-        setScale(Math.max(scaleX, scaleY));
+        if (vw <= 768) {
+          // Mobile portrait
+          setScale(Math.max(scaleX * 1.55, scaleY * 0.75));
+        } else if (vw <= 1024 || aspect < 1.55) {
+          // Tablet - exact scale factor matching user dragged coordinates
+          setScale(Math.min(scaleX, scaleY) * 1.02);
+        } else {
+          // Desktop widescreen
+          setScale(Math.max(scaleX, scaleY));
+        }
       }
     };
     updateScale();
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);
-  }, [stageSize.width, stageSize.height]);
+  }, [stageSize.width, stageSize.height, activeDevice]);
 
   const switchPage = (target: DishesPage) => {
     if (isTransitioningRef.current || dishesPage === target) return;
@@ -2209,22 +2251,27 @@ function DesignStage({
           {showDishesBaseOnly ? (
             <>
               {baseImages.slice(0, 1).map((layer, index) => (
-                <ImageLayerView
-                  key={`dishes-bg-${index}`}
-                  layer={getDisplayImageLayer(section, layer, index)}
-                  index={index}
-                />
+                <DraggableWrapper key={`dishes-bg-${index}`} id="dishes-bg" label="Dishes Carousel Background">
+                  <ImageLayerView
+                    layer={getDisplayImageLayer(section, layer, index)}
+                    index={index}
+                  />
+                </DraggableWrapper>
               ))}
-              <div
-                aria-hidden="true"
-                className="sakura-dishes-band"
-                style={{ left: initialDishesCornerPositions.top.x, top: initialDishesCornerPositions.top.y }}
-              />
-              <div
-                aria-hidden="true"
-                className="sakura-dishes-band"
-                style={{ left: initialDishesCornerPositions.bottom.x, top: initialDishesCornerPositions.bottom.y }}
-              />
+              <DraggableWrapper id="dishes-top-black-band" label="Dishes Top Black Line">
+                <div
+                  aria-hidden="true"
+                  className="sakura-dishes-band"
+                  style={{ left: initialDishesCornerPositions.top.x, top: initialDishesCornerPositions.top.y }}
+                />
+              </DraggableWrapper>
+              <DraggableWrapper id="dishes-bottom-black-band" label="Dishes Bottom Black Line">
+                <div
+                  aria-hidden="true"
+                  className="sakura-dishes-band"
+                  style={{ left: initialDishesCornerPositions.bottom.x, top: initialDishesCornerPositions.bottom.y }}
+                />
+              </DraggableWrapper>
               {baseImages
                 .map((layer, index) => ({ layer, index }))
                 .filter(({ layer, index }) => index > 0 && !isDishesBlackBlock(layer) && !dishesDishKey(layer))
@@ -2363,11 +2410,12 @@ function DesignStage({
           ) : (
             <>
               {baseImages.map((layer, index) => (
-                <ImageLayerView
-                  key={`base-img-${index}`}
-                  layer={getDisplayImageLayer(section, layer, index)}
-                  index={index}
-                />
+                <DraggableWrapper key={`base-img-${index}`} id="hero-bg" label="Hero Background Image">
+                  <ImageLayerView
+                    layer={getDisplayImageLayer(section, layer, index)}
+                    index={index}
+                  />
+                </DraggableWrapper>
               ))}
               {heroTitleTexts.map((layer, index) => (
                 <div
@@ -2603,6 +2651,7 @@ export default function SakuraExperience() {
               />
             </div>
           ))}
+          <SakuraZenAudio />
           <AevumAgencyFooter />
         </main>
       </DeviceFrameWrapper>

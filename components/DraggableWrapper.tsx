@@ -67,19 +67,39 @@ export default function DraggableWrapper({
     };
   };
 
+  const getParentScale = (): number => {
+    let curr = wrapperRef.current?.parentElement;
+    while (curr) {
+      const transform = window.getComputedStyle(curr).transform;
+      if (transform && transform !== "none") {
+        const match = transform.match(/^matrix\((.+)\)$/);
+        if (match) {
+          const values = match[1].split(", ");
+          const a = parseFloat(values[0]);
+          const b = parseFloat(values[1]);
+          const s = Math.sqrt(a * a + b * b);
+          if (s > 0) return s;
+        }
+      }
+      curr = curr.parentElement;
+    }
+    return 1;
+  };
+
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const parentScale = getParentScale();
     if (isDragging) {
       e.stopPropagation();
-      const dx = e.clientX - dragStartRef.current.startX;
-      const dy = e.clientY - dragStartRef.current.startY;
+      const dx = (e.clientX - dragStartRef.current.startX) / parentScale;
+      const dy = (e.clientY - dragStartRef.current.startY) / parentScale;
       updateTransform(id, {
         x: Math.round(dragStartRef.current.initialX + dx),
         y: Math.round(dragStartRef.current.initialY + dy),
       }, false);
     } else if (isResizing) {
       e.stopPropagation();
-      const dy = e.clientY - dragStartRef.current.startY;
-      const dx = e.clientX - dragStartRef.current.startX;
+      const dy = (e.clientY - dragStartRef.current.startY) / parentScale;
+      const dx = (e.clientX - dragStartRef.current.startX) / parentScale;
       
       const distance = isResizing.includes("bottom") || isResizing.includes("right")
         ? (dx + dy) / 180
@@ -91,6 +111,7 @@ export default function DraggableWrapper({
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const parentScale = getParentScale();
     if (isDragging) {
       e.stopPropagation();
       setIsDragging(false);
@@ -98,8 +119,8 @@ export default function DraggableWrapper({
         e.currentTarget.releasePointerCapture(e.pointerId);
       } catch (err) {}
       // Record history on drag release if moved
-      const dx = e.clientX - dragStartRef.current.startX;
-      const dy = e.clientY - dragStartRef.current.startY;
+      const dx = (e.clientX - dragStartRef.current.startX) / parentScale;
+      const dy = (e.clientY - dragStartRef.current.startY) / parentScale;
       if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
         updateTransform(id, {
           x: Math.round(dragStartRef.current.initialX + dx),

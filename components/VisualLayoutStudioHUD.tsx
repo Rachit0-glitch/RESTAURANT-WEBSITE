@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLayoutEditor, REGISTERED_ELEMENTS } from "../context/LayoutEditorContext";
 
 export default function VisualLayoutStudioHUD() {
@@ -28,7 +28,6 @@ export default function VisualLayoutStudioHUD() {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [copiedNotification, setCopiedNotification] = useState<string | null>(null);
-
   const selectedItemMeta = REGISTERED_ELEMENTS.find((el) => el.id === selectedElementId);
   const transform = selectedElementId ? getTransform(selectedElementId) : null;
 
@@ -50,16 +49,37 @@ export default function VisualLayoutStudioHUD() {
       )}
 
       {/* Floating Lightweight Bottom Control Pill */}
-      <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-2 pointer-events-auto">
-        <div className="flex items-center gap-1.5 bg-[#121214]/95 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-2xl text-white">
-          {/* Real-time Viewport & Device Indicator */}
-          <div
-            className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-[11px] font-medium text-zinc-300 select-none"
-            title="Auto-detected from your browser extension / viewport"
-          >
-            <span>{deviceIcon}</span>
-            <span className="capitalize font-semibold text-white">{activeDevice}</span>
-            <span className="text-zinc-500 font-mono text-[10px]">({viewportWidth}px)</span>
+      <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-2 pointer-events-auto select-none">
+        <div className="flex items-center gap-2 bg-[#121214]/95 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-2xl text-white">
+          {/* Quick Profile Target Switcher */}
+          <div className="flex items-center bg-black/50 rounded-full p-0.5 border border-white/10 text-xs">
+            <button
+              type="button"
+              onClick={() => setActiveDevice("desktop")}
+              className={`px-3 py-1 rounded-full transition-all font-bold cursor-pointer ${
+                activeDevice === "desktop" ? "bg-[#e16b5c] text-white shadow" : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              💻 Desktop
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveDevice("tablet")}
+              className={`px-3 py-1 rounded-full transition-all font-bold cursor-pointer ${
+                activeDevice === "tablet" ? "bg-[#e16b5c] text-white shadow" : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              📟 Tablet
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveDevice("mobile")}
+              className={`px-3 py-1 rounded-full transition-all font-bold cursor-pointer ${
+                activeDevice === "mobile" ? "bg-[#e16b5c] text-white shadow" : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              📱 Mobile
+            </button>
           </div>
 
           {/* Undo & Redo Quick Buttons in HUD */}
@@ -93,37 +113,6 @@ export default function VisualLayoutStudioHUD() {
               </button>
             </div>
           )}
-
-          {/* Quick Profile Target Switcher */}
-          <div className="hidden sm:flex items-center bg-black/40 rounded-full p-0.5 border border-white/10 text-[10px]">
-            <button
-              type="button"
-              onClick={() => setActiveDevice("desktop")}
-              className={`px-2.5 py-1 rounded-full transition-colors ${
-                activeDevice === "desktop" ? "bg-[#e16b5c] text-white font-semibold shadow" : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              Desktop
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveDevice("tablet")}
-              className={`px-2.5 py-1 rounded-full transition-colors ${
-                activeDevice === "tablet" ? "bg-[#e16b5c] text-white font-semibold shadow" : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              Tablet
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveDevice("mobile")}
-              className={`px-2.5 py-1 rounded-full transition-colors ${
-                activeDevice === "mobile" ? "bg-[#e16b5c] text-white font-semibold shadow" : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              Mobile
-            </button>
-          </div>
 
           {/* Master Drag Mode Toggle Button */}
           <button

@@ -9,26 +9,38 @@ import type {
   DraggableItemMeta,
 } from "../types/layoutEditor";
 
-const STORAGE_KEY = "sakura_custom_layout_v6";
+const STORAGE_KEY = "sakura_custom_layout_v10";
 
 export const REGISTERED_ELEMENTS: DraggableItemMeta[] = [
-  { id: "hero-title", name: "Hero Japanese Title (SAKURA)", category: "Hero", description: "Main typography & Japanese calligraphy heading" },
-  { id: "hero-sushi-platter", name: "Hero Main Sushi Platter", category: "Hero", description: "Centerpiece wooden sushi platter" },
-  { id: "hero-floating-salmon", name: "Floating Salmon Nigiri", category: "Hero", description: "Floating salmon piece top-right" },
-  { id: "hero-floating-avocado", name: "Floating Avocado Slice", category: "Hero", description: "Floating fresh avocado slice" },
-  { id: "hero-floating-leaf", name: "Floating Sakura Blossom Leaf", category: "Hero", description: "Floating seasonal garnish" },
-  { id: "hero-floating-ginger", name: "Floating Ginger & Wasabi", category: "Hero", description: "Garnish condiment accent" },
-  { id: "hero-cta-button", name: "Hero CTA Action Button", category: "Hero", description: "Order Now / Explore Menu button" },
-  { id: "navbar-brand", name: "Navbar Brand / Logo", category: "Navigation", description: "Sakura top logo emblem" },
-  { id: "navbar-links", name: "Navbar Navigation Links", category: "Navigation", description: "Menu, Home, Contact nav links" },
-  { id: "dishes-ramen-dish", name: "Tonkotsu Ramen Bowl", category: "Dishes", description: "Artisanal Ramen dish" },
-  { id: "dishes-platter-dish", name: "Sushi Deluxe Platter", category: "Dishes", description: "Signature sushi plate" },
-  { id: "dishes-udon-dish", name: "Kake Udon Bowl", category: "Dishes", description: "Savory dashi udon dish" },
-  { id: "dishes-tempura-dish", name: "Crispy Tempura Plate", category: "Dishes", description: "Golden fried shrimp & vegetables" },
-  { id: "dishes-yakitori-dish", name: "Grilled Yakitori Skewers", category: "Dishes", description: "Glazed chicken tare skewers" },
-  { id: "dishes-okonomiyaki-dish", name: "Osaka Okonomiyaki", category: "Dishes", description: "Japanese savory pancake" },
-  { id: "dishes-top-card", name: "Dishes Top Info Card (01 / 03 / 05)", category: "Dishes", description: "Top dish title, number & description" },
-  { id: "dishes-bottom-card", name: "Dishes Bottom Info Card (02 / 04 / 06)", category: "Dishes", description: "Bottom dish title, number & description" },
+  // Hero Section Elements
+  { id: "hero-bg", name: "🖼️ Hero Background Image", category: "Hero", description: "Main section background texture/image" },
+  { id: "hero-title", name: "🔤 Hero SUSHI Title", category: "Hero", description: "Oversized Japanese calligraphy & SUSHI typography" },
+  { id: "hero-sushi-platter", name: "🍣 Hero Sushi Platter Centerpiece", category: "Hero", description: "Main 4K sushi platter wooden board" },
+  { id: "hero-top-ribbon", name: "🏷️ Japanese Paper Ribbon (最高の寿司盛り合わせ)", category: "Hero", description: "Top center white paper banner" },
+  { id: "hero-seal-stamp", name: "💮 Traditional Red Seal (極上 鮨処)", category: "Hero", description: "Vertical authentic Japanese stamp" },
+  { id: "hero-cta-button", name: "🥢 Hero Tagline Card (AUTHENTIC JAPANESE DINING.)", category: "Hero", description: "Headline copy, description & explore menu button" },
+  { id: "hero-floating-salmon", name: "🐟 Floating Salmon Nigiri", category: "Hero", description: "Floating salmon piece top-right" },
+  { id: "hero-floating-avocado", name: "🥑 Floating Avocado Slice", category: "Hero", description: "Floating fresh avocado garnish" },
+  { id: "hero-floating-leaf", name: "🍃 Floating Shiso Leaf", category: "Hero", description: "Floating seasonal herb garnish" },
+  { id: "hero-floating-ginger", name: "🫚 Floating Ginger & Wasabi", category: "Hero", description: "Garnish condiment accent" },
+  
+  // Navigation & Controls
+  { id: "navbar-brand", name: "🔴 Navbar Brand / Logo", category: "Navigation", description: "Sakura top logo emblem" },
+  { id: "navbar-links", name: "🧭 Navbar Navigation Links", category: "Navigation", description: "Home, Menu, Contact navigation links" },
+  { id: "zen-audio-player", name: "🎵 Zen Sound Control Pill", category: "Navigation", description: "Interactive audio toggle pill" },
+
+  // Dishes Carousel Section Elements
+  { id: "dishes-bg", name: "🖼️ Dishes Section Background", category: "Dishes", description: "Dishes menu section full-bleed background" },
+  { id: "dishes-top-black-band", name: "⬛ Dishes Top Black Line / Block", category: "Dishes", description: "Top decorative black accent line block" },
+  { id: "dishes-bottom-black-band", name: "⬛ Dishes Bottom Black Line / Block", category: "Dishes", description: "Bottom decorative black accent line block" },
+  { id: "dishes-ramen-dish", name: "🍜 Tonkotsu Ramen Bowl", category: "Dishes", description: "Signature handcrafted Ramen dish" },
+  { id: "dishes-platter-dish", name: "🍱 Sushi Deluxe Platter", category: "Dishes", description: "Signature sushi platter plate" },
+  { id: "dishes-udon-dish", name: "🍲 Kake Udon Bowl", category: "Dishes", description: "Savory dashi udon dish" },
+  { id: "dishes-tempura-dish", name: "🍤 Crispy Tempura Plate", category: "Dishes", description: "Golden fried shrimp & vegetables" },
+  { id: "dishes-yakitori-dish", name: "🍢 Grilled Yakitori Skewers", category: "Dishes", description: "Glazed chicken tare skewers" },
+  { id: "dishes-okonomiyaki-dish", name: "🥞 Osaka Okonomiyaki Dish", category: "Dishes", description: "Japanese savory pancake" },
+  { id: "dishes-top-card", name: "📋 Dishes Top Info Card (01 / 03 / 05)", category: "Dishes", description: "Top dish title, number & description" },
+  { id: "dishes-bottom-card", name: "📋 Dishes Bottom Info Card (02 / 04 / 06)", category: "Dishes", description: "Bottom dish title, number & description" },
 ];
 
 export const DEFAULT_TRANSFORM: ElementTransform = {
@@ -51,14 +63,17 @@ const DEFAULT_STORE: FullLayoutStore = {
     "hero-title": { x: -12, y: -150, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   tablet: {
-    "hero-title": { x: -533, y: -568, scale: 1.6, rotate: 0, opacity: 1, fontSizeScale: 0.95, zIndex: 6 },
-    "hero-sushi-platter": { x: -673, y: -614, scale: 1.6, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-cta-button": { x: 971, y: -643, scale: 2.2, rotate: 0, opacity: 1, zIndex: 12 },
+    "hero-title": { x: -577, y: -659, scale: 1.55, rotate: 0, opacity: 1, zIndex: 6 },
+    "hero-sushi-platter": { x: -668, y: -672, scale: 1.6, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-cta-button": { x: 985, y: -1291, scale: 2.85, rotate: 0, opacity: 1, zIndex: 12 },
+    "hero-top-ribbon": { x: -10, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   mobile: {
-    "hero-title": { x: 14, y: -23, scale: 0.75, rotate: 0, opacity: 1, fontSizeScale: 0.75, zIndex: 10 },
-    "hero-sushi-platter": { x: 0, y: 40, scale: 0.8, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-cta-button": { x: 0, y: 35, scale: 0.9, rotate: 0, opacity: 1, zIndex: 12 },
+    "hero-title": { x: 0, y: -120, scale: 0.9, rotate: 0, opacity: 1, fontSizeScale: 0.85, zIndex: 10 },
+    "hero-sushi-platter": { x: 0, y: 10, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-cta-button": { x: 0, y: 60, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
+    "hero-top-ribbon": { x: 0, y: 6, scale: 0.9, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-seal-stamp": { x: 0, y: 6, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
   },
 };
 
@@ -82,14 +97,15 @@ interface LayoutEditorContextType {
   redo: () => void;
 
   // Actions
-  getTransform: (id: string) => ElementTransform;
-  updateTransform: (id: string, updates: Partial<ElementTransform>) => void;
-  resetElement: (id: string) => void;
-  resetDeviceLayout: (device?: DeviceMode) => void;
+  getTransform: (elementId: string) => ElementTransform;
+  updateTransform: (elementId: string, partial: Partial<ElementTransform>, recordHistory?: boolean) => void;
+  resetElement: (elementId: string) => void;
+  resetDeviceLayout: (device: DeviceMode) => void;
   resetAll: () => void;
   exportJSON: () => string;
   exportCSS: () => string;
-  applyPreset: (name: string) => void;
+  importJSON: (jsonStr: string) => boolean;
+  applyPreset: (presetName: "default" | "compact" | "cinematic" | "playful") => void;
 }
 
 const LayoutEditorContext = createContext<LayoutEditorContextType | null>(null);
