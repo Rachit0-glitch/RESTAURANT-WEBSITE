@@ -235,12 +235,21 @@ export default function SakuraHeroAtmosphere({
         }}
       />
 
-      {/* 3. Traditional Japanese Seal Stamp */}
-      <div className="absolute top-28 right-8 sm:right-16 hidden lg:flex flex-col items-center gap-2 opacity-80 hover:opacity-100 transition-opacity duration-300 pointer-events-auto select-none">
-        <div className="w-10 h-28 border-2 border-red-700/60 rounded bg-red-950/15 backdrop-blur-md flex flex-col items-center justify-center py-2 px-1 text-[13px] font-serif font-black text-red-700 tracking-[0.35em] uppercase [writing-mode:vertical-rl] shadow-[0_8px_20px_rgba(230,0,18,0.18)] hover:scale-105 transition-transform">
+      {/* 3. Japanese Top Ribbon Banner: 最高の寿司盛り合わせ */}
+      <div className="absolute top-[72px] sm:top-[80px] md:top-[88px] left-1/2 -translate-x-1/2 z-20 pointer-events-auto select-none">
+        <div className="bg-white/95 backdrop-blur-sm border border-black/10 px-4 sm:px-6 py-1 sm:py-1.5 rounded shadow-[0_4px_16px_rgba(0,0,0,0.08)] flex items-center justify-center gap-1 font-bold text-xs sm:text-sm md:text-base tracking-wider text-black">
+          <span>最高の</span>
+          <span className="text-[#e60012]">寿司</span>
+          <span>盛り合わせ</span>
+        </div>
+      </div>
+
+      {/* 4. Traditional Japanese Seal Stamp */}
+      <div className="absolute top-20 sm:top-24 md:top-28 right-4 sm:right-8 md:right-14 z-20 flex flex-col items-center gap-1 opacity-90 hover:opacity-100 transition-opacity duration-300 pointer-events-auto select-none">
+        <div className="w-7 sm:w-8 md:w-9 h-18 sm:h-22 md:h-24 border border-red-700/60 rounded bg-red-950/5 flex flex-col items-center justify-center py-1 px-1 text-[10px] sm:text-[11px] md:text-[12px] font-serif font-black text-red-700 tracking-[0.35em] uppercase [writing-mode:vertical-rl]">
           極上 鮨処
         </div>
-        <span className="text-[9px] font-mono font-bold text-neutral-600 uppercase tracking-widest">
+        <span className="text-[7px] sm:text-[8px] md:text-[9px] font-mono font-bold text-neutral-600 uppercase tracking-widest">
           Est. 1988
         </span>
       </div>

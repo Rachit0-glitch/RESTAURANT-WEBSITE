@@ -105,7 +105,7 @@ button.absolute:focus-visible {
   height: 100vh;
   height: 100svh;
   max-height: 100svh;
-  background: #f1dfcf;
+  background: #ffffff;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -533,5 +533,102 @@ button.absolute:focus-visible {
 .animate-fade-in-slow {
   animation: fadeInSlow 1.5s ease-out both;
 }
+
+.sakura-hero-cta-card {
+  left: 85px;
+  top: 525px;
+  width: 320px;
+}
+
+/* ==========================================================================
+   Generated Sakura Custom Layout CSS
+   ========================================================================== */
+@media (min-width: 1025px) {
+  #home.sakura-section {
+    background-image: url('/sakura-assets/_assets/media/ba78b4a30520331745a674cd7d48884f.png') !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+  }
+  [data-layout-id="hero-sushi-platter"] {
+    transform: translate3d(-67px, -257px, 0) scale(1.25) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="hero-title"] {
+    transform: translate3d(-12px, -150px, 0) scale(1) rotate(0deg);
+    z-index: 10;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  #home.sakura-section {
+    background-image: url('/sakura-assets/_assets/media/tab-bg.png') !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+  }
+  .sakura-hero-cta-card {
+    left: 50% !important;
+    top: 855px !important;
+    width: max-content !important;
+    max-width: 92vw !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+  }
+  [data-layout-id="hero-title"] {
+    transform: translate3d(-533px, -568px, 0) scale(1.6) rotate(0deg);
+    font-size: calc(1em * 0.95);
+    z-index: 6;
+  }
+  [data-layout-id="hero-sushi-platter"] {
+    transform: translate3d(-673px, -614px, 0) scale(1.6) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="hero-cta-button"] {
+    transform: translate3d(971px, -643px, 0) scale(2.2) rotate(0deg);
+    z-index: 12;
+  }
+  [data-layout-id="hero-floating-salmon"],
+  [data-layout-id="hero-floating-avocado"],
+  [data-layout-id="hero-floating-leaf"],
+  [data-layout-id="hero-floating-ginger"] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #home.sakura-section {
+    background-image: url('/sakura-assets/_assets/media/mobile-bg.png') !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+  }
+  .sakura-hero-cta-card {
+    left: 50% !important;
+    top: 670px !important;
+    width: 88vw !important;
+    margin-left: -44vw !important;
+  }
+  [data-layout-id="hero-title"] {
+    transform: translate3d(14px, -23px, 0) scale(0.75) rotate(0deg);
+    font-size: calc(1em * 0.75);
+    z-index: 10;
+  }
+  [data-layout-id="hero-sushi-platter"] {
+    transform: translate3d(0px, 40px, 0) scale(0.8) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="hero-cta-button"] {
+    transform: translate3d(0px, 35px, 0) scale(0.9) rotate(0deg);
+    z-index: 12;
+  }
+  [data-layout-id="hero-floating-salmon"],
+  [data-layout-id="hero-floating-avocado"],
+  [data-layout-id="hero-floating-leaf"],
+  [data-layout-id="hero-floating-ginger"] {
+    display: none !important;
+  }
+}
+
 
 

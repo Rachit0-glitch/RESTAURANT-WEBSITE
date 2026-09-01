@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { DishesPage } from "./SakuraExperience";
+import DraggableWrapper from "./DraggableWrapper";
 
 interface NavItem {
   id: string;
@@ -104,40 +105,44 @@ export default function SakuraNavbar({
       >
         <div className="flex items-center justify-between">
           {/* Brand Wordmark with subtle signature dot */}
-          <button
-            type="button"
-            onClick={() => handleNavClick(NAV_ITEMS[0])}
-            className="flex items-center gap-3 group focus:outline-none cursor-pointer"
-          >
-            <span className="w-2.5 h-2.5 rounded-full bg-red-600 group-hover:scale-125 transition-transform duration-300" />
-            <span className="font-black text-base sm:text-lg tracking-[0.22em] uppercase leading-none text-white transition-colors duration-300">
-              SAKURA
-            </span>
-          </button>
+          <DraggableWrapper id="navbar-brand" label="Navbar Brand">
+            <button
+              type="button"
+              onClick={() => handleNavClick(NAV_ITEMS[0])}
+              className="flex items-center gap-3 group focus:outline-none cursor-pointer"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 group-hover:scale-125 transition-transform duration-300" />
+              <span className="font-black text-base sm:text-lg tracking-[0.22em] uppercase leading-none text-white transition-colors duration-300">
+                SAKURA
+              </span>
+            </button>
+          </DraggableWrapper>
 
           {/* Clean Nav Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {NAV_ITEMS.map((item) => {
-              const isActive = activeNav === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => handleNavClick(item)}
-                  className={`relative py-1 text-xs font-bold tracking-[0.16em] uppercase transition-colors duration-200 cursor-pointer ${
-                    isActive
-                      ? "text-white"
-                      : "text-white/70 hover:text-white"
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#e60012] rounded-full transition-all duration-300" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          <DraggableWrapper id="navbar-links" label="Nav Links">
+            <div className="hidden md:flex items-center gap-8">
+              {NAV_ITEMS.map((item) => {
+                const isActive = activeNav === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleNavClick(item)}
+                    className={`relative py-1 text-xs font-bold tracking-[0.16em] uppercase transition-colors duration-200 cursor-pointer ${
+                      isActive
+                        ? "text-white"
+                        : "text-white/70 hover:text-white"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#e60012] rounded-full transition-all duration-300" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </DraggableWrapper>
 
           {/* Attractive Solid Crimson CTA */}
           <div className="flex items-center gap-3">
@@ -165,11 +170,11 @@ export default function SakuraNavbar({
               onClick={() => setMobileMenuOpen((prev) => !prev)}
               className="md:hidden p-2 rounded-full text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8h16M4 16h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
             </button>

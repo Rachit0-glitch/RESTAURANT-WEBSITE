@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import DraggableWrapper from "./DraggableWrapper";
 
 export default function SakuraZenAudio() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -101,32 +102,34 @@ export default function SakuraZenAudio() {
   }, []);
 
   return (
-    <button
-      type="button"
-      onClick={toggleAudio}
-      aria-label={isPlaying ? "Mute Zen Soundscape" : "Play Zen Soundscape"}
-      className="fixed bottom-6 left-6 z-50 flex items-center gap-2.5 px-3.5 py-2 rounded-full backdrop-blur-xl bg-black/40 hover:bg-black/60 border border-white/20 hover:border-white/40 text-white/90 hover:text-white transition-all duration-300 shadow-[0_8px_24px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 group cursor-pointer"
-    >
-      <div className="flex items-center gap-[3px] h-3.5">
-        <span
-          className={`w-[2.5px] bg-[#e60012] rounded-full transition-all duration-300 ${
-            isPlaying ? "h-3.5 animate-pulse" : "h-1.5 opacity-50"
-          }`}
-        />
-        <span
-          className={`w-[2.5px] bg-[#e60012] rounded-full transition-all duration-300 ${
-            isPlaying ? "h-2 animate-bounce" : "h-1.5 opacity-50"
-          }`}
-        />
-        <span
-          className={`w-[2.5px] bg-[#e60012] rounded-full transition-all duration-300 ${
-            isPlaying ? "h-3 animate-pulse" : "h-1.5 opacity-50"
-          }`}
-        />
-      </div>
-      <span className="text-[10px] font-bold tracking-[0.18em] uppercase select-none">
-        {isPlaying ? "Zen Ambience: ON" : "Sound: OFF"}
-      </span>
-    </button>
+    <DraggableWrapper id="zen-audio-player" label="Zen Audio Pill" className="fixed bottom-6 left-6 z-50">
+      <button
+        type="button"
+        onClick={toggleAudio}
+        aria-label={isPlaying ? "Mute Zen Soundscape" : "Play Zen Soundscape"}
+        className="flex items-center gap-2.5 px-3.5 py-2 rounded-full backdrop-blur-xl bg-black/40 hover:bg-black/60 border border-white/20 hover:border-white/40 text-white/90 hover:text-white transition-all duration-300 shadow-[0_8px_24px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 group cursor-pointer"
+      >
+        <div className="flex items-center gap-[3px] h-3.5">
+          <span
+            className={`w-[2.5px] bg-[#e60012] rounded-full transition-all duration-300 ${
+              isPlaying ? "h-3.5 animate-pulse" : "h-1.5 opacity-50"
+            }`}
+          />
+          <span
+            className={`w-[2.5px] bg-[#e60012] rounded-full transition-all duration-300 ${
+              isPlaying ? "h-2 animate-bounce" : "h-1.5 opacity-50"
+            }`}
+          />
+          <span
+            className={`w-[2.5px] bg-[#e60012] rounded-full transition-all duration-300 ${
+              isPlaying ? "h-3 animate-pulse" : "h-1.5 opacity-50"
+            }`}
+          />
+        </div>
+        <span className="text-[10px] font-bold tracking-[0.18em] uppercase select-none">
+          {isPlaying ? "Zen Ambience: ON" : "Sound: OFF"}
+        </span>
+      </button>
+    </DraggableWrapper>
   );
 }
