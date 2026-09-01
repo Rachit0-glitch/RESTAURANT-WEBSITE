@@ -607,22 +607,22 @@ button.absolute:focus-visible {
     background-size: cover !important;
   }
   .sakura-hero-cta-card {
-    left: 5% !important;
-    right: 5% !important;
-    top: 535px !important;
-    width: 90% !important;
-    max-width: 350px !important;
+    left: 6% !important;
+    right: 6% !important;
+    top: 540px !important;
+    width: 88% !important;
+    max-width: 340px !important;
     transform: none !important;
     margin-left: 0 !important;
     text-align: left !important;
   }
   [data-layout-id="hero-title"] {
-    transform: translate3d(0px, -135px, 0) scale(0.98) rotate(0deg);
+    transform: translate3d(0px, -150px, 0) scale(1.05) rotate(0deg);
     font-size: calc(1em * 0.95);
     z-index: 6;
   }
   [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(0px, -15px, 0) scale(1.15) rotate(0deg);
+    transform: translate3d(0px, -15px, 0) scale(1.25) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-cta-button"] {
@@ -630,11 +630,15 @@ button.absolute:focus-visible {
     z-index: 12;
   }
   [data-layout-id="hero-top-ribbon"] {
-    transform: translate3d(0px, 0px, 0) scale(0.95) rotate(0deg);
+    transform: translate3d(0px, -235px, 0) scale(0.95) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-seal-stamp"] {
-    transform: translate3d(0px, 0px, 0) scale(0.9) rotate(0deg);
+    transform: translate3d(128px, -205px, 0) scale(0.85) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="zen-audio-player"] {
+    transform: translate3d(-105px, 355px, 0) scale(0.9) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-floating-salmon"],

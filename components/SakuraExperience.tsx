@@ -1672,27 +1672,22 @@ function HeroTaglineCTA({
       </div>
 
       {/* Mobile Stacked Card View Matching mobile vie.png */}
-      <div className="flex md:hidden flex-col items-start text-left w-full max-w-[340px] px-2 py-1">
-        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-950 uppercase leading-[0.98]">
+      <div className="flex md:hidden flex-col items-start text-left w-full px-2 py-1 select-none">
+        <h2 className="text-[34px] font-black tracking-tight text-neutral-950 uppercase leading-[0.90]">
           Authentic <br />
           Japanese <br />
           <span className="text-[#e60012]">Dining.</span>
         </h2>
-        <p className="text-xs text-neutral-700 font-medium leading-snug mt-2.5 max-w-[280px]">
+        <p className="text-[13px] text-neutral-800 font-medium leading-snug mt-3 max-w-[270px]">
           Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.
         </p>
         <button
           type="button"
           onClick={onExploreMenu}
-          className="inline-flex items-center gap-2 bg-neutral-950 hover:bg-[#e60012] text-white text-xs font-bold tracking-[0.14em] uppercase px-5 py-2.5 rounded-full transition-all duration-300 cursor-pointer shadow-md mt-3.5 active:scale-95"
+          className="inline-flex items-center gap-2.5 bg-black hover:bg-[#e60012] text-white text-xs font-bold tracking-[0.16em] uppercase px-6 py-3 rounded-full transition-all duration-300 cursor-pointer shadow-[0_6px_18px_rgba(0,0,0,0.35)] mt-4 active:scale-95"
         >
-          <span>Explore Menu</span>
-          <svg
-            className="w-3 h-3 stroke-current stroke-2 fill-none"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
+          <span>EXPLORE MENU</span>
+          <span className="text-sm font-bold">→</span>
         </button>
       </div>
     </div>
