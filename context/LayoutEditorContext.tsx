@@ -9,7 +9,7 @@ import type {
   DraggableItemMeta,
 } from "../types/layoutEditor";
 
-const STORAGE_KEY = "sakura_custom_layout_v15";
+const STORAGE_KEY = "sakura_custom_layout_v16";
 
 export const REGISTERED_ELEMENTS: DraggableItemMeta[] = [
   // Hero Section Elements
@@ -59,8 +59,8 @@ export const DEFAULT_TRANSFORM: ElementTransform = {
 
 const DEFAULT_STORE: FullLayoutStore = {
   desktop: {
-    "hero-sushi-platter": { x: -115, y: -285, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-title": { x: -185, y: -133, scale: 1.2, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-sushi-platter": { x: -93, y: -279, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: -173, y: -108, scale: 1.2, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-cta-button": { x: -48, y: -141, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
   },
   tablet: {
@@ -70,12 +70,12 @@ const DEFAULT_STORE: FullLayoutStore = {
     "hero-top-ribbon": { x: -10, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   mobile: {
-    "hero-top-ribbon": { x: 0, y: -260, scale: 0.65, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-seal-stamp": { x: 100, y: -240, scale: 0.6, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-title": { x: 0, y: -170, scale: 0.6, rotate: 0, opacity: 1, fontSizeScale: 0.75, zIndex: 6 },
-    "hero-sushi-platter": { x: 0, y: 0, scale: 0.65, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-cta-button": { x: 0, y: 180, scale: 0.65, rotate: 0, opacity: 1, zIndex: 12 },
-    "zen-audio-player": { x: 0, y: 290, scale: 0.75, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-top-ribbon": { x: 0, y: -235, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-seal-stamp": { x: 128, y: -205, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: 0, y: -150, scale: 0.65, rotate: 0, opacity: 1, fontSizeScale: 0.95, zIndex: 6 },
+    "hero-sushi-platter": { x: 0, y: -15, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-cta-button": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
+    "zen-audio-player": { x: -105, y: 355, scale: 0.9, rotate: 0, opacity: 1, zIndex: 10 },
   },
 };
 

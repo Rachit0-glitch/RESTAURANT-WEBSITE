@@ -555,11 +555,11 @@ button.absolute:focus-visible {
     background-size: cover !important;
   }
   [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(-115px, -285px, 0) scale(1.25) rotate(0deg);
+    transform: translate3d(-93px, -279px, 0) scale(1.25) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-title"] {
-    transform: translate3d(-185px, -133px, 0) scale(1.2) rotate(0deg);
+    transform: translate3d(-173px, -108px, 0) scale(1.2) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-cta-button"] {
@@ -624,18 +624,18 @@ button.absolute:focus-visible {
     text-align: left !important;
   }
   [data-layout-id="hero-top-ribbon"] {
-    transform: translate3d(0px, -260px, 0) scale(0.65) rotate(0deg);
+    transform: translate3d(0px, -235px, 0) scale(0.95) rotate(0deg);
     z-index: 10;
     display: block !important;
   }
   [data-layout-id="hero-seal-stamp"] {
-    transform: translate3d(100px, -240px, 0) scale(0.6) rotate(0deg);
+    transform: translate3d(128px, -205px, 0) scale(0.85) rotate(0deg);
     z-index: 10;
     display: block !important;
   }
   [data-layout-id="hero-title"] {
-    transform: translate3d(0px, -170px, 0) scale(0.6) rotate(0deg);
-    font-size: calc(1em * 0.75);
+    transform: translate3d(0px, -150px, 0) scale(0.65) rotate(0deg);
+    font-size: calc(1em * 0.95);
     z-index: 6;
     display: block !important;
   }
