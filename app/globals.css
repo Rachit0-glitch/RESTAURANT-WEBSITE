@@ -585,6 +585,18 @@ body.sakura-editor-active [data-layout-id] {
     transform: translate3d(-48px, -141px, 0) scale(1.25) rotate(0deg);
     z-index: 10;
   }
+  [data-layout-id="dishes-okonomiyaki-dish"] {
+    transform: translate3d(45px, 26px, 0) scale(1) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="dishes-bottom-black-band"] {
+    transform: translate3d(-139px, 18px, 0) scale(1) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="dishes-yakitori-dish"] {
+    transform: translate3d(-31px, -26px, 0) scale(1) rotate(0deg);
+    z-index: 10;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px), [data-device="tablet"] {
@@ -603,11 +615,11 @@ body.sakura-editor-active [data-layout-id] {
     margin-left: 0 !important;
   }
   [data-layout-id="hero-title"] {
-    transform: translate3d(-577px, -659px, 0) scale(1.55) rotate(0deg);
+    transform: translate3d(-600px, -572px, 0) scale(1.55) rotate(0deg);
     z-index: 6;
   }
   [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(-668px, -672px, 0) scale(1.6) rotate(0deg);
+    transform: translate3d(-658px, -679px, 0) scale(1.6) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-cta-button"] {
@@ -616,6 +628,10 @@ body.sakura-editor-active [data-layout-id] {
   }
   [data-layout-id="hero-top-ribbon"] {
     transform: translate3d(-10px, 18px, 0) scale(1) rotate(0deg);
+    z-index: 10;
+  }
+  [data-layout-id="dishes-tempura-dish"] {
+    transform: translate3d(400px, -421px, 0) scale(1) rotate(0deg);
     z-index: 10;
   }
   [data-layout-id="hero-floating-salmon"],

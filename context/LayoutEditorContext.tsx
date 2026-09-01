@@ -9,7 +9,7 @@ import type {
   DraggableItemMeta,
 } from "../types/layoutEditor";
 
-const STORAGE_KEY = "sakura_custom_layout_v17";
+const STORAGE_KEY = "sakura_custom_layout_v18";
 
 export const REGISTERED_ELEMENTS: DraggableItemMeta[] = [
   // Hero Section Elements
@@ -62,12 +62,16 @@ const DEFAULT_STORE: FullLayoutStore = {
     "hero-sushi-platter": { x: -93, y: -279, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-title": { x: -173, y: -108, scale: 1.2, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-cta-button": { x: -48, y: -141, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-okonomiyaki-dish": { x: 45, y: 26, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-bottom-black-band": { x: -139, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-yakitori-dish": { x: -31, y: -26, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   tablet: {
-    "hero-title": { x: -577, y: -659, scale: 1.55, rotate: 0, opacity: 1, zIndex: 6 },
-    "hero-sushi-platter": { x: -668, y: -672, scale: 1.6, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: -600, y: -572, scale: 1.55, rotate: 0, opacity: 1, zIndex: 6 },
+    "hero-sushi-platter": { x: -658, y: -679, scale: 1.6, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-cta-button": { x: 985, y: -1291, scale: 2.85, rotate: 0, opacity: 1, zIndex: 12 },
     "hero-top-ribbon": { x: -10, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-tempura-dish": { x: 400, y: -421, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   mobile: {
     "hero-top-ribbon": { x: 0, y: -235, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
