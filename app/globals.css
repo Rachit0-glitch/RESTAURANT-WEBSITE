@@ -640,17 +640,15 @@ button.absolute:focus-visible {
     display: block !important;
   }
   [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(0px, 0px, 0) scale(0.65) rotate(0deg);
+    transform: translate3d(0px, -15px, 0) scale(0.65) rotate(0deg);
     z-index: 10;
     display: block !important;
   }
   [data-layout-id="hero-cta-button"] {
-    transform: translate3d(0px, 180px, 0) scale(0.65) rotate(0deg);
     z-index: 12;
-    display: block !important;
   }
   [data-layout-id="zen-audio-player"] {
-    transform: translate3d(0px, 290px, 0) scale(0.75) rotate(0deg);
+    transform: translate3d(-105px, 355px, 0) scale(0.9) rotate(0deg);
     z-index: 10;
     display: block !important;
   }

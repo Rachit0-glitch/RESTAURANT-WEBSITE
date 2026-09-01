@@ -9,7 +9,7 @@ import type {
   DraggableItemMeta,
 } from "../types/layoutEditor";
 
-const STORAGE_KEY = "sakura_custom_layout_v16";
+const STORAGE_KEY = "sakura_custom_layout_v17";
 
 export const REGISTERED_ELEMENTS: DraggableItemMeta[] = [
   // Hero Section Elements
@@ -73,7 +73,7 @@ const DEFAULT_STORE: FullLayoutStore = {
     "hero-top-ribbon": { x: 0, y: -235, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-seal-stamp": { x: 128, y: -205, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-title": { x: 0, y: -150, scale: 0.65, rotate: 0, opacity: 1, fontSizeScale: 0.95, zIndex: 6 },
-    "hero-sushi-platter": { x: 0, y: -15, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-sushi-platter": { x: 0, y: -15, scale: 0.65, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-cta-button": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
     "zen-audio-player": { x: -105, y: 355, scale: 0.9, rotate: 0, opacity: 1, zIndex: 10 },
   },
