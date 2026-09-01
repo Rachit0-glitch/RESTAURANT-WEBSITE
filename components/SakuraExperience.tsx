@@ -2228,12 +2228,22 @@ function DesignStage({
           }}
         />
       )}
+      {section.id === "dishes-1" && (
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0">
+          <img
+            src="/sakura-assets/_assets/media/b04f0772236c0166269f504ed52d6aa2.png"
+            alt="Sakura Dishes Background"
+            className="w-full h-full object-cover object-center select-none"
+            draggable={false}
+          />
+        </div>
+      )}
       <div
         ref={shellRef}
         className="sakura-stage-shell relative mx-auto w-full h-full flex items-center justify-center overflow-hidden"
       >
         <div
-          className={`absolute ${section.id === "home" ? "overflow-visible" : "overflow-hidden"}`}
+          className={`absolute ${section.id === "home" || section.id === "dishes-1" ? "overflow-visible" : "overflow-hidden"}`}
           style={{
             width: stageSize.width,
             height: stageSize.height,

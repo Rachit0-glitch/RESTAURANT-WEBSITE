@@ -126,14 +126,24 @@ button.absolute:focus-visible {
 
 .sakura-dishes-band {
   position: absolute;
-  display: block;
-  background: #000;
-  width: 750px;
-  height: 250px;
-  transform: rotate(-32deg);
-  transform-origin: center;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: #000000 !important;
+  width: 880px !important;
+  height: 280px !important;
+  transform: rotate(-32deg) !important;
+  transform-origin: center center !important;
   pointer-events: none;
   z-index: 5;
+}
+
+[data-layout-id="dishes-top-black-band"],
+[data-layout-id="dishes-bottom-black-band"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 5 !important;
 }
 
 .sakura-hidden-dishes-content {
@@ -680,14 +690,18 @@ button.absolute:focus-visible {
   object-position: center center;
 }
 
+#dishes-1.sakura-section {
+  background-color: #f1dfcf;
+  background-image: url('/sakura-assets/_assets/media/b04f0772236c0166269f504ed52d6aa2.png') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
 @media (min-width: 769px) and (max-width: 1024px) {
   #dishes-1.sakura-section {
     background-size: cover !important;
     background-position: center center !important;
-  }
-  .sakura-dishes-band {
-    width: 100% !important;
-    transform: scale(0.90) !important;
   }
 }
 
@@ -695,10 +709,6 @@ button.absolute:focus-visible {
   #dishes-1.sakura-section {
     background-size: cover !important;
     background-position: center center !important;
-  }
-  .sakura-dishes-band {
-    width: 100% !important;
-    transform: scale(0.80) !important;
   }
 }
 
