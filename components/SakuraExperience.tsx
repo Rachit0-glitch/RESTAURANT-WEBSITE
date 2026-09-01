@@ -47,14 +47,14 @@ const WIDESCREEN_STAGE = { width: 1920, height: 1080 };
 const renderedSectionIds = new Set(["home", "dishes-1"]);
 const initialDishesCornerPositions = {
   top: { x: 1348, y: -42 },
-  bottom: { x: -128, y: 842 },
+  bottom: { x: -128, y: 780 },
 };
 const initialDishesDishPositions = {
-  sushi: { x: 80, y: 485 },
+  sushi: { x: 80, y: 440 },
   ramen: { x: 1088, y: 60 },
-  tempura: { x: 80, y: 500 },
+  tempura: { x: 80, y: 440 },
   udon: { x: 1088, y: 60 },
-  okonomiyaki: { x: 80, y: 500 },
+  okonomiyaki: { x: 80, y: 440 },
   yakitori: { x: 1088, y: 60 },
 };
 
@@ -1996,7 +1996,8 @@ function DesignStage({
           // Tablet dishes scaled down
           setScale(Math.min(scaleX, scaleY) * 0.85);
         } else {
-          setScale(Math.max(scaleX, scaleY));
+          // Desktop widescreen dishes - fully fit to viewport height so bottom dish/text is never cut
+          setScale(Math.min(scaleX, scaleY) * 0.96);
         }
       } else {
         if (vw <= 768) {
