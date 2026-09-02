@@ -40,6 +40,12 @@ export default function VisualLayoutStudioHUD() {
     }
   }, []);
 
+  useEffect(() => {
+    if (selectedElementId) {
+      setIsExpanded(true);
+    }
+  }, [selectedElementId]);
+
   const selectedItemMeta = REGISTERED_ELEMENTS.find((el) => el.id === selectedElementId);
   const transform = selectedElementId ? getTransform(selectedElementId) : null;
 
@@ -259,94 +265,305 @@ export default function VisualLayoutStudioHUD() {
 
             {/* Selected Element Quick Controls */}
             {selectedElementId && transform ? (
-              <div className="space-y-3 bg-black/40 p-3 rounded-xl border border-white/10">
-                <div className="flex items-center justify-between pb-1 border-b border-white/10">
-                  <span className="font-bold text-amber-300 truncate text-[11px]">
-                    {selectedItemMeta?.name || selectedElementId}
-                  </span>
-                  <span className="text-[10px] text-zinc-400 font-mono">
-                    ({transform.x}px, {transform.y}px)
-                  </span>
+              <div className="space-y-3.5 bg-black/50 p-3.5 rounded-xl border border-amber-500/30 shadow-lg">
+                <div className="flex items-center justify-between pb-2 border-b border-white/15">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+                    <span className="font-bold text-amber-300 truncate text-xs">
+                      {selectedItemMeta?.name || selectedElementId}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => resetElement(selectedElementId)}
+                    className="text-[10px] text-rose-400 hover:text-rose-300 underline font-medium cursor-pointer flex-shrink-0 ml-2"
+                  >
+                    Reset
+                  </button>
                 </div>
 
-                {/* Size / Scale */}
-                <div>
-                  <div className="flex justify-between text-zinc-300 text-[11px] mb-1">
-                    <span>Size / Scale:</span>
-                    <span className="font-mono text-amber-300 font-bold">{Math.round(transform.scale * 100)}%</span>
+                {/* Direct Position Controls (X & Y) */}
+                <div className="space-y-2 bg-[#18181b]/90 p-2.5 rounded-lg border border-white/10">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-white flex items-center gap-1">
+                      <span>📍</span> Position (X, Y)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { x: 0, y: 0 }, true)}
+                      className="text-[10px] text-zinc-400 hover:text-white px-1.5 py-0.5 bg-white/10 rounded cursor-pointer"
+                      title="Center / Reset Position"
+                    >
+                      (0, 0)
+                    </button>
                   </div>
-                  <div className="flex items-center gap-2">
+
+                  {/* X Coordinate */}
+                  <div>
+                    <div className="flex items-center justify-between text-[11px] mb-1">
+                      <span className="text-zinc-300 font-medium">X (Horizontal):</span>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={Math.round(transform.x)}
+                          onChange={(e) => updateTransform(selectedElementId, { x: Number(e.target.value) || 0 }, true)}
+                          className="w-16 bg-black border border-white/20 rounded px-1.5 py-0.5 text-right font-mono text-amber-300 text-[11px] focus:outline-none focus:border-amber-400"
+                        />
+                        <span className="text-zinc-500 font-mono text-[10px]">px</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { x: Math.round(transform.x) - 10 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Left 10px"
+                      >
+                        ◀◀ -10
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { x: Math.round(transform.x) - 1 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Left 1px"
+                      >
+                        ◀ -1
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { x: Math.round(transform.x) + 1 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Right 1px"
+                      >
+                        +1 ▶
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { x: Math.round(transform.x) + 10 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Right 10px"
+                      >
+                        +10 ▶▶
+                      </button>
+                    </div>
                     <input
                       type="range"
-                      min="20"
-                      max="300"
-                      step="5"
-                      value={Math.round(transform.scale * 100)}
-                      onChange={(e) => updateTransform(selectedElementId, { scale: Number(e.target.value) / 100 }, false)}
-                      onMouseUp={() => updateTransform(selectedElementId, { scale: transform.scale }, true)}
-                      onTouchEnd={() => updateTransform(selectedElementId, { scale: transform.scale }, true)}
-                      className="w-full accent-[#e16b5c] cursor-pointer"
+                      min="-600"
+                      max="600"
+                      step="1"
+                      value={Math.round(transform.x)}
+                      onChange={(e) => updateTransform(selectedElementId, { x: Number(e.target.value) }, false)}
+                      onMouseUp={() => updateTransform(selectedElementId, { x: transform.x }, true)}
+                      onTouchEnd={() => updateTransform(selectedElementId, { x: transform.x }, true)}
+                      className="w-full mt-1.5 accent-amber-400 cursor-pointer"
                     />
+                  </div>
+
+                  {/* Y Coordinate */}
+                  <div className="pt-1.5 border-t border-white/10">
+                    <div className="flex items-center justify-between text-[11px] mb-1">
+                      <span className="text-zinc-300 font-medium">Y (Vertical):</span>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={Math.round(transform.y)}
+                          onChange={(e) => updateTransform(selectedElementId, { y: Number(e.target.value) || 0 }, true)}
+                          className="w-16 bg-black border border-white/20 rounded px-1.5 py-0.5 text-right font-mono text-amber-300 text-[11px] focus:outline-none focus:border-amber-400"
+                        />
+                        <span className="text-zinc-500 font-mono text-[10px]">px</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { y: Math.round(transform.y) - 10 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Up 10px"
+                      >
+                        ▲▲ -10
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { y: Math.round(transform.y) - 1 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Up 1px"
+                      >
+                        ▲ -1
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { y: Math.round(transform.y) + 1 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Down 1px"
+                      >
+                        +1 ▼
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateTransform(selectedElementId, { y: Math.round(transform.y) + 10 }, true)}
+                        className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                        title="Move Down 10px"
+                      >
+                        +10 ▼▼
+                      </button>
+                    </div>
+                    <input
+                      type="range"
+                      min="-600"
+                      max="600"
+                      step="1"
+                      value={Math.round(transform.y)}
+                      onChange={(e) => updateTransform(selectedElementId, { y: Number(e.target.value) }, false)}
+                      onMouseUp={() => updateTransform(selectedElementId, { y: transform.y }, true)}
+                      onTouchEnd={() => updateTransform(selectedElementId, { y: transform.y }, true)}
+                      className="w-full mt-1.5 accent-amber-400 cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Size / Scale Controls */}
+                <div className="space-y-1.5 bg-[#18181b]/90 p-2.5 rounded-lg border border-white/10">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="font-bold text-white flex items-center gap-1">
+                      <span>🔍</span> Size / Scale:
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="10"
+                        max="400"
+                        step="1"
+                        value={Math.round(transform.scale * 100)}
+                        onChange={(e) => updateTransform(selectedElementId, { scale: (Number(e.target.value) || 100) / 100 }, true)}
+                        className="w-14 bg-black border border-white/20 rounded px-1.5 py-0.5 text-right font-mono text-amber-300 text-[11px] focus:outline-none focus:border-amber-400"
+                      />
+                      <span className="text-zinc-500 font-mono text-[10px]">%</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { scale: Math.max(0.1, Number((transform.scale - 0.1).toFixed(2))) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      −10%
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { scale: Math.max(0.1, Number((transform.scale - 0.01).toFixed(2))) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      −1%
+                    </button>
                     <button
                       type="button"
                       onClick={() => updateTransform(selectedElementId, { scale: 1 }, true)}
-                      className="px-1.5 py-0.5 bg-white/10 hover:bg-white/20 rounded text-[10px]"
+                      className="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 rounded text-[10px] font-mono font-bold cursor-pointer"
                     >
                       100%
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { scale: Math.min(4, Number((transform.scale + 0.01).toFixed(2))) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      +1%
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { scale: Math.min(4, Number((transform.scale + 0.1).toFixed(2))) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      +10%
+                    </button>
                   </div>
+
+                  <input
+                    type="range"
+                    min="20"
+                    max="300"
+                    step="2"
+                    value={Math.round(transform.scale * 100)}
+                    onChange={(e) => updateTransform(selectedElementId, { scale: Number(e.target.value) / 100 }, false)}
+                    onMouseUp={() => updateTransform(selectedElementId, { scale: transform.scale }, true)}
+                    onTouchEnd={() => updateTransform(selectedElementId, { scale: transform.scale }, true)}
+                    className="w-full mt-1 accent-[#e16b5c] cursor-pointer"
+                  />
                 </div>
 
                 {/* Rotation */}
-                <div>
-                  <div className="flex justify-between text-zinc-300 text-[11px] mb-1">
-                    <span>Rotation:</span>
-                    <span className="font-mono text-amber-300">{transform.rotate}°</span>
+                <div className="space-y-1.5 bg-[#18181b]/90 p-2.5 rounded-lg border border-white/10">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="font-bold text-white flex items-center gap-1">
+                      <span>🔄</span> Rotation:
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="-180"
+                        max="180"
+                        step="1"
+                        value={Math.round(transform.rotate)}
+                        onChange={(e) => updateTransform(selectedElementId, { rotate: Number(e.target.value) || 0 }, true)}
+                        className="w-14 bg-black border border-white/20 rounded px-1.5 py-0.5 text-right font-mono text-cyan-300 text-[11px] focus:outline-none focus:border-cyan-400"
+                      />
+                      <span className="text-zinc-500 font-mono text-[10px]">°</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="range"
-                      min="-180"
-                      max="180"
-                      step="1"
-                      value={transform.rotate}
-                      onChange={(e) => updateTransform(selectedElementId, { rotate: Number(e.target.value) }, false)}
-                      onMouseUp={() => updateTransform(selectedElementId, { rotate: transform.rotate }, true)}
-                      onTouchEnd={() => updateTransform(selectedElementId, { rotate: transform.rotate }, true)}
-                      className="w-full accent-cyan-400 cursor-pointer"
-                    />
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { rotate: (transform.rotate - 15) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      ↺ -15°
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { rotate: (transform.rotate - 1) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      ↺ -1°
+                    </button>
                     <button
                       type="button"
                       onClick={() => updateTransform(selectedElementId, { rotate: 0 }, true)}
-                      className="px-1.5 py-0.5 bg-white/10 hover:bg-white/20 rounded text-[10px]"
+                      className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold cursor-pointer"
                     >
                       0°
                     </button>
-                  </div>
-                </div>
-
-                {/* Opacity */}
-                <div>
-                  <div className="flex justify-between text-zinc-300 text-[11px] mb-1">
-                    <span>Opacity:</span>
-                    <span className="font-mono text-amber-300">{Math.round(transform.opacity * 100)}%</span>
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { rotate: (transform.rotate + 1) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      +1° ↻
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateTransform(selectedElementId, { rotate: (transform.rotate + 15) }, true)}
+                      className="flex-1 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-mono font-bold text-zinc-300 cursor-pointer"
+                    >
+                      +15° ↻
+                    </button>
                   </div>
                   <input
                     type="range"
-                    min="0"
-                    max="100"
-                    step="5"
-                    value={Math.round(transform.opacity * 100)}
-                    onChange={(e) => updateTransform(selectedElementId, { opacity: Number(e.target.value) / 100 }, false)}
-                    onMouseUp={() => updateTransform(selectedElementId, { opacity: transform.opacity }, true)}
-                    onTouchEnd={() => updateTransform(selectedElementId, { opacity: transform.opacity }, true)}
-                    className="w-full accent-emerald-400 cursor-pointer"
+                    min="-180"
+                    max="180"
+                    step="1"
+                    value={transform.rotate}
+                    onChange={(e) => updateTransform(selectedElementId, { rotate: Number(e.target.value) }, false)}
+                    onMouseUp={() => updateTransform(selectedElementId, { rotate: transform.rotate }, true)}
+                    onTouchEnd={() => updateTransform(selectedElementId, { rotate: transform.rotate }, true)}
+                    className="w-full mt-1 accent-cyan-400 cursor-pointer"
                   />
                 </div>
               </div>
             ) : (
-              <div className="bg-black/30 border border-dashed border-white/20 rounded-xl p-3 text-center text-zinc-400 text-[11px]">
-                💡 Pick any element from the dropdown above or click on the screen to start editing.
+              <div className="bg-black/30 border border-dashed border-white/20 rounded-xl p-3.5 text-center text-zinc-400 text-xs">
+                💡 Pick any element from the dropdown above or click on the screen to view and adjust X, Y, Scale & Rotation directly from the tool.
               </div>
             )}
 

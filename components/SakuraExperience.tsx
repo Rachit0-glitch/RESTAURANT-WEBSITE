@@ -29,7 +29,7 @@ const HERO_LOGO_SRC = "/sakura-assets/_assets/media/6c06138391acf332fac3fc3d9be6
 const HERO_CTA_SRC = "/sakura-assets/_assets/media/d7008c2fca28475fcc4c0217970428fb.png";
 const HERO_CTA_ARROW_SRC = "/sakura-assets/_assets/media/30f4682c39416bf4fa425304a1e01229.png";
 const HERO_SUSHI_PLATTER_SRC = "/sakura-assets/_assets/media/2cccb1d8bca202e0ae7adde1a1d5d489.png";
-const HERO_SUSHI_PLATTER_HQ_SRC = "/sakura-assets/_assets/media/sushi-platter-desktop-angle-4k.png";
+const HERO_SUSHI_PLATTER_HQ_SRC = "/sakura-assets/_assets/media/hero-sushi-platter-hq-cutout.png";
 const DISHES_BLACK_BLOCK_SRC = "/sakura-assets/_assets/media/dishes/328fb685432d62976b0179f561f987bf.png";
 const DISHES_TOP_BLACK_BLOCK_SRC = "/sakura-assets/_assets/media/dishes/c2d746e5094a5d523e58dfbfefe4d7f7.png";
 const DISHES_SUSHI_PLATTER_SRC = "/sakura-assets/_assets/media/dishes/4bb926cd437f06f219ac808e624af238.png";
@@ -1928,10 +1928,11 @@ function DesignStage({
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const isTransitioningRef = useRef(false);
   const [scale, setScale] = useState(1);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+
+  const { activeDevice, isEditorActive, selectedElementId } = useLayoutEditor();
 
   useEffect(() => {
-    if (section.id !== "home" && section.id !== "dishes-1") return;
+    if (isEditorActive || (section.id !== "home" && section.id !== "dishes-1")) return;
 
     let rafId: number;
     let targetX = 0;
@@ -1945,9 +1946,12 @@ function DesignStage({
     };
 
     const animate = () => {
-      currentX += (targetX - currentX) * 0.05;
-      currentY += (targetY - currentY) * 0.05;
-      setMouseOffset({ x: currentX, y: currentY });
+      currentX += (targetX - currentX) * 0.06;
+      currentY += (targetY - currentY) * 0.06;
+      if (shellRef.current) {
+        shellRef.current.style.setProperty("--mx", `${currentX.toFixed(4)}`);
+        shellRef.current.style.setProperty("--my", `${currentY.toFixed(4)}`);
+      }
       rafId = requestAnimationFrame(animate);
     };
 
@@ -1958,7 +1962,18 @@ function DesignStage({
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(rafId);
     };
-  }, [section.id]);
+  }, [section.id, isEditorActive]);
+
+  useEffect(() => {
+    if (!isEditorActive || !selectedElementId) return;
+    if (selectedElementId === "dishes-ramen-dish" || selectedElementId === "dishes-platter-dish") {
+      setDishesPage("first");
+    } else if (selectedElementId === "dishes-udon-dish" || selectedElementId === "dishes-tempura-dish") {
+      setDishesPage("second");
+    } else if (selectedElementId === "dishes-yakitori-dish" || selectedElementId === "dishes-okonomiyaki-dish") {
+      setDishesPage("third");
+    }
+  }, [selectedElementId, isEditorActive, setDishesPage]);
 
   const dishPositions = initialDishesDishPositions;
   const visibleImages = section.id === "home" ? section.images.filter((layer) => !isHeroNavImage(layer)) : section.images;
@@ -1970,8 +1985,6 @@ function DesignStage({
   const stageSize = getStageSize(section);
   const stageRatio = stageSize.width / stageSize.height;
   const showDishesBaseOnly = section.id === "dishes-1";
-
-  const { activeDevice } = useLayoutEditor();
 
   useLayoutEffect(() => {
     const updateScale = () => {
@@ -2001,8 +2014,8 @@ function DesignStage({
         }
       } else {
         if (vw <= 768) {
-          // Mobile portrait hero
-          setScale(Math.max(scaleX * 1.55, scaleY * 0.75));
+          // Mobile portrait hero - fit cleanly within mobile screen width
+          setScale(scaleX * 0.96);
         } else if (vw <= 1024 || aspect < 1.55) {
           // Tablet hero (exact factor matching user coordinates)
           setScale(Math.min(scaleX, scaleY) * 1.02);
@@ -2071,6 +2084,7 @@ function DesignStage({
     let wheelDebounceTimer: number | null = null;
 
     function onWheel(event: WheelEvent) {
+      if (isEditorActive) return;
       const element = sectionRef.current;
       if (!element) return;
 
@@ -2120,12 +2134,10 @@ function DesignStage({
         }
         return;
       }
-
-      // If on Pair 3 and scrolling DOWN: all explored -> smoothly unlock down to footer
-      // If on Pair 1 and scrolling UP: at top -> smoothly unlock up to Hero
     }
 
     function onKeyDown(event: KeyboardEvent) {
+      if (isEditorActive) return;
       const element = sectionRef.current;
       if (!element) return;
       const rect = element.getBoundingClientRect();
@@ -2155,16 +2167,17 @@ function DesignStage({
       window.removeEventListener("wheel", onWheel, { capture: true });
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [dishesPage, showDishesBaseOnly]);
+  }, [dishesPage, showDishesBaseOnly, isEditorActive]);
 
   const handleTouchStart = (e: React.TouchEvent | React.PointerEvent) => {
+    if (isEditorActive) return;
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     touchStartRef.current = { x: clientX, y: clientY, time: Date.now() };
   };
 
   const handleTouchEnd = (e: React.TouchEvent | React.PointerEvent) => {
-    if (!touchStartRef.current) return;
+    if (isEditorActive || !touchStartRef.current) return;
     const clientX = "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
     const clientY = "changedTouches" in e ? e.changedTouches[0].clientY : e.clientY;
     const deltaX = clientX - touchStartRef.current.x;
@@ -2202,10 +2215,14 @@ function DesignStage({
   const bottomNumberLayer = getDishesTextTemplate(section, "02.");
   const bottomTitleLayer = getDishesTextTemplate(section, "Sushi Platter");
   const bottomDescriptionLayer = getDishesTextTemplate(section, "Salmon, tuna & shrimpnigiri, maki rolls, sashimi,pickled ginger, wasabi.");
+  const ramenBaseLayer = baseImages.find((layer) => dishesDishKey(layer) === "ramen");
+  const sushiBaseLayer = baseImages.find((layer) => dishesDishKey(layer) === "sushi");
+  const ramenLayer = ramenBaseLayer ? { ...getDisplayImageLayer(section, ramenBaseLayer, 0), x: dishPositions.ramen.x, y: dishPositions.ramen.y } : makeDishLayer(DISHES_RAMEN_HQ_SRC, dishPositions.ramen.x, dishPositions.ramen.y, 640, 536);
+  const sushiLayer = sushiBaseLayer ? { ...getDisplayImageLayer(section, sushiBaseLayer, 0), x: dishPositions.sushi.x, y: dishPositions.sushi.y } : makeDishLayer(DISHES_SUSHI_PLATTER_HQ_SRC, dishPositions.sushi.x, dishPositions.sushi.y, 700, 520);
   const udonLayer = makeDishLayer(DISHES_UDON_HQ_SRC, dishPositions.udon.x, dishPositions.udon.y, 640, 626);
   const tempuraLayer = makeDishLayer(DISHES_TEMPURA_HQ_SRC, dishPositions.tempura.x, dishPositions.tempura.y, 640, 590);
-  const yakitoriLayer = makeDishLayer(DISHES_YAKITORI_HQ_SRC, dishPositions.yakitori.x, dishPositions.yakitori.y + 35, 650, 488);
-  const okonomiyakiLayer = makeDishLayer(DISHES_OKONOMIYAKI_HQ_SRC, dishPositions.okonomiyaki.x + 12, dishPositions.okonomiyaki.y - 15, 610, 570);
+  const yakitoriLayer = makeDishLayer(DISHES_YAKITORI_HQ_SRC, dishPositions.yakitori.x, dishPositions.yakitori.y, 650, 488);
+  const okonomiyakiLayer = makeDishLayer(DISHES_OKONOMIYAKI_HQ_SRC, dishPositions.okonomiyaki.x, dishPositions.okonomiyaki.y, 610, 570);
 
   return (
     <section
@@ -2214,10 +2231,10 @@ function DesignStage({
       aria-label={section.label}
       className={`sakura-section relative w-full overflow-hidden ${section.id === "dishes-1" ? "sakura-dishes-section" : ""}`}
       style={{ scrollMarginTop: 0 }}
-      onTouchStart={showDishesBaseOnly ? handleTouchStart : undefined}
-      onTouchEnd={showDishesBaseOnly ? handleTouchEnd : undefined}
-      onPointerDown={showDishesBaseOnly ? handleTouchStart : undefined}
-      onPointerUp={showDishesBaseOnly ? handleTouchEnd : undefined}
+      onTouchStart={!isEditorActive && showDishesBaseOnly ? handleTouchStart : undefined}
+      onTouchEnd={!isEditorActive && showDishesBaseOnly ? handleTouchEnd : undefined}
+      onPointerDown={!isEditorActive && showDishesBaseOnly ? handleTouchStart : undefined}
+      onPointerUp={!isEditorActive && showDishesBaseOnly ? handleTouchEnd : undefined}
     >
       {section.id === "home" && (
         <SakuraHeroAtmosphere
@@ -2230,7 +2247,7 @@ function DesignStage({
         />
       )}
       {section.id === "dishes-1" && (
-        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0">
+        <div className="sakura-dishes-clean-bg absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0">
           <img
             src="/sakura-assets/_assets/media/dishes-clean-bg.png"
             alt="Sakura Dishes Background"
@@ -2244,6 +2261,7 @@ function DesignStage({
         className="sakura-stage-shell relative mx-auto w-full h-full flex items-center justify-center overflow-hidden"
       >
         <div
+          data-stage-width={stageSize.width}
           className={`absolute ${section.id === "home" || section.id === "dishes-1" ? "overflow-visible" : "overflow-hidden"}`}
           style={{
             width: stageSize.width,
@@ -2261,14 +2279,14 @@ function DesignStage({
               <DraggableWrapper id="dishes-top-black-band" label="Dishes Top Black Line">
                 <div
                   aria-hidden="true"
-                  className="sakura-dishes-band"
+                  className="sakura-dishes-band sakura-dishes-band-top"
                   style={{ left: initialDishesCornerPositions.top.x, top: initialDishesCornerPositions.top.y }}
                 />
               </DraggableWrapper>
               <DraggableWrapper id="dishes-bottom-black-band" label="Dishes Bottom Black Line">
                 <div
                   aria-hidden="true"
-                  className="sakura-dishes-band"
+                  className="sakura-dishes-band sakura-dishes-band-bottom"
                   style={{ left: initialDishesCornerPositions.bottom.x, top: initialDishesCornerPositions.bottom.y }}
                 />
               </DraggableWrapper>
@@ -2324,7 +2342,7 @@ function DesignStage({
                   layer={yakitoriLayer}
                   index={92}
                   className={`sakura-dish-swap sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
-                  style={showThirdDishes ? {
+                  style={!isEditorActive && showThirdDishes ? {
                     transform: `translate3d(${mouseOffset.x * 32}px, ${mouseOffset.y * 24}px, 0)`,
                     willChange: "transform",
                   } : undefined}
@@ -2335,7 +2353,7 @@ function DesignStage({
                   layer={okonomiyakiLayer}
                   index={93}
                   className={`sakura-dish-swap sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
-                  style={showThirdDishes ? {
+                  style={!isEditorActive && showThirdDishes ? {
                     transform: `translate3d(${mouseOffset.x * -24}px, ${mouseOffset.y * -18}px, 0)`,
                     willChange: "transform",
                   } : undefined}
@@ -2461,27 +2479,27 @@ function DesignStage({
                   if (isPlatter) {
                     animationClass = "hero-animate-platter";
                     parallaxStyle = {
-                      transform: `translate3d(${mouseOffset.x * 24}px, ${mouseOffset.y * 18}px, 0)`,
+                      transform: "translate3d(calc(var(--mx, 0) * 24px), calc(var(--my, 0) * 18px), 0)",
                       transformOrigin: "center center",
                     };
                   } else if (isFloating1) {
                     animationClass = "hero-floating-1";
                     parallaxStyle = {
-                      transform: `translate3d(${mouseOffset.x * 38}px, ${mouseOffset.y * 28}px, 0)`,
+                      transform: "translate3d(calc(var(--mx, 0) * 38px), calc(var(--my, 0) * 28px), 0)",
                     };
                   } else if (isFloating2) {
                     animationClass = "hero-floating-2";
                     parallaxStyle = {
-                      transform: `translate3d(${mouseOffset.x * -32}px, ${mouseOffset.y * -24}px, 0)`,
+                      transform: "translate3d(calc(var(--mx, 0) * -32px), calc(var(--my, 0) * -24px), 0)",
                     };
                   } else if (isFloating3) {
                     animationClass = "hero-floating-3";
                     parallaxStyle = {
-                      transform: `translate3d(${mouseOffset.x * 42}px, ${mouseOffset.y * 32}px, 0)`,
+                      transform: "translate3d(calc(var(--mx, 0) * 42px), calc(var(--my, 0) * 32px), 0)",
                     };
                   } else {
                     parallaxStyle = {
-                      transform: `translate3d(${mouseOffset.x * -6}px, ${mouseOffset.y * -4}px, 0)`,
+                      transform: "translate3d(calc(var(--mx, 0) * -6px), calc(var(--my, 0) * -4px), 0)",
                     };
                   }
                 }
@@ -2510,7 +2528,7 @@ function DesignStage({
                 <div
                   className={isHeroRevealed ? "hero-animate-tagline" : "opacity-0"}
                   style={{
-                    transform: isHeroRevealed ? `translate3d(${mouseOffset.x * 12}px, ${mouseOffset.y * 10}px, 0)` : undefined,
+                    transform: isHeroRevealed ? "translate3d(calc(var(--mx, 0) * 12px), calc(var(--my, 0) * 10px), 0)" : undefined,
                   }}
                 >
                   <DraggableWrapper id="hero-cta-button" label="Hero CTA Button">

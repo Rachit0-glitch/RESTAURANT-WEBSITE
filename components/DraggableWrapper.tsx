@@ -47,16 +47,20 @@ export default function DraggableWrapper({
   }>({ startX: 0, startY: 0, initialX: 0, initialY: 0, initialScale: 1 });
 
   // Handle Dragging
+  // Handle Dragging
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isEditorActive || disableDrag) return;
     if ((e.target as HTMLElement).closest(".on-element-toolbar, .resize-handle")) return;
 
+    e.preventDefault();
     e.stopPropagation();
     setSelectedElementId(id);
     setIsDragging(true);
 
     const target = e.currentTarget;
-    target.setPointerCapture(e.pointerId);
+    try {
+      target.setPointerCapture(e.pointerId);
+    } catch {}
 
     dragStartRef.current = {
       startX: e.clientX,
@@ -68,28 +72,57 @@ export default function DraggableWrapper({
   };
 
   const getParentScale = (): number => {
-    let curr = wrapperRef.current?.parentElement;
-    while (curr) {
-      const transform = window.getComputedStyle(curr).transform;
-      if (transform && transform !== "none") {
-        const match = transform.match(/^matrix\((.+)\)$/);
-        if (match) {
-          const values = match[1].split(", ");
-          const a = parseFloat(values[0]);
-          const b = parseFloat(values[1]);
-          const s = Math.sqrt(a * a + b * b);
-          if (s > 0) return s;
+    if (wrapperRef.current) {
+      // 1. Check if wrapper has a measurable client rect vs design stage
+      const stage = wrapperRef.current.closest("[data-stage-width]") as HTMLElement | null;
+      if (stage) {
+        const stageDesignWidth = parseFloat(stage.dataset.stageWidth || "1920");
+        const stageRect = stage.getBoundingClientRect();
+        if (stageRect.width > 0 && stageDesignWidth > 0) {
+          const ratio = stageRect.width / stageDesignWidth;
+          if (ratio > 0.05 && ratio < 20) {
+            return ratio;
+          }
         }
       }
-      curr = curr.parentElement;
+
+      // 2. Computed matrix / matrix3d walk up the DOM
+      let curr = wrapperRef.current.parentElement;
+      while (curr) {
+        const style = window.getComputedStyle(curr);
+        const transform = style.transform;
+        if (transform && transform !== "none") {
+          const match2d = transform.match(/^matrix\((.+)\)$/);
+          if (match2d) {
+            const values = match2d[1].split(", ");
+            const a = parseFloat(values[0]);
+            const b = parseFloat(values[1]);
+            const s = Math.sqrt(a * a + b * b);
+            if (s > 0) return s;
+          }
+          const match3d = transform.match(/^matrix3d\((.+)\)$/);
+          if (match3d) {
+            const values = match3d[1].split(", ");
+            const a = parseFloat(values[0]);
+            const b = parseFloat(values[1]);
+            const c = parseFloat(values[2]);
+            const s = Math.sqrt(a * a + b * b + c * c);
+            if (s > 0) return s;
+          }
+        }
+        curr = curr.parentElement;
+      }
     }
     return 1;
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const parentScale = getParentScale();
+    if (!isDragging && !isResizing) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const parentScale = getParentScale() || 1;
+
     if (isDragging) {
-      e.stopPropagation();
       const dx = (e.clientX - dragStartRef.current.startX) / parentScale;
       const dy = (e.clientY - dragStartRef.current.startY) / parentScale;
       updateTransform(id, {
@@ -97,7 +130,6 @@ export default function DraggableWrapper({
         y: Math.round(dragStartRef.current.initialY + dy),
       }, false);
     } else if (isResizing) {
-      e.stopPropagation();
       const dy = (e.clientY - dragStartRef.current.startY) / parentScale;
       const dx = (e.clientX - dragStartRef.current.startX) / parentScale;
       
@@ -111,9 +143,11 @@ export default function DraggableWrapper({
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    const parentScale = getParentScale();
+    if (!isDragging && !isResizing) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const parentScale = getParentScale() || 1;
     if (isDragging) {
-      e.stopPropagation();
       setIsDragging(false);
       try {
         e.currentTarget.releasePointerCapture(e.pointerId);
@@ -129,16 +163,18 @@ export default function DraggableWrapper({
       }
     }
     if (isResizing) {
-      e.stopPropagation();
       setIsResizing(null);
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch (err) {}
       updateTransform(id, { scale: transform.scale }, true);
     }
   };
 
-  // Direct Wheel-to-Resize feature when hovering in edit mode
+  // Direct Wheel-to-Resize only when Alt key is explicitly held
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     if (!isEditorActive || disableDrag) return;
-    if (e.ctrlKey || e.altKey || isSelected) {
+    if (e.altKey) {
       e.preventDefault();
       e.stopPropagation();
       const delta = e.deltaY < 0 ? 0.05 : -0.05;
@@ -149,6 +185,7 @@ export default function DraggableWrapper({
 
   // Corner Resize
   const handleResizeStart = (e: React.PointerEvent, handleType: string) => {
+    e.preventDefault();
     e.stopPropagation();
     setIsResizing(handleType);
     dragStartRef.current = {
@@ -179,7 +216,7 @@ export default function DraggableWrapper({
     zIndex: transform.zIndex !== undefined ? transform.zIndex : style.zIndex,
     filter: filterStyle ? `${style.filter || ""} ${filterStyle}`.trim() : style.filter,
     fontSize: transform.fontSizeScale && transform.fontSizeScale !== 1 ? `calc(1em * ${transform.fontSizeScale})` : style.fontSize,
-    transition: isDragging || isResizing || isEditorActive ? "none !important" : undefined,
+    transition: isDragging || isResizing || isEditorActive ? "none" : undefined,
     cursor: isEditorActive ? (isDragging ? "grabbing" : "grab") : undefined,
     userSelect: isEditorActive ? "none" : undefined,
     touchAction: isEditorActive ? "none" : undefined,
@@ -189,7 +226,7 @@ export default function DraggableWrapper({
     <div
       ref={wrapperRef}
       data-layout-id={id}
-      className={`relative inline-block transition-transform duration-75 ${className} ${
+      className={`relative inline-block ${!isEditorActive ? "transition-transform duration-75" : ""} ${className} ${
         isEditorActive
           ? isSelected
             ? "ring-2 ring-[#e16b5c] ring-offset-1 ring-offset-black/40 shadow-2xl z-50"
@@ -208,10 +245,10 @@ export default function DraggableWrapper({
         }
       }}
     >
-      {/* Tight On-Element Control Bar attached right to top border */}
-      {isEditorActive && (
+      {/* Tight On-Element Control Bar attached right to top border (Hidden during active drag/resize to prevent flicker) */}
+      {!isDragging && !isResizing && isEditorActive && (
         <div
-          className={`on-element-toolbar absolute -top-5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-sans whitespace-nowrap z-[120] transition-all flex items-center gap-1 shadow-lg backdrop-blur-md ${
+          className={`on-element-toolbar absolute -top-5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-sans whitespace-nowrap z-[120] transition-all flex items-center gap-1 shadow-lg backdrop-blur-md pointer-events-auto ${
             isSelected
               ? "bg-[#18181b]/95 text-white border border-[#e16b5c] shadow-red-500/20"
               : "bg-black/80 text-amber-300 opacity-60 hover:opacity-100 border border-white/10"

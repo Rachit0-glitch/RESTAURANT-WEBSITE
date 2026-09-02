@@ -59,26 +59,44 @@ export const DEFAULT_TRANSFORM: ElementTransform = {
 
 const DEFAULT_STORE: FullLayoutStore = {
   desktop: {
-    "hero-sushi-platter": { x: -93, y: -279, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-title": { x: -173, y: -108, scale: 1.2, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-cta-button": { x: -48, y: -141, scale: 1.25, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-sushi-platter": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 4 },
+    "hero-cta-button": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
+    "hero-top-ribbon": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-seal-stamp": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
     "dishes-okonomiyaki-dish": { x: 45, y: 26, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
     "dishes-bottom-black-band": { x: -139, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
     "dishes-yakitori-dish": { x: -31, y: -26, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-top-card": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
   },
   tablet: {
     "hero-title": { x: -600, y: -572, scale: 1.55, rotate: 0, opacity: 1, zIndex: 6 },
     "hero-sushi-platter": { x: -658, y: -679, scale: 1.6, rotate: 0, opacity: 1, zIndex: 10 },
     "hero-cta-button": { x: 985, y: -1291, scale: 2.85, rotate: 0, opacity: 1, zIndex: 12 },
     "hero-top-ribbon": { x: -10, y: 18, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-top-black-band": { x: -487, y: -600, scale: 1.95, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-ramen-dish": { x: 84, y: -461, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-udon-dish": { x: -1374, y: -377, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-bottom-black-band": { x: 242, y: -48, scale: 2, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-platter-dish": { x: 521, y: -461, scale: 1.45, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-tempura-dish": { x: 665, y: -313, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-top-card": { x: -496, y: -519, scale: 1.68, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-bottom-card": { x: 717, y: 48, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-bg": { x: 316, y: 265, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-yakitori-dish": { x: 173, y: 62, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-okonomiyaki-dish": { x: -60, y: 85, scale: 1.62, rotate: 0, opacity: 1, zIndex: 10 },
   },
   mobile: {
-    "hero-top-ribbon": { x: 0, y: -235, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-seal-stamp": { x: 128, y: -205, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-title": { x: 0, y: -150, scale: 0.65, rotate: 0, opacity: 1, fontSizeScale: 0.95, zIndex: 6 },
-    "hero-sushi-platter": { x: 0, y: -15, scale: 0.65, rotate: 0, opacity: 1, zIndex: 10 },
-    "hero-cta-button": { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1, zIndex: 12 },
-    "zen-audio-player": { x: -105, y: 355, scale: 0.9, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-top-ribbon": { x: 0, y: -380, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-seal-stamp": { x: 140, y: -260, scale: 0.8, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-title": { x: 0, y: -160, scale: 0.7, rotate: 0, opacity: 1, fontSizeScale: 0.95, zIndex: 6 },
+    "hero-sushi-platter": { x: 0, y: 110, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
+    "hero-cta-button": { x: 0, y: 380, scale: 0.95, rotate: 0, opacity: 1, zIndex: 12 },
+    "zen-audio-player": { x: 0, y: 440, scale: 0.85, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-top-black-band": { x: -204, y: -718, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-udon-dish": { x: -374, y: 455, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-tempura-dish": { x: 1232, y: 514, scale: 1, rotate: 0, opacity: 1, zIndex: 10 },
+    "dishes-bottom-black-band": { x: 0, y: 0, scale: 0.95, rotate: 0, opacity: 1, zIndex: 10 },
   },
 };
 
@@ -160,7 +178,9 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Persist to localStorage and sync across frames
+  const instanceIdRef = useRef<string>(typeof Math !== "undefined" ? Math.random().toString(36) : "main");
+
+  // Persist to localStorage and sync across frames & iframes
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY && e.newValue) {
@@ -173,14 +193,36 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
         setIsEditorActive(e.newValue === "true");
       }
     };
+
+    const handleMessage = (e: MessageEvent) => {
+      // Ignore messages originating from the same window or self-instance to stop ping-pong loops
+      if (!e.data || e.source === window || e.data.senderId === instanceIdRef.current) return;
+      if (e.data.type === "SAKURA_LAYOUT_SYNC") {
+        if (e.data.layouts) setLayouts(e.data.layouts);
+        if (e.data.isEditorActive !== undefined) setIsEditorActive(e.data.isEditorActive);
+      }
+    };
+
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("message", handleMessage);
+    };
   }, []);
 
   const setIsEditorActiveWithSync = useCallback((active: boolean) => {
     setIsEditorActive(active);
     try {
       localStorage.setItem("sakura_layout_editor_mode_active", active ? "true" : "false");
+      const message = { type: "SAKURA_LAYOUT_SYNC", isEditorActive: active, senderId: instanceIdRef.current };
+      const iframes = document.querySelectorAll("iframe");
+      iframes.forEach((iframe) => {
+        iframe.contentWindow?.postMessage(message, "*");
+      });
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(message, "*");
+      }
     } catch {}
   }, []);
 
@@ -190,15 +232,26 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
     }
   }, [isEditorActive]);
 
-  // Persist to localStorage
+  // Persist to localStorage and broadcast to iframes (debounced for buttery 60fps dragging)
   useEffect(() => {
-    if (isHydrated) {
+    if (!isHydrated) return;
+    const timer = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(layouts));
+        const message = { type: "SAKURA_LAYOUT_SYNC", layouts, senderId: instanceIdRef.current };
+        const iframes = document.querySelectorAll("iframe");
+        iframes.forEach((iframe) => {
+          iframe.contentWindow?.postMessage(message, "*");
+        });
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(message, "*");
+        }
       } catch (e) {
         console.warn("Failed to save layout to localStorage:", e);
       }
-    }
+    }, 80);
+
+    return () => clearTimeout(timer);
   }, [layouts, isHydrated]);
 
   const undo = useCallback(() => {
@@ -253,7 +306,17 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
   const getTransform = useCallback(
     (elementId: string): ElementTransform => {
       const deviceLayout = layouts[activeDevice] || {};
-      const elTransform = deviceLayout[elementId];
+      
+      let lookupId = elementId;
+      if (activeDevice !== "desktop") {
+        if ((elementId === "dishes-udon-dish" || elementId === "dishes-yakitori-dish") && !deviceLayout[elementId]) {
+          lookupId = "dishes-ramen-dish";
+        } else if ((elementId === "dishes-tempura-dish" || elementId === "dishes-okonomiyaki-dish") && !deviceLayout[elementId]) {
+          lookupId = "dishes-platter-dish";
+        }
+      }
+
+      const elTransform = deviceLayout[lookupId];
       if (!elTransform) {
         return DEFAULT_TRANSFORM;
       }
@@ -285,12 +348,25 @@ export function LayoutEditorProvider({ children }: { children: React.ReactNode }
           if (partial.y !== undefined) updated.y = Math.round(updated.y / gridSize) * gridSize;
         }
 
+        const newDeviceLayout: Record<string, ElementTransform> = {
+          ...currentDeviceLayout,
+          [elementId]: updated,
+        };
+
+        // On tablet and mobile: automatically synchronize all top dishes with the top slot
+        if (activeDevice !== "desktop" && elementId === "dishes-ramen-dish") {
+          newDeviceLayout["dishes-udon-dish"] = { ...updated };
+          newDeviceLayout["dishes-yakitori-dish"] = { ...updated };
+        }
+        // On tablet and mobile: automatically synchronize all bottom dishes with the bottom slot
+        if (activeDevice !== "desktop" && elementId === "dishes-platter-dish") {
+          newDeviceLayout["dishes-tempura-dish"] = { ...updated };
+          newDeviceLayout["dishes-okonomiyaki-dish"] = { ...updated };
+        }
+
         return {
           ...prev,
-          [activeDevice]: {
-            ...currentDeviceLayout,
-            [elementId]: updated,
-          },
+          [activeDevice]: newDeviceLayout,
         };
       });
     },

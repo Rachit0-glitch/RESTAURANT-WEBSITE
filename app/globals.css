@@ -150,8 +150,11 @@ button.absolute:focus-visible {
 body.sakura-editor-active .sakura-dish-swap,
 body.sakura-editor-active .sakura-dishes-band,
 body.sakura-editor-active .sakura-hero-title,
-body.sakura-editor-active [data-layout-id] {
+body.sakura-editor-active [data-layout-id],
+body.sakura-editor-active [data-layout-id] *,
+body.sakura-editor-active .sakura-dish-swap > img {
   transition: none !important;
+  animation: none !important;
   animation-play-state: paused !important;
 }
 
@@ -387,17 +390,69 @@ body.sakura-editor-active [data-layout-id] {
   backface-visibility: hidden !important;
 }
 
+@keyframes hero-sushi-speed-ramp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 48px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hero-sushi-shimmer {
+  0%, 100% {
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.06));
+  }
+  50% {
+    filter: drop-shadow(0 25px 50px rgba(230, 0, 18, 0.15));
+  }
+}
+
+@keyframes hero-platter-reveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 52px, 0) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hero-platter-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+.hero-animate-platter {
+  animation:
+    hero-platter-reveal 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both,
+    hero-platter-float 6s ease-in-out 1.1s infinite;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  z-index: 10;
+}
+
 .hero-animate-title {
-  animation: hero-title-crisp-reveal 0.95s cubic-bezier(0.08, 0.98, 0.2, 1) 0.25s both !important;
-  will-change: transform, opacity !important;
-  filter: none !important;
+  animation:
+    hero-sushi-speed-ramp 0.9s cubic-bezier(0.08, 0.98, 0.2, 1) 0.22s both;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   z-index: 4;
 }
 
-@keyframes hero-title-crisp-reveal {
+@keyframes hero-tagline-reveal {
   0% {
     opacity: 0;
-    transform: translate3d(0, 20px, 0);
+    transform: translate3d(0, 32px, 0);
   }
   100% {
     opacity: 1;
@@ -406,8 +461,10 @@ body.sakura-editor-active [data-layout-id] {
 }
 
 .hero-animate-tagline {
-  animation: hero-tagline-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+  animation: hero-tagline-reveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
   will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .hero-floating-1 {
@@ -573,18 +630,6 @@ body.sakura-editor-active [data-layout-id] {
     background-repeat: no-repeat !important;
     background-size: cover !important;
   }
-  [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(-93px, -279px, 0) scale(1.25) rotate(0deg);
-    z-index: 10;
-  }
-  [data-layout-id="hero-title"] {
-    transform: translate3d(-173px, -108px, 0) scale(1.2) rotate(0deg);
-    z-index: 10;
-  }
-  [data-layout-id="hero-cta-button"] {
-    transform: translate3d(-48px, -141px, 0) scale(1.25) rotate(0deg);
-    z-index: 10;
-  }
   [data-layout-id="dishes-okonomiyaki-dish"] {
     transform: translate3d(45px, 26px, 0) scale(1) rotate(0deg);
     z-index: 10;
@@ -655,31 +700,33 @@ body.sakura-editor-active [data-layout-id] {
     text-align: left !important;
   }
   [data-layout-id="hero-top-ribbon"] {
-    transform: translate3d(0px, -235px, 0) scale(0.95) rotate(0deg);
+    transform: translate3d(0px, -380px, 0) scale(0.85) rotate(0deg);
     z-index: 10;
     display: block !important;
   }
   [data-layout-id="hero-seal-stamp"] {
-    transform: translate3d(128px, -205px, 0) scale(0.85) rotate(0deg);
+    transform: translate3d(140px, -260px, 0) scale(0.8) rotate(0deg);
     z-index: 10;
     display: block !important;
   }
   [data-layout-id="hero-title"] {
-    transform: translate3d(0px, -150px, 0) scale(0.65) rotate(0deg);
+    transform: translate3d(0px, -160px, 0) scale(0.7) rotate(0deg);
     font-size: calc(1em * 0.95);
     z-index: 6;
     display: block !important;
   }
   [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(0px, -15px, 0) scale(0.65) rotate(0deg);
+    transform: translate3d(0px, 110px, 0) scale(0.85) rotate(0deg);
     z-index: 10;
     display: block !important;
   }
   [data-layout-id="hero-cta-button"] {
+    transform: translate3d(0px, 380px, 0) scale(0.95) rotate(0deg);
     z-index: 12;
+    display: block !important;
   }
   [data-layout-id="zen-audio-player"] {
-    transform: translate3d(-105px, 355px, 0) scale(0.9) rotate(0deg);
+    transform: translate3d(0px, 440px, 0) scale(0.85) rotate(0deg);
     z-index: 10;
     display: block !important;
   }
@@ -719,18 +766,19 @@ body.sakura-editor-active [data-layout-id] {
   background-repeat: no-repeat !important;
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (max-width: 768px) {
   #dishes-1.sakura-section {
     background-size: cover !important;
     background-position: center center !important;
   }
 }
 
-@media (max-width: 768px) {
-  #dishes-1.sakura-section {
-    background-size: cover !important;
-    background-position: center center !important;
-  }
+[data-layout-id="dishes-top-black-band"],
+[data-layout-id="dishes-bottom-black-band"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 5 !important;
 }
 
 
