@@ -10,6 +10,9 @@ import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
 import SakuraDishesEffects from "./SakuraDishesEffects";
 import SakuraTransitionBanner from "./SakuraTransitionBanner";
 import SakuraZenAudio from "./SakuraZenAudio";
+import { MobileLayoutProvider } from "../context/MobileLayoutEditorContext";
+import MobileLayoutStudioHUD from "./MobileLayoutStudioHUD";
+import MobileDraggableWrapper from "./MobileDraggableWrapper";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
 type TextLayer = { x: number; y: number; w: number; h: number; r: number; runs: TextRun[]; style: CSSProperties & { fontSize?: number; lineHeight?: number } };
@@ -2273,44 +2276,55 @@ function DesignStage({
                   const displayLayer = getDisplayImageLayer(section, layer, index);
                   const movableLayer = dishKey ? { ...displayLayer, x: dishPositions[dishKey].x, y: dishPositions[dishKey].y } : displayLayer;
                   const route = dishKey === "ramen" ? "top" : "bottom";
+                  const dragId = dishKey === "ramen" ? "dishes-ramen-dish" : "dishes-platter-dish";
+                  const dragLabel = dishKey === "ramen" ? "Tonkotsu Ramen" : "Sushi Platter";
 
                   return (
-                    <ImageLayerView
-                      key={`dishes-img-${index}`}
-                      layer={movableLayer}
-                      index={index}
-                      className={dishKey ? `sakura-dish-swap sakura-dish-top ${route === "bottom" ? "sakura-dish-bottom" : ""} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
-                    />
+                    <MobileDraggableWrapper key={`dishes-img-${index}`} id={dragId} label={dragLabel}>
+                      <ImageLayerView
+                        layer={movableLayer}
+                        index={index}
+                        className={dishKey ? `sakura-dish-swap sakura-dish-top ${route === "bottom" ? "sakura-dish-bottom" : ""} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
+                      />
+                    </MobileDraggableWrapper>
                   );
                 })}
-              <ImageLayerView
-                layer={udonLayer}
-                index={90}
-                className={`sakura-dish-swap sakura-dish-top ${showSecondDishes ? "is-home" : "is-away"}`}
-              />
-              <ImageLayerView
-                layer={tempuraLayer}
-                index={91}
-                className={`sakura-dish-swap sakura-dish-bottom ${showSecondDishes ? "is-home" : "is-away"}`}
-              />
-              <ImageLayerView
-                layer={yakitoriLayer}
-                index={92}
-                className={`sakura-dish-swap sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
-                style={showThirdDishes ? {
-                  transform: "translate3d(calc(var(--mx, 0) * 32px), calc(var(--my, 0) * 24px), 0)",
-                  willChange: "transform",
-                } : undefined}
-              />
-              <ImageLayerView
-                layer={okonomiyakiLayer}
-                index={93}
-                className={`sakura-dish-swap sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
-                style={showThirdDishes ? {
-                  transform: "translate3d(calc(var(--mx, 0) * -24px), calc(var(--my, 0) * -18px), 0)",
-                  willChange: "transform",
-                } : undefined}
-              />
+              <MobileDraggableWrapper id="dishes-udon-dish" label="Udon Bowl">
+                <ImageLayerView
+                  layer={udonLayer}
+                  index={90}
+                  className={`sakura-dish-swap sakura-dish-top ${showSecondDishes ? "is-home" : "is-away"}`}
+                />
+              </MobileDraggableWrapper>
+              <MobileDraggableWrapper id="dishes-tempura-dish" label="Tempura Plate">
+                <ImageLayerView
+                  layer={tempuraLayer}
+                  index={91}
+                  className={`sakura-dish-swap sakura-dish-bottom ${showSecondDishes ? "is-home" : "is-away"}`}
+                />
+              </MobileDraggableWrapper>
+              <MobileDraggableWrapper id="dishes-yakitori-dish" label="Yakitori Skewers">
+                <ImageLayerView
+                  layer={yakitoriLayer}
+                  index={92}
+                  className={`sakura-dish-swap sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
+                  style={showThirdDishes ? {
+                    transform: "translate3d(calc(var(--mx, 0) * 32px), calc(var(--my, 0) * 24px), 0)",
+                    willChange: "transform",
+                  } : undefined}
+                />
+              </MobileDraggableWrapper>
+              <MobileDraggableWrapper id="dishes-okonomiyaki-dish" label="Okonomiyaki Dish">
+                <ImageLayerView
+                  layer={okonomiyakiLayer}
+                  index={93}
+                  className={`sakura-dish-swap sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
+                  style={showThirdDishes ? {
+                    transform: "translate3d(calc(var(--mx, 0) * -24px), calc(var(--my, 0) * -18px), 0)",
+                    willChange: "transform",
+                  } : undefined}
+                />
+              </MobileDraggableWrapper>
               {foregroundTexts
                 .filter((layer) => layerText(layer) === "TopDishes")
                 .map((layer, index) => {
@@ -2324,29 +2338,33 @@ function DesignStage({
                     />
                   );
                 })}
-              <div className="sakura-dishes-top-card-wrap">
-                <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.first.top.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
-                <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.first.top.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
-                <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.first.top.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
-                <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.second.top.number]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.second.top.title]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.second.top.description} visible={showSecondDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.third.top.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.third.top.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.third.top.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
-              </div>
+              <MobileDraggableWrapper id="dishes-top-card" label="Top Dish Info">
+                <div className="sakura-dishes-top-card-wrap">
+                  <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.first.top.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+                  <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.first.top.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+                  <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.first.top.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
+                  <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.second.top.number]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.second.top.title]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.second.top.description} visible={showSecondDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.third.top.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.third.top.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.third.top.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+                </div>
+              </MobileDraggableWrapper>
 
-              <div className="sakura-dishes-bottom-card-wrap">
-                <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.first.bottom.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
-                <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.first.bottom.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
-                <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.first.bottom.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
-                <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.second.bottom.number]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.second.bottom.title]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.second.bottom.description} visible={showSecondDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.third.bottom.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.third.bottom.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
-                <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.third.bottom.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
-              </div>
+              <MobileDraggableWrapper id="dishes-bottom-card" label="Bottom Dish Info">
+                <div className="sakura-dishes-bottom-card-wrap">
+                  <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.first.bottom.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+                  <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.first.bottom.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
+                  <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.first.bottom.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
+                  <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.second.bottom.number]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.second.bottom.title]} visible={showSecondDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.second.bottom.description} visible={showSecondDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.third.bottom.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.third.bottom.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
+                  <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.third.bottom.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
+                </div>
+              </MobileDraggableWrapper>
 
               <SakuraDishesEffects
                 page={dishesPage}
@@ -2391,12 +2409,14 @@ function DesignStage({
                   key={`hero-title-wrap-${index}`}
                   className="absolute inset-0 pointer-events-none"
                 >
-                  <TextLayerView
-                    key={`hero-title-${index}`}
-                    layer={getDisplayTextLayer(section, layer)}
-                    index={index}
-                    className={`sakura-hero-title ${isHeroRevealed ? "hero-animate-title" : "opacity-0"}`}
-                  />
+                  <MobileDraggableWrapper id="hero-title" label="SAKURA Title" className="pointer-events-auto">
+                    <TextLayerView
+                      key={`hero-title-${index}`}
+                      layer={getDisplayTextLayer(section, layer)}
+                      index={index}
+                      className={`sakura-hero-title ${isHeroRevealed ? "hero-animate-title" : "opacity-0"}`}
+                    />
+                  </MobileDraggableWrapper>
                 </div>
               ))}
               {overlayImages.map((layer, index) => {
@@ -2437,6 +2457,19 @@ function DesignStage({
                   }
                 }
 
+                if (isPlatter) {
+                  return (
+                    <MobileDraggableWrapper key={`overlay-img-${index}`} id="hero-sushi-platter" label="Hero Sushi Platter">
+                      <ImageLayerView
+                        layer={getDisplayImageLayer(section, layer, index + baseImages.length)}
+                        index={index + baseImages.length}
+                        className={animationClass}
+                        style={parallaxStyle}
+                      />
+                    </MobileDraggableWrapper>
+                  );
+                }
+
                 return (
                   <ImageLayerView
                     key={`overlay-img-${index}`}
@@ -2461,13 +2494,15 @@ function DesignStage({
                     transform: isHeroRevealed ? "translate3d(calc(var(--mx, 0) * 12px), calc(var(--my, 0) * 10px), 0)" : undefined,
                   }}
                 >
-                  <HeroTaglineCTA
-                    onExploreMenu={() => {
-                      setActiveNav("dishes-1");
-                      setDishesPage("first");
-                      scrollToSection("dishes-1");
-                    }}
-                  />
+                  <MobileDraggableWrapper id="hero-cta-button" label="Explore Menu CTA Card">
+                    <HeroTaglineCTA
+                      onExploreMenu={() => {
+                        setActiveNav("dishes-1");
+                        setDishesPage("first");
+                        scrollToSection("dishes-1");
+                      }}
+                    />
+                  </MobileDraggableWrapper>
                 </div>
               )}
             </>
@@ -2570,34 +2605,37 @@ export default function SakuraExperience() {
   }, [dishesPage]);
 
   return (
-    <main className="w-full bg-[#f1dfcf]">
-      {!isDisclaimerAccepted && (
-        <AevumDisclaimerGate onAccept={handleDisclaimerAccept} />
-      )}
-      {isLoadingActive && (
-        <AevumLoadingScreen onComplete={handleLoadingComplete} />
-      )}
-      <SakuraNavbar
-        activeNav={activeNav}
-        setActiveNav={setActiveNav}
-        dishesPage={dishesPage}
-        setDishesPage={setDishesPage}
-      />
-      {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
-        <div key={section.id} id={section.id}>
-          <DesignStage
-            section={section}
-            activeNav={activeNav}
-            setActiveNav={setActiveNav}
-            dishesPage={dishesPage}
-            setDishesPage={setDishesPage}
-            isHeroRevealed={isHeroRevealed}
-          />
-        </div>
-      ))}
-      <SakuraZenAudio />
-      <AevumAgencyFooter />
-    </main>
+    <MobileLayoutProvider>
+      <main className="w-full bg-[#f1dfcf]">
+        {!isDisclaimerAccepted && (
+          <AevumDisclaimerGate onAccept={handleDisclaimerAccept} />
+        )}
+        {isLoadingActive && (
+          <AevumLoadingScreen onComplete={handleLoadingComplete} />
+        )}
+        <SakuraNavbar
+          activeNav={activeNav}
+          setActiveNav={setActiveNav}
+          dishesPage={dishesPage}
+          setDishesPage={setDishesPage}
+        />
+        {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
+          <div key={section.id} id={section.id}>
+            <DesignStage
+              section={section}
+              activeNav={activeNav}
+              setActiveNav={setActiveNav}
+              dishesPage={dishesPage}
+              setDishesPage={setDishesPage}
+              isHeroRevealed={isHeroRevealed}
+            />
+          </div>
+        ))}
+        <SakuraZenAudio />
+        <AevumAgencyFooter />
+      </main>
+      <MobileLayoutStudioHUD />
+    </MobileLayoutProvider>
   );
 }
 

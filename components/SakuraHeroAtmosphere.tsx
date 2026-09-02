@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import MobileDraggableWrapper from "./MobileDraggableWrapper";
 
 interface Petal {
   id: number;
@@ -237,23 +238,31 @@ export default function SakuraHeroAtmosphere({
       />
 
       {/* 3. Japanese Top Ribbon Banner: 最高の寿司盛り合わせ */}
-      <div className="absolute top-[76px] sm:top-[84px] md:top-[90px] left-1/2 -translate-x-1/2 z-20 pointer-events-auto select-none">
+      <MobileDraggableWrapper
+        id="hero-top-ribbon"
+        label="Japanese Ribbon Banner"
+        className="absolute top-[76px] sm:top-[84px] md:top-[90px] left-1/2 -translate-x-1/2 z-20 pointer-events-auto select-none"
+      >
         <div className="bg-white/95 backdrop-blur-sm border border-black/10 px-4 sm:px-6 py-1 sm:py-1.5 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.08)] flex items-center justify-center gap-1 font-bold text-xs sm:text-sm md:text-base tracking-wider text-black">
           <span>最高の</span>
           <span className="text-[#e60012]">寿司</span>
           <span>盛り合わせ</span>
         </div>
-      </div>
+      </MobileDraggableWrapper>
 
       {/* 4. Traditional Japanese Seal Stamp */}
-      <div className="absolute top-20 sm:top-24 md:top-28 right-4 sm:right-8 md:right-14 z-20 flex flex-col items-center gap-1.5 opacity-90 hover:opacity-100 transition-opacity duration-300 pointer-events-auto select-none">
+      <MobileDraggableWrapper
+        id="hero-seal-stamp"
+        label="Japanese Seal Stamp"
+        className="absolute top-20 sm:top-24 md:top-28 right-4 sm:right-8 md:right-14 z-20 flex flex-col items-center gap-1.5 opacity-90 hover:opacity-100 transition-opacity duration-300 pointer-events-auto select-none"
+      >
         <div className="w-8 sm:w-9 md:w-10 h-22 sm:h-26 md:h-28 border-2 border-red-700/60 rounded bg-red-950/15 backdrop-blur-md flex flex-col items-center justify-center py-2 px-1 text-[11px] sm:text-[12px] md:text-[13px] font-serif font-black text-red-700 tracking-[0.35em] uppercase [writing-mode:vertical-rl] shadow-[0_8px_20px_rgba(230,0,18,0.18)] hover:scale-105 transition-transform">
           極上 鮨処
         </div>
         <span className="text-[8px] sm:text-[9px] font-mono font-bold text-neutral-600 uppercase tracking-widest">
           Est. 1988
         </span>
-      </div>
+      </MobileDraggableWrapper>
     </div>
   );
 }

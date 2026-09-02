@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import MobileDraggableWrapper from "./MobileDraggableWrapper";
 
 export default function SakuraZenAudio() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -101,7 +102,7 @@ export default function SakuraZenAudio() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 pointer-events-auto select-none">
+    <MobileDraggableWrapper id="zen-audio-player" label="Zen Audio Pill" className="fixed bottom-6 left-6 z-50 pointer-events-auto select-none">
       <button
         type="button"
         onClick={toggleAudio}
@@ -129,6 +130,6 @@ export default function SakuraZenAudio() {
           {isPlaying ? "Zen Ambience: ON" : "Sound: OFF"}
         </span>
       </button>
-    </div>
+    </MobileDraggableWrapper>
   );
 }
