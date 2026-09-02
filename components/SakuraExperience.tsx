@@ -1988,24 +1988,26 @@ function DesignStage({
 
   useLayoutEffect(() => {
     const updateScale = () => {
-      let vw = window.innerWidth;
-      let vh = window.innerHeight;
-      if (activeDevice === "tablet") {
-        vw = 820;
-        vh = 1100;
-      } else if (activeDevice === "mobile") {
-        vw = 390;
-        vh = 844;
+      let vw = typeof window !== "undefined" ? window.innerWidth : 1440;
+      let vh = typeof window !== "undefined" ? window.innerHeight : 900;
+      if (isEditorActive) {
+        if (activeDevice === "tablet") {
+          vw = 820;
+          vh = 1100;
+        } else if (activeDevice === "mobile") {
+          vw = 390;
+          vh = 844;
+        }
       }
 
       const scaleX = vw / stageSize.width;
       const scaleY = vh / stageSize.height;
-      const aspect = vw / vh;
+      const aspect = vw / Math.max(1, vh);
       if (section.id === "dishes-1") {
-        if (vw <= 768) {
+        if (vw <= 768 || activeDevice === "mobile") {
           // Mobile dishes scaled down
           setScale(Math.min(scaleX, scaleY) * 0.95);
-        } else if (vw <= 1024) {
+        } else if (vw <= 1024 || activeDevice === "tablet") {
           // Tablet dishes scaled down
           setScale(Math.min(scaleX, scaleY) * 0.85);
         } else {
@@ -2013,10 +2015,10 @@ function DesignStage({
           setScale(Math.min(scaleX, scaleY) * 0.96);
         }
       } else {
-        if (vw <= 768) {
+        if (vw <= 768 || (isEditorActive && activeDevice === "mobile")) {
           // Mobile portrait hero - fit cleanly within mobile screen width
           setScale(scaleX * 0.96);
-        } else if (vw <= 1024 || aspect < 1.55) {
+        } else if (vw <= 1024 || (isEditorActive && activeDevice === "tablet") || aspect < 1.55) {
           // Tablet hero (exact factor matching user coordinates)
           setScale(Math.min(scaleX, scaleY) * 1.02);
         } else {
@@ -2028,7 +2030,7 @@ function DesignStage({
     updateScale();
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);
-  }, [stageSize.width, stageSize.height, activeDevice]);
+  }, [stageSize.width, stageSize.height, activeDevice, isEditorActive]);
 
   const switchPage = (target: DishesPage) => {
     if (isTransitioningRef.current || dishesPage === target) return;
