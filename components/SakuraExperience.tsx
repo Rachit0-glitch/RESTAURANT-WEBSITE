@@ -2345,7 +2345,7 @@ function DesignStage({
                   index={92}
                   className={`sakura-dish-swap sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
                   style={!isEditorActive && showThirdDishes ? {
-                    transform: `translate3d(${mouseOffset.x * 32}px, ${mouseOffset.y * 24}px, 0)`,
+                    transform: "translate3d(calc(var(--mx, 0) * 32px), calc(var(--my, 0) * 24px), 0)",
                     willChange: "transform",
                   } : undefined}
                 />
@@ -2356,7 +2356,7 @@ function DesignStage({
                   index={93}
                   className={`sakura-dish-swap sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
                   style={!isEditorActive && showThirdDishes ? {
-                    transform: `translate3d(${mouseOffset.x * -24}px, ${mouseOffset.y * -18}px, 0)`,
+                    transform: "translate3d(calc(var(--mx, 0) * -24px), calc(var(--my, 0) * -18px), 0)",
                     willChange: "transform",
                   } : undefined}
                 />
