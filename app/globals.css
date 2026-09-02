@@ -621,30 +621,18 @@ body.sakura-editor-active .sakura-dish-swap > img {
 }
 
 /* ==========================================================================
-   Generated Sakura Custom Layout CSS
+   Sakura Responsive Device Breakpoints
    ========================================================================== */
-@media (min-width: 1025px), [data-device="desktop"] {
+@media (min-width: 1025px) {
   #home.sakura-section {
     background-image: url('/sakura-assets/_assets/media/ba78b4a30520331745a674cd7d48884f.png') !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
     background-size: cover !important;
   }
-  [data-layout-id="dishes-okonomiyaki-dish"] {
-    transform: translate3d(45px, 26px, 0) scale(1) rotate(0deg);
-    z-index: 10;
-  }
-  [data-layout-id="dishes-bottom-black-band"] {
-    transform: translate3d(-139px, 18px, 0) scale(1) rotate(0deg);
-    z-index: 10;
-  }
-  [data-layout-id="dishes-yakitori-dish"] {
-    transform: translate3d(-31px, -26px, 0) scale(1) rotate(0deg);
-    z-index: 10;
-  }
 }
 
-@media (min-width: 769px) and (max-width: 1024px), [data-device="tablet"] {
+@media (min-width: 769px) and (max-width: 1024px) {
   #home.sakura-section {
     background-image: url('/sakura-assets/_assets/media/tab-bg.png') !important;
     background-position: center top !important;
@@ -659,31 +647,9 @@ body.sakura-editor-active .sakura-dish-swap > img {
     transform: translateX(-50%) !important;
     margin-left: 0 !important;
   }
-  [data-layout-id="hero-title"] {
-    transform: translate3d(-600px, -572px, 0) scale(1.55) rotate(0deg);
-    z-index: 6;
-  }
-  [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(-658px, -679px, 0) scale(1.6) rotate(0deg);
-    z-index: 10;
-  }
-  [data-layout-id="hero-cta-button"] {
-    transform: translate3d(985px, -1291px, 0) scale(2.85) rotate(0deg);
-    z-index: 12;
-  }
-  [data-layout-id="hero-top-ribbon"] {
-    transform: translate3d(-10px, 18px, 0) scale(1) rotate(0deg);
-    z-index: 10;
-  }
-  [data-layout-id="hero-floating-salmon"],
-  [data-layout-id="hero-floating-avocado"],
-  [data-layout-id="hero-floating-leaf"],
-  [data-layout-id="hero-floating-ginger"] {
-    display: none !important;
-  }
 }
 
-@media (max-width: 768px), [data-device="mobile"] {
+@media (max-width: 768px) {
   #home.sakura-section {
     background-image: url('/sakura-assets/_assets/media/mobile-bg.png') !important;
     background-position: center top !important;
@@ -698,43 +664,6 @@ body.sakura-editor-active .sakura-dish-swap > img {
     transform: translate(-50%, -50%) !important;
     margin-left: 0 !important;
     text-align: left !important;
-  }
-  [data-layout-id="hero-top-ribbon"] {
-    transform: translate3d(0px, -380px, 0) scale(0.85) rotate(0deg);
-    z-index: 10;
-    display: block !important;
-  }
-  [data-layout-id="hero-seal-stamp"] {
-    transform: translate3d(140px, -260px, 0) scale(0.8) rotate(0deg);
-    z-index: 10;
-    display: block !important;
-  }
-  [data-layout-id="hero-title"] {
-    transform: translate3d(0px, -160px, 0) scale(0.7) rotate(0deg);
-    font-size: calc(1em * 0.95);
-    z-index: 6;
-    display: block !important;
-  }
-  [data-layout-id="hero-sushi-platter"] {
-    transform: translate3d(0px, 110px, 0) scale(0.85) rotate(0deg);
-    z-index: 10;
-    display: block !important;
-  }
-  [data-layout-id="hero-cta-button"] {
-    transform: translate3d(0px, 380px, 0) scale(0.95) rotate(0deg);
-    z-index: 12;
-    display: block !important;
-  }
-  [data-layout-id="zen-audio-player"] {
-    transform: translate3d(0px, 440px, 0) scale(0.85) rotate(0deg);
-    z-index: 10;
-    display: block !important;
-  }
-  [data-layout-id="hero-floating-salmon"],
-  [data-layout-id="hero-floating-avocado"],
-  [data-layout-id="hero-floating-leaf"],
-  [data-layout-id="hero-floating-ginger"] {
-    display: none !important;
   }
 }
 
@@ -773,13 +702,14 @@ body.sakura-editor-active .sakura-dish-swap > img {
   }
 }
 
-[data-layout-id="dishes-top-black-band"],
-[data-layout-id="dishes-bottom-black-band"] {
+.sakura-dishes-band-top,
+.sakura-dishes-band-bottom {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
   z-index: 5 !important;
 }
+
 
 
 

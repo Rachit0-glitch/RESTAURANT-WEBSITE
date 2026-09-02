@@ -10,10 +10,6 @@ import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
 import SakuraDishesEffects from "./SakuraDishesEffects";
 import SakuraTransitionBanner from "./SakuraTransitionBanner";
 import SakuraZenAudio from "./SakuraZenAudio";
-import { LayoutEditorProvider, useLayoutEditor } from "../context/LayoutEditorContext";
-import VisualLayoutStudioHUD from "./VisualLayoutStudioHUD";
-import DeviceFrameWrapper from "./DeviceFrameWrapper";
-import DraggableWrapper from "./DraggableWrapper";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
 type TextLayer = { x: number; y: number; w: number; h: number; r: number; runs: TextRun[]; style: CSSProperties & { fontSize?: number; lineHeight?: number } };
@@ -1929,10 +1925,8 @@ function DesignStage({
   const isTransitioningRef = useRef(false);
   const [scale, setScale] = useState(1);
 
-  const { activeDevice, isEditorActive, selectedElementId } = useLayoutEditor();
-
   useEffect(() => {
-    if (isEditorActive || (section.id !== "home" && section.id !== "dishes-1")) return;
+    if (section.id !== "home" && section.id !== "dishes-1") return;
 
     let rafId: number;
     let targetX = 0;
@@ -1962,18 +1956,7 @@ function DesignStage({
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(rafId);
     };
-  }, [section.id, isEditorActive]);
-
-  useEffect(() => {
-    if (!isEditorActive || !selectedElementId) return;
-    if (selectedElementId === "dishes-ramen-dish" || selectedElementId === "dishes-platter-dish") {
-      setDishesPage("first");
-    } else if (selectedElementId === "dishes-udon-dish" || selectedElementId === "dishes-tempura-dish") {
-      setDishesPage("second");
-    } else if (selectedElementId === "dishes-yakitori-dish" || selectedElementId === "dishes-okonomiyaki-dish") {
-      setDishesPage("third");
-    }
-  }, [selectedElementId, isEditorActive, setDishesPage]);
+  }, [section.id]);
 
   const dishPositions = initialDishesDishPositions;
   const visibleImages = section.id === "home" ? section.images.filter((layer) => !isHeroNavImage(layer)) : section.images;
@@ -1988,41 +1971,26 @@ function DesignStage({
 
   useLayoutEffect(() => {
     const updateScale = () => {
-      let vw = typeof window !== "undefined" ? window.innerWidth : 1440;
-      let vh = typeof window !== "undefined" ? window.innerHeight : 900;
-      if (isEditorActive) {
-        if (activeDevice === "tablet") {
-          vw = 820;
-          vh = 1100;
-        } else if (activeDevice === "mobile") {
-          vw = 390;
-          vh = 844;
-        }
-      }
-
+      const vw = typeof window !== "undefined" ? window.innerWidth : 1440;
+      const vh = typeof window !== "undefined" ? window.innerHeight : 900;
       const scaleX = vw / stageSize.width;
       const scaleY = vh / stageSize.height;
       const aspect = vw / Math.max(1, vh);
+
       if (section.id === "dishes-1") {
-        if (vw <= 768 || activeDevice === "mobile") {
-          // Mobile dishes scaled down
+        if (vw <= 768) {
           setScale(Math.min(scaleX, scaleY) * 0.95);
-        } else if (vw <= 1024 || activeDevice === "tablet") {
-          // Tablet dishes scaled down
+        } else if (vw <= 1024) {
           setScale(Math.min(scaleX, scaleY) * 0.85);
         } else {
-          // Desktop widescreen dishes - fully fit to viewport height so bottom dish/text is never cut
           setScale(Math.min(scaleX, scaleY) * 0.96);
         }
       } else {
-        if (vw <= 768 || (isEditorActive && activeDevice === "mobile")) {
-          // Mobile portrait hero - fit cleanly within mobile screen width
+        if (vw <= 768) {
           setScale(scaleX * 0.96);
-        } else if (vw <= 1024 || (isEditorActive && activeDevice === "tablet") || aspect < 1.55) {
-          // Tablet hero (exact factor matching user coordinates)
+        } else if (vw <= 1024 || aspect < 1.55) {
           setScale(Math.min(scaleX, scaleY) * 1.02);
         } else {
-          // Desktop widescreen hero
           setScale(Math.max(scaleX, scaleY));
         }
       }
@@ -2030,7 +1998,7 @@ function DesignStage({
     updateScale();
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);
-  }, [stageSize.width, stageSize.height, activeDevice, isEditorActive]);
+  }, [stageSize.width, stageSize.height]);
 
   const switchPage = (target: DishesPage) => {
     if (isTransitioningRef.current || dishesPage === target) return;
@@ -2086,7 +2054,6 @@ function DesignStage({
     let wheelDebounceTimer: number | null = null;
 
     function onWheel(event: WheelEvent) {
-      if (isEditorActive) return;
       const element = sectionRef.current;
       if (!element) return;
 
@@ -2139,7 +2106,6 @@ function DesignStage({
     }
 
     function onKeyDown(event: KeyboardEvent) {
-      if (isEditorActive) return;
       const element = sectionRef.current;
       if (!element) return;
       const rect = element.getBoundingClientRect();
@@ -2169,17 +2135,16 @@ function DesignStage({
       window.removeEventListener("wheel", onWheel, { capture: true });
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [dishesPage, showDishesBaseOnly, isEditorActive]);
+  }, [dishesPage, showDishesBaseOnly]);
 
   const handleTouchStart = (e: React.TouchEvent | React.PointerEvent) => {
-    if (isEditorActive) return;
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     touchStartRef.current = { x: clientX, y: clientY, time: Date.now() };
   };
 
   const handleTouchEnd = (e: React.TouchEvent | React.PointerEvent) => {
-    if (isEditorActive || !touchStartRef.current) return;
+    if (!touchStartRef.current) return;
     const clientX = "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
     const clientY = "changedTouches" in e ? e.changedTouches[0].clientY : e.clientY;
     const deltaX = clientX - touchStartRef.current.x;
@@ -2233,10 +2198,10 @@ function DesignStage({
       aria-label={section.label}
       className={`sakura-section relative w-full overflow-hidden ${section.id === "dishes-1" ? "sakura-dishes-section" : ""}`}
       style={{ scrollMarginTop: 0 }}
-      onTouchStart={!isEditorActive && showDishesBaseOnly ? handleTouchStart : undefined}
-      onTouchEnd={!isEditorActive && showDishesBaseOnly ? handleTouchEnd : undefined}
-      onPointerDown={!isEditorActive && showDishesBaseOnly ? handleTouchStart : undefined}
-      onPointerUp={!isEditorActive && showDishesBaseOnly ? handleTouchEnd : undefined}
+      onTouchStart={showDishesBaseOnly ? handleTouchStart : undefined}
+      onTouchEnd={showDishesBaseOnly ? handleTouchEnd : undefined}
+      onPointerDown={showDishesBaseOnly ? handleTouchStart : undefined}
+      onPointerUp={showDishesBaseOnly ? handleTouchEnd : undefined}
     >
       {section.id === "home" && (
         <SakuraHeroAtmosphere
@@ -2278,20 +2243,16 @@ function DesignStage({
         >
           {showDishesBaseOnly ? (
             <>
-              <DraggableWrapper id="dishes-top-black-band" label="Dishes Top Black Line">
-                <div
-                  aria-hidden="true"
-                  className="sakura-dishes-band sakura-dishes-band-top"
-                  style={{ left: initialDishesCornerPositions.top.x, top: initialDishesCornerPositions.top.y }}
-                />
-              </DraggableWrapper>
-              <DraggableWrapper id="dishes-bottom-black-band" label="Dishes Bottom Black Line">
-                <div
-                  aria-hidden="true"
-                  className="sakura-dishes-band sakura-dishes-band-bottom"
-                  style={{ left: initialDishesCornerPositions.bottom.x, top: initialDishesCornerPositions.bottom.y }}
-                />
-              </DraggableWrapper>
+              <div
+                aria-hidden="true"
+                className="sakura-dishes-band sakura-dishes-band-top"
+                style={{ left: initialDishesCornerPositions.top.x, top: initialDishesCornerPositions.top.y }}
+              />
+              <div
+                aria-hidden="true"
+                className="sakura-dishes-band sakura-dishes-band-bottom"
+                style={{ left: initialDishesCornerPositions.bottom.x, top: initialDishesCornerPositions.bottom.y }}
+              />
               {baseImages
                 .map((layer, index) => ({ layer, index }))
                 .filter(({ layer, index }) => index > 0 && !isDishesBlackBlock(layer) && !dishesDishKey(layer))
@@ -2312,55 +2273,44 @@ function DesignStage({
                   const displayLayer = getDisplayImageLayer(section, layer, index);
                   const movableLayer = dishKey ? { ...displayLayer, x: dishPositions[dishKey].x, y: dishPositions[dishKey].y } : displayLayer;
                   const route = dishKey === "ramen" ? "top" : "bottom";
-                  const dragId = dishKey === "ramen" ? "dishes-ramen-dish" : "dishes-platter-dish";
-                  const dragLabel = dishKey === "ramen" ? "Tonkotsu Ramen" : "Sushi Platter";
 
                   return (
-                    <DraggableWrapper key={`dishes-img-${index}`} id={dragId} label={dragLabel}>
-                      <ImageLayerView
-                        layer={movableLayer}
-                        index={index}
-                        className={dishKey ? `sakura-dish-swap sakura-dish-top ${route === "bottom" ? "sakura-dish-bottom" : ""} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
-                      />
-                    </DraggableWrapper>
+                    <ImageLayerView
+                      key={`dishes-img-${index}`}
+                      layer={movableLayer}
+                      index={index}
+                      className={dishKey ? `sakura-dish-swap sakura-dish-top ${route === "bottom" ? "sakura-dish-bottom" : ""} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
+                    />
                   );
                 })}
-              <DraggableWrapper id="dishes-udon-dish" label="Udon Bowl">
-                <ImageLayerView
-                  layer={udonLayer}
-                  index={90}
-                  className={`sakura-dish-swap sakura-dish-top ${showSecondDishes ? "is-home" : "is-away"}`}
-                />
-              </DraggableWrapper>
-              <DraggableWrapper id="dishes-tempura-dish" label="Tempura Plate">
-                <ImageLayerView
-                  layer={tempuraLayer}
-                  index={91}
-                  className={`sakura-dish-swap sakura-dish-bottom ${showSecondDishes ? "is-home" : "is-away"}`}
-                />
-              </DraggableWrapper>
-              <DraggableWrapper id="dishes-yakitori-dish" label="Yakitori Skewers">
-                <ImageLayerView
-                  layer={yakitoriLayer}
-                  index={92}
-                  className={`sakura-dish-swap sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
-                  style={!isEditorActive && showThirdDishes ? {
-                    transform: "translate3d(calc(var(--mx, 0) * 32px), calc(var(--my, 0) * 24px), 0)",
-                    willChange: "transform",
-                  } : undefined}
-                />
-              </DraggableWrapper>
-              <DraggableWrapper id="dishes-okonomiyaki-dish" label="Okonomiyaki Dish">
-                <ImageLayerView
-                  layer={okonomiyakiLayer}
-                  index={93}
-                  className={`sakura-dish-swap sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
-                  style={!isEditorActive && showThirdDishes ? {
-                    transform: "translate3d(calc(var(--mx, 0) * -24px), calc(var(--my, 0) * -18px), 0)",
-                    willChange: "transform",
-                  } : undefined}
-                />
-              </DraggableWrapper>
+              <ImageLayerView
+                layer={udonLayer}
+                index={90}
+                className={`sakura-dish-swap sakura-dish-top ${showSecondDishes ? "is-home" : "is-away"}`}
+              />
+              <ImageLayerView
+                layer={tempuraLayer}
+                index={91}
+                className={`sakura-dish-swap sakura-dish-bottom ${showSecondDishes ? "is-home" : "is-away"}`}
+              />
+              <ImageLayerView
+                layer={yakitoriLayer}
+                index={92}
+                className={`sakura-dish-swap sakura-dish-top ${showThirdDishes ? "is-home" : "is-away"}`}
+                style={showThirdDishes ? {
+                  transform: "translate3d(calc(var(--mx, 0) * 32px), calc(var(--my, 0) * 24px), 0)",
+                  willChange: "transform",
+                } : undefined}
+              />
+              <ImageLayerView
+                layer={okonomiyakiLayer}
+                index={93}
+                className={`sakura-dish-swap sakura-dish-bottom ${showThirdDishes ? "is-home" : "is-away"}`}
+                style={showThirdDishes ? {
+                  transform: "translate3d(calc(var(--mx, 0) * -24px), calc(var(--my, 0) * -18px), 0)",
+                  willChange: "transform",
+                } : undefined}
+              />
               {foregroundTexts
                 .filter((layer) => layerText(layer) === "TopDishes")
                 .map((layer, index) => {
@@ -2374,7 +2324,7 @@ function DesignStage({
                     />
                   );
                 })}
-              <DraggableWrapper id="dishes-top-card" label="Top Dish Info (01 / 03 / 05)">
+              <div className="sakura-dishes-top-card-wrap">
                 <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.first.top.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
                 <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.first.top.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
                 <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.first.top.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
@@ -2384,9 +2334,9 @@ function DesignStage({
                 <AnimatedDishesText layer={topNumberLayer} lines={[dishesCopy.third.top.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
                 <AnimatedDishesText layer={topTitleLayer} lines={[dishesCopy.third.top.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
                 <AnimatedDishesText layer={topDescriptionLayer} lines={dishesCopy.third.top.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
-              </DraggableWrapper>
+              </div>
 
-              <DraggableWrapper id="dishes-bottom-card" label="Bottom Dish Info (02 / 04 / 06)">
+              <div className="sakura-dishes-bottom-card-wrap">
                 <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.first.bottom.number]} visible={showFirstDishes} order="ltr" baseDelay={0} />
                 <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.first.bottom.title]} visible={showFirstDishes} order="ltr" baseDelay={0} />
                 <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.first.bottom.description} visible={showFirstDishes} order="rtl" baseDelay={0} />
@@ -2396,7 +2346,7 @@ function DesignStage({
                 <AnimatedDishesText layer={bottomNumberLayer} lines={[dishesCopy.third.bottom.number]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
                 <AnimatedDishesText layer={bottomTitleLayer} lines={[dishesCopy.third.bottom.title]} visible={showThirdDishes} order="rtl" baseDelay={0} className="sakura-copy-next" />
                 <AnimatedDishesText layer={bottomDescriptionLayer} lines={dishesCopy.third.bottom.description} visible={showThirdDishes} order="ltr" baseDelay={0} className="sakura-copy-next" />
-              </DraggableWrapper>
+              </div>
 
               <SakuraDishesEffects
                 page={dishesPage}
@@ -2430,26 +2380,23 @@ function DesignStage({
           ) : (
             <>
               {baseImages.map((layer, index) => (
-                <DraggableWrapper key={`base-img-${index}`} id="hero-bg" label="Hero Background Image">
-                  <ImageLayerView
-                    layer={getDisplayImageLayer(section, layer, index)}
-                    index={index}
-                  />
-                </DraggableWrapper>
+                <ImageLayerView
+                  key={`base-img-${index}`}
+                  layer={getDisplayImageLayer(section, layer, index)}
+                  index={index}
+                />
               ))}
               {heroTitleTexts.map((layer, index) => (
                 <div
                   key={`hero-title-wrap-${index}`}
                   className="absolute inset-0 pointer-events-none"
                 >
-                  <DraggableWrapper id="hero-title" label="Hero Title (SAKURA)" className="pointer-events-auto">
-                    <TextLayerView
-                      key={`hero-title-${index}`}
-                      layer={getDisplayTextLayer(section, layer)}
-                      index={index}
-                      className={`sakura-hero-title ${isHeroRevealed ? "hero-animate-title" : "opacity-0"}`}
-                    />
-                  </DraggableWrapper>
+                  <TextLayerView
+                    key={`hero-title-${index}`}
+                    layer={getDisplayTextLayer(section, layer)}
+                    index={index}
+                    className={`sakura-hero-title ${isHeroRevealed ? "hero-animate-title" : "opacity-0"}`}
+                  />
                 </div>
               ))}
               {overlayImages.map((layer, index) => {
@@ -2457,22 +2404,6 @@ function DesignStage({
                 const isFloating1 = index === 1;
                 const isFloating2 = index === 2;
                 const isFloating3 = index === 3;
-
-                let dragId = "hero-floating-ginger";
-                let dragLabel = "Floating Garnish";
-                if (isPlatter) {
-                  dragId = "hero-sushi-platter";
-                  dragLabel = "Main Sushi Platter";
-                } else if (isFloating1) {
-                  dragId = "hero-floating-salmon";
-                  dragLabel = "Floating Salmon";
-                } else if (isFloating2) {
-                  dragId = "hero-floating-avocado";
-                  dragLabel = "Floating Avocado";
-                } else if (isFloating3) {
-                  dragId = "hero-floating-leaf";
-                  dragLabel = "Floating Sakura Leaf";
-                }
 
                 let animationClass = isHeroRevealed ? "" : "opacity-0";
                 let parallaxStyle: CSSProperties = {};
@@ -2506,17 +2437,14 @@ function DesignStage({
                   }
                 }
 
-                const responsiveClass = "";
-
                 return (
-                  <DraggableWrapper key={`overlay-img-${index}`} id={dragId} label={dragLabel} className={responsiveClass}>
-                    <ImageLayerView
-                      layer={getDisplayImageLayer(section, layer, index + baseImages.length)}
-                      index={index + baseImages.length}
-                      className={animationClass}
-                      style={parallaxStyle}
-                    />
-                  </DraggableWrapper>
+                  <ImageLayerView
+                    key={`overlay-img-${index}`}
+                    layer={getDisplayImageLayer(section, layer, index + baseImages.length)}
+                    index={index + baseImages.length}
+                    className={animationClass}
+                    style={parallaxStyle}
+                  />
                 );
               })}
               {foregroundTexts.map((layer, index) => (
@@ -2533,15 +2461,13 @@ function DesignStage({
                     transform: isHeroRevealed ? "translate3d(calc(var(--mx, 0) * 12px), calc(var(--my, 0) * 10px), 0)" : undefined,
                   }}
                 >
-                  <DraggableWrapper id="hero-cta-button" label="Hero CTA Button">
-                    <HeroTaglineCTA
-                      onExploreMenu={() => {
-                        setActiveNav("dishes-1");
-                        setDishesPage("first");
-                        scrollToSection("dishes-1");
-                      }}
-                    />
-                  </DraggableWrapper>
+                  <HeroTaglineCTA
+                    onExploreMenu={() => {
+                      setActiveNav("dishes-1");
+                      setDishesPage("first");
+                      scrollToSection("dishes-1");
+                    }}
+                  />
                 </div>
               )}
             </>
@@ -2644,39 +2570,34 @@ export default function SakuraExperience() {
   }, [dishesPage]);
 
   return (
-    <LayoutEditorProvider>
-      <DeviceFrameWrapper>
-        <main className="w-full bg-[#f1dfcf]">
-          {!isDisclaimerAccepted && (
-            <AevumDisclaimerGate onAccept={handleDisclaimerAccept} />
-          )}
-          {isLoadingActive && (
-            <AevumLoadingScreen onComplete={handleLoadingComplete} />
-          )}
-          <SakuraNavbar
+    <main className="w-full bg-[#f1dfcf]">
+      {!isDisclaimerAccepted && (
+        <AevumDisclaimerGate onAccept={handleDisclaimerAccept} />
+      )}
+      {isLoadingActive && (
+        <AevumLoadingScreen onComplete={handleLoadingComplete} />
+      )}
+      <SakuraNavbar
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        dishesPage={dishesPage}
+        setDishesPage={setDishesPage}
+      />
+      {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
+        <div key={section.id} id={section.id}>
+          <DesignStage
+            section={section}
             activeNav={activeNav}
             setActiveNav={setActiveNav}
             dishesPage={dishesPage}
             setDishesPage={setDishesPage}
+            isHeroRevealed={isHeroRevealed}
           />
-          {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
-            <div key={section.id} id={section.id}>
-              <DesignStage
-                section={section}
-                activeNav={activeNav}
-                setActiveNav={setActiveNav}
-                dishesPage={dishesPage}
-                setDishesPage={setDishesPage}
-                isHeroRevealed={isHeroRevealed}
-              />
-            </div>
-          ))}
-          <SakuraZenAudio />
-          <AevumAgencyFooter />
-        </main>
-      </DeviceFrameWrapper>
-      <VisualLayoutStudioHUD />
-    </LayoutEditorProvider>
+        </div>
+      ))}
+      <SakuraZenAudio />
+      <AevumAgencyFooter />
+    </main>
   );
 }
 
