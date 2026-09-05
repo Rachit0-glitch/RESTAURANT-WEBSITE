@@ -2,10 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-}
-
+/* Deliberately no `scroll-behavior: smooth` here — the dishes carousel reads
+   the section's live getBoundingClientRect() on every wheel tick to decide
+   whether to hijack scroll, and CSS-driven smooth scrolling animates the
+   native scroll position asynchronously, so that read samples a stale,
+   still-catching-up position. That's what made scrolling back up from the
+   last dish pair unreliable. All deliberate animated jumps (nav clicks, the
+   hero/footer edge transitions) go through smoothScrollTo() in
+   SakuraExperience.tsx instead, which eases with its own rAF loop. */
 html,
 body {
   margin: 0;
@@ -138,26 +142,6 @@ button.absolute:focus-visible {
   z-index: 5;
 }
 
-[data-layout-id="dishes-top-black-band"],
-[data-layout-id="dishes-bottom-black-band"] {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 5 !important;
-}
-
-/* Editor Active Override - Eliminates all transition lag & trembling during drag */
-body.sakura-editor-active .sakura-dish-swap,
-body.sakura-editor-active .sakura-dishes-band,
-body.sakura-editor-active .sakura-hero-title,
-body.sakura-editor-active [data-layout-id],
-body.sakura-editor-active [data-layout-id] *,
-body.sakura-editor-active .sakura-dish-swap > img {
-  transition: none !important;
-  animation: none !important;
-  animation-play-state: paused !important;
-}
-
 .sakura-hidden-dishes-content {
   position: absolute;
   inset: 0;
@@ -165,13 +149,28 @@ body.sakura-editor-active .sakura-dish-swap > img {
   pointer-events: none;
 }
 
+@keyframes sakura-mobile-dish-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sakura-mobile-dish-fade {
+  animation: sakura-mobile-dish-fade-in 450ms ease-out;
+}
+
 .sakura-dish-swap {
   opacity: 1;
   transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
   transition:
-    transform 980ms cubic-bezier(0.12, 0.98, 0.22, 1),
-    opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
-    filter 650ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform 1900ms cubic-bezier(0.12, 0.98, 0.22, 1),
+    opacity 1400ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1400ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform, filter;
   z-index: 14;
 }
@@ -615,9 +614,9 @@ body.sakura-editor-active .sakura-dish-swap > img {
 }
 
 .sakura-hero-cta-card {
-  left: 85px;
-  top: 525px;
-  width: 320px;
+  left: 150px;
+  top: 480px;
+  width: 450px;
 }
 
 /* ==========================================================================

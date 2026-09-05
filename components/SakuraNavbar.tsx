@@ -100,7 +100,7 @@ export default function SakuraNavbar({
     <header className="fixed top-3 sm:top-5 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 pointer-events-none transition-all duration-300">
       <nav
         aria-label="Main Navigation"
-        className="pointer-events-auto w-full max-w-4xl rounded-full transition-all duration-500 backdrop-blur-xl bg-black/40 border border-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.25)] text-white py-2 sm:py-2.5 px-5 sm:px-7"
+        className="pointer-events-auto w-full max-w-4xl rounded-2xl md:rounded-full transition-all duration-500 backdrop-blur-xl bg-black/40 border border-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.25)] text-white py-2 sm:py-2.5 px-5 sm:px-7"
       >
         <div className="flex items-center justify-between">
           {/* Brand Wordmark with subtle signature dot */}

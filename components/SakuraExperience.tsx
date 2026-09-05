@@ -10,8 +10,6 @@ import SakuraHeroAtmosphere from "./SakuraHeroAtmosphere";
 import SakuraDishesEffects from "./SakuraDishesEffects";
 import SakuraTransitionBanner from "./SakuraTransitionBanner";
 import SakuraZenAudio from "./SakuraZenAudio";
-import { MobileLayoutProvider } from "../context/MobileLayoutEditorContext";
-import MobileLayoutStudioHUD from "./MobileLayoutStudioHUD";
 import MobileDraggableWrapper from "./MobileDraggableWrapper";
 
 type TextRun = { text?: string; break?: true; color?: string; fontWeight?: string; fontStyle?: string; textDecorationLine?: string };
@@ -29,6 +27,7 @@ const HERO_CTA_SRC = "/sakura-assets/_assets/media/d7008c2fca28475fcc4c021797042
 const HERO_CTA_ARROW_SRC = "/sakura-assets/_assets/media/30f4682c39416bf4fa425304a1e01229.png";
 const HERO_SUSHI_PLATTER_SRC = "/sakura-assets/_assets/media/2cccb1d8bca202e0ae7adde1a1d5d489.png";
 const HERO_SUSHI_PLATTER_HQ_SRC = "/sakura-assets/_assets/media/hero-sushi-platter-hq-cutout.png";
+const MOBILE_HERO_SUSHI_PLATTER_SRC = "/sakura-assets/_assets/media/hero-sushi-platter-new.png";
 const DISHES_BLACK_BLOCK_SRC = "/sakura-assets/_assets/media/dishes/328fb685432d62976b0179f561f987bf.png";
 const DISHES_TOP_BLACK_BLOCK_SRC = "/sakura-assets/_assets/media/dishes/c2d746e5094a5d523e58dfbfefe4d7f7.png";
 const DISHES_SUSHI_PLATTER_SRC = "/sakura-assets/_assets/media/dishes/4bb926cd437f06f219ac808e624af238.png";
@@ -43,18 +42,48 @@ const HERO_TITLE_POSITION = { x: 278, y: 105 };
 const HERO_TITLE_SIZE = { width: 1420, height: 737, fontSize: "548px", lineHeight: "690px" };
 const HERO_NAV_FRAME = { x: 20.6589, y: -6.65675, w: 1875.37, h: 158.385 };
 const WIDESCREEN_STAGE = { width: 1920, height: 1080 };
+// All three dish pairs are now reachable via scroll/keys/swipe.
+const DISHES_MAX_REACHABLE_PAGE: DishesPage = "third";
+const DISHES_PAGE_ORDER: DishesPage[] = ["first", "second", "third"];
+function canAdvanceDishesPage(current: DishesPage) {
+  return DISHES_PAGE_ORDER.indexOf(current) < DISHES_PAGE_ORDER.indexOf(DISHES_MAX_REACHABLE_PAGE);
+}
+// Require a section to cover most of the viewport before hijacking scroll —
+// otherwise a scroll that's still arriving gets swallowed before the user
+// has actually finished entering it. Coverage degrades smoothly as the
+// section scrolls in/out, giving a wide window of scroll positions that
+// qualify (unlike a dual-edge check, which only qualifies inside a razor-
+// thin scroll range a single real wheel/swipe tick can jump clean over).
+function dishesSectionCoverage(rect: DOMRect) {
+  const visibleTop = Math.max(rect.top, 0);
+  const visibleBottom = Math.min(rect.bottom, window.innerHeight);
+  return Math.max(0, visibleBottom - visibleTop) / window.innerHeight;
+}
 const renderedSectionIds = new Set(["home", "dishes-1"]);
+// Band is 880x280 rotated -32deg around its own center (see .sakura-dishes-band
+// in globals.css). Anchoring left/top so the band's CENTER sits exactly on the
+// stage corner guarantees the shape touches that corner regardless of rotation.
+const DISHES_BAND_SIZE = { width: 880, height: 280 };
 const initialDishesCornerPositions = {
-  top: { x: 1348, y: -42 },
-  bottom: { x: -128, y: 780 },
+  top: {
+    x: WIDESCREEN_STAGE.width - DISHES_BAND_SIZE.width / 2,
+    y: 0 - DISHES_BAND_SIZE.height / 2,
+  },
+  bottom: {
+    x: 0 - DISHES_BAND_SIZE.width / 2,
+    y: WIDESCREEN_STAGE.height - DISHES_BAND_SIZE.height / 2,
+  },
 };
+// Centered on the point where each black corner band reaches furthest into
+// the canvas (the band's inward tip), so each dish sits centered against
+// that edge instead of floating at an arbitrary spot.
 const initialDishesDishPositions = {
-  sushi: { x: 80, y: 440 },
-  ramen: { x: 1088, y: 60 },
-  tempura: { x: 80, y: 440 },
-  udon: { x: 1088, y: 60 },
-  okonomiyaki: { x: 80, y: 440 },
-  yakitori: { x: 1088, y: 60 },
+  sushi: { x: 137, y: 523 },
+  ramen: { x: 1301, y: 32 },
+  tempura: { x: 141, y: 556 },
+  udon: { x: 1301, y: 32 },
+  okonomiyaki: { x: 148, y: 552 },
+  yakitori: { x: 1301, y: 32 },
 };
 
 const dishesCopy = {
@@ -1424,7 +1453,44 @@ const sections = [
   }
 ] satisfies Section[];
 
-function scrollToSection(id: string) { document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); }
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+// Native `behavior: "smooth"` scrolling finishes in ~300-500ms in most
+// browsers, which feels abrupt for full-section jumps. This drives the same
+// scroll with a slower, explicitly-timed easing curve instead. `html` has
+// `scroll-behavior: smooth` globally (see globals.css) — every per-frame
+// scrollTo below must force "auto", otherwise each step re-triggers the CSS
+// smooth animation and the two fight, sometimes stalling entirely.
+function smoothScrollTo(targetY: number, duration = 2400) {
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  if (Math.abs(distance) < 1) return;
+  const startTime = performance.now();
+  const root = document.documentElement;
+  const previousScrollBehavior = root.style.scrollBehavior;
+  root.style.scrollBehavior = "auto";
+
+  function step(now: number) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      root.style.scrollBehavior = previousScrollBehavior;
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function scrollToSection(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const targetY = el.getBoundingClientRect().top + window.scrollY;
+  smoothScrollTo(targetY);
+}
 
 function safeScrollTarget(id: string) {
   return renderedSectionIds.has(id) ? id : "dishes-1";
@@ -1513,6 +1579,14 @@ function isDishesBlackBlock(layer: ImageLayer) {
   return [DISHES_BLACK_BLOCK_SRC, DISHES_TOP_BLACK_BLOCK_SRC].includes(layer.src);
 }
 
+// Orphaned drop-shadow asset from the original Canva layout — with the dishes
+// repositioned it no longer sits under anything and just floats as a stray
+// dark smudge in the empty lower-left area. Hidden, not deleted from the data.
+const DISHES_STRAY_SHADOW_SRC = "/sakura-assets/_assets/media/dishes/1c8a48fe519798d973bed8fe9d09f5f6.png";
+function isDishesStrayShadow(layer: ImageLayer) {
+  return layer.src === DISHES_STRAY_SHADOW_SRC;
+}
+
 function dishesDishKey(layer: ImageLayer): DishesDishKey | null {
   if (layer.src === DISHES_SUSHI_PLATTER_SRC) return "sushi";
   if (layer.src === DISHES_RAMEN_SRC) return "ramen";
@@ -1541,11 +1615,11 @@ function getDisplayTextLayer(section: Section, layer: TextLayer): TextLayer {
   if (text === "TopDishes") {
     return {
       ...layer,
-      x: 95,
-      y: 205,
-      w: 315,
-      h: 380,
-      style: { ...layer.style, fontSize: 190, lineHeight: 146 },
+      x: -25,
+      y: 120,
+      w: 471,
+      h: 552,
+      style: { ...layer.style, fontSize: 285, lineHeight: 218 },
     };
   }
 
@@ -1612,26 +1686,26 @@ function HeroTaglineCTA({
   return (
     <div className="sakura-hero-cta-card absolute z-30 pointer-events-auto select-none">
       {/* Desktop Layout View */}
-      <div className="hidden min-[1025px]:flex flex-col text-left w-[320px]">
-        <h2 className="text-4xl lg:text-[45px] font-black tracking-tight text-neutral-950 uppercase leading-[1.04]">
+      <div className="hidden min-[1025px]:flex flex-col text-left w-[450px]">
+        <h2 className="text-7xl lg:text-[74px] font-black tracking-tight text-neutral-950 uppercase leading-[1.0]">
           Authentic <br />
           Japanese <br />
           <span className="text-[#e60012]">Dining.</span>
         </h2>
 
-        <p className="text-base text-neutral-700 font-medium leading-relaxed mt-4">
+        <p className="text-lg text-neutral-700 font-medium leading-relaxed mt-5 max-w-[420px]">
           Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.
         </p>
 
-        <div className="pt-6">
+        <div className="pt-7">
           <button
             type="button"
             onClick={onExploreMenu}
-            className="inline-flex items-center gap-3 bg-neutral-950 hover:bg-[#e60012] text-white text-sm font-bold tracking-[0.16em] uppercase px-8 py-3.5 rounded-full transition-all duration-300 cursor-pointer shadow-lg shadow-black/10 hover:shadow-red-600/30 hover:scale-105 active:scale-95"
+            className="inline-flex items-center gap-3 bg-neutral-950 hover:bg-[#e60012] text-white text-base font-bold tracking-[0.16em] uppercase px-9 py-4 rounded-full transition-all duration-300 cursor-pointer shadow-lg shadow-black/10 hover:shadow-red-600/30 hover:scale-105 active:scale-95"
           >
             <span>Explore Menu</span>
             <svg
-              className="w-4 h-4 stroke-current stroke-2 fill-none"
+              className="w-5 h-5 stroke-current stroke-2 fill-none"
               viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -2015,23 +2089,36 @@ function DesignStage({
     if (sectionRef.current) {
       const topPos = sectionRef.current.offsetTop;
       if (Math.abs(window.scrollY - topPos) > 4) {
-        window.scrollTo({ top: topPos, behavior: "smooth" });
+        smoothScrollTo(topPos);
       }
     }
 
+    // Freeze all scrolling for the duration of the dish-swap transition —
+    // regardless of input device (mouse wheel, trackpad, touchscreen drag,
+    // keyboard) — so momentum/inertia from one gesture can't fight the
+    // animation or queue up a second jump the instant it ends. Locking both
+    // html and body covers iOS Safari's tendency to still rubber-band body
+    // scroll when only the html element is locked.
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    // Matches .sakura-dish-swap's transform transition duration in globals.css
+    // — keep them in sync so the lock doesn't release mid-animation.
     window.setTimeout(() => {
       isTransitioningRef.current = false;
-    }, 980);
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    }, 1900);
   };
 
   const navigateDishes = (direction: 1 | -1): boolean => {
     if (isTransitioningRef.current) return true;
     if (direction > 0) {
-      if (dishesPage === "first") {
+      if (dishesPage === "first" && canAdvanceDishesPage("first")) {
         switchPage("second");
         return true;
       }
-      if (dishesPage === "second") {
+      if (dishesPage === "second" && canAdvanceDishesPage("second")) {
         switchPage("third");
         return true;
       }
@@ -2061,7 +2148,7 @@ function DesignStage({
       if (!element) return;
 
       const rect = element.getBoundingClientRect();
-      const inDishesFrame = rect.top <= window.innerHeight * 0.65 && rect.bottom >= window.innerHeight * 0.35;
+      const inDishesFrame = dishesSectionCoverage(rect) >= 0.7;
       if (!inDishesFrame) return;
 
       const primaryDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
@@ -2075,8 +2162,8 @@ function DesignStage({
         return;
       }
 
-      // If scrolling DOWN and not yet at the final pair (Pair 3): lock and step carousel
-      if (direction > 0 && dishesPage !== "third") {
+      // If scrolling DOWN and not yet at the final reachable pair: lock and step carousel
+      if (direction > 0 && canAdvanceDishesPage(dishesPage)) {
         event.preventDefault();
         accumulatedDelta += primaryDelta;
         if (wheelDebounceTimer) window.clearTimeout(wheelDebounceTimer);
@@ -2084,7 +2171,7 @@ function DesignStage({
           accumulatedDelta = 0;
         }, 220);
 
-        if (accumulatedDelta >= 20) {
+        if (accumulatedDelta >= 70) {
           accumulatedDelta = 0;
           navigateDishes(1);
         }
@@ -2100,7 +2187,7 @@ function DesignStage({
           accumulatedDelta = 0;
         }, 220);
 
-        if (accumulatedDelta <= -20) {
+        if (accumulatedDelta <= -70) {
           accumulatedDelta = 0;
           navigateDishes(-1);
         }
@@ -2112,11 +2199,11 @@ function DesignStage({
       const element = sectionRef.current;
       if (!element) return;
       const rect = element.getBoundingClientRect();
-      const inDishesFrame = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
+      const inDishesFrame = dishesSectionCoverage(rect) >= 0.7;
       if (!inDishesFrame) return;
 
       if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-        if (dishesPage !== "third") {
+        if (canAdvanceDishesPage(dishesPage)) {
           if (navigateDishes(1)) event.preventDefault();
         } else {
           scrollToSection("aevum-footer");
@@ -2159,7 +2246,7 @@ function DesignStage({
 
     if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX < 0) {
-        if (dishesPage !== "third") navigateDishes(1);
+        if (canAdvanceDishesPage(dishesPage)) navigateDishes(1);
         else scrollToSection("aevum-footer");
       } else {
         if (dishesPage !== "first") navigateDishes(-1);
@@ -2167,7 +2254,7 @@ function DesignStage({
       }
     } else if (Math.abs(deltaY) > 45) {
       if (deltaY < 0) {
-        if (dishesPage !== "third") navigateDishes(1);
+        if (canAdvanceDishesPage(dishesPage)) navigateDishes(1);
         else scrollToSection("aevum-footer");
       } else {
         if (dishesPage !== "first") navigateDishes(-1);
@@ -2258,7 +2345,7 @@ function DesignStage({
               />
               {baseImages
                 .map((layer, index) => ({ layer, index }))
-                .filter(({ layer, index }) => index > 0 && !isDishesBlackBlock(layer) && !dishesDishKey(layer))
+                .filter(({ layer, index }) => index > 0 && !isDishesBlackBlock(layer) && !isDishesStrayShadow(layer) && !dishesDishKey(layer))
                 .map(({ layer, index }) => {
                   return (
                     <ImageLayerView
@@ -2272,9 +2359,14 @@ function DesignStage({
                 .map((layer, index) => ({ layer, index }))
                 .filter(({ layer, index }) => index > 0 && !isDishesBlackBlock(layer) && dishesDishKey(layer))
                 .map(({ layer, index }) => {
+                  // Sushi Platter's final position is locked in via
+                  // initialDishesDishPositions.sushi — it no longer follows
+                  // the drag tool (that's now on the Tempura dish, frame 2).
                   const dishKey = dishesDishKey(layer);
                   const displayLayer = getDisplayImageLayer(section, layer, index);
-                  const movableLayer = dishKey ? { ...displayLayer, x: dishPositions[dishKey].x, y: dishPositions[dishKey].y } : displayLayer;
+                  const positionedLayer = dishKey
+                    ? { ...displayLayer, x: dishPositions[dishKey].x, y: dishPositions[dishKey].y }
+                    : displayLayer;
                   const route = dishKey === "ramen" ? "top" : "bottom";
                   const dragId = dishKey === "ramen" ? "dishes-ramen-dish" : "dishes-platter-dish";
                   const dragLabel = dishKey === "ramen" ? "Tonkotsu Ramen" : "Sushi Platter";
@@ -2282,7 +2374,7 @@ function DesignStage({
                   return (
                     <MobileDraggableWrapper key={`dishes-img-${index}`} id={dragId} label={dragLabel}>
                       <ImageLayerView
-                        layer={movableLayer}
+                        layer={positionedLayer}
                         index={index}
                         className={dishKey ? `sakura-dish-swap sakura-dish-top ${route === "bottom" ? "sakura-dish-bottom" : ""} ${showFirstDishes ? "is-home" : "is-away"}` : ""}
                       />
@@ -2528,6 +2620,282 @@ function DesignStage({
   );
 }
 
+// Mobile-only hero and dishes layouts. The desktop/tablet views above render
+// a fixed 16:9 canvas and scale it down to fit any viewport via a CSS
+// transform — great for wide screens, but on a tall narrow phone that same
+// transform shrinks EVERYTHING (including text/buttons that already have
+// their own mobile-tailored styles) down to a tiny strip in the middle of
+// the screen, since the transform can't tell the difference between a
+// background and a button. So instead of reusing that scaled canvas, these
+// two components build the mobile composition directly with normal
+// percentage-based CSS inside a locked 9:16 box (same fixed-aspect-canvas
+// idea as the desktop 16:9 stage, just portrait) — mirroring how the AEVUM
+// project's MobileOurWorkSection is a separate hand-laid-out component
+// rather than a scaled-down copy of its desktop counterpart.
+function MobileHeroSection({ onExploreMenu }: { onExploreMenu: () => void }) {
+  return (
+    <div className="relative w-full h-dvh md:hidden flex items-center justify-center overflow-hidden bg-[#f1dfcf]">
+      <div className="relative mx-auto h-full max-h-dvh w-full max-w-[56.25dvh] aspect-[9/16] overflow-hidden">
+        <img
+          src="/sakura-assets/_assets/media/mobile-bg.png"
+          alt="Sakura Hero Background"
+          className="absolute inset-0 h-full w-full object-cover object-center pointer-events-none select-none"
+          draggable={false}
+        />
+
+        <div className="absolute left-[6%] top-[9%] z-20 whitespace-nowrap rounded-sm bg-white px-[4%] py-[1.6%] text-[4vw] font-bold shadow-[0_6px_16px_rgba(0,0,0,0.15)]">
+          <span className="text-black">最高の</span>
+          <span className="text-[#e60012]">寿司</span>
+          <span className="text-black">盛り合わせ</span>
+        </div>
+
+        <div className="absolute right-[5%] top-[7.5%] z-10 flex flex-col items-center gap-[1%] rounded-md border border-[#e60012]/70 px-[2.4%] py-[3%]">
+          {["極", "上", "鮨", "処"].map((ch) => (
+            <span key={ch} className="text-[3.6vw] font-bold leading-none text-[#e60012]">
+              {ch}
+            </span>
+          ))}
+        </div>
+        <div className="absolute right-[5%] top-[21%] z-10 text-[2.5vw] font-semibold tracking-[0.25em] text-neutral-500">
+          EST. 1988
+        </div>
+
+        <h1
+          className="pointer-events-none absolute left-1/2 top-[33%] z-0 w-full -translate-x-1/2 -translate-y-1/2 select-none text-center uppercase text-black"
+          style={{ fontFamily: "YAEzv44m-7M_0, sans-serif", fontWeight: 400, fontSize: "34.5vw", lineHeight: 0.82 }}
+        >
+          SUSHI
+        </h1>
+
+        <img
+          src={MOBILE_HERO_SUSHI_PLATTER_SRC}
+          alt="Sakura sushi platter"
+          className="pointer-events-none absolute left-1/2 top-[45%] z-10 w-[92%] -translate-x-1/2 -translate-y-1/2 select-none object-contain"
+          draggable={false}
+        />
+
+        <div className="absolute inset-x-0 top-[68%] z-20 px-[7%] text-left">
+          <h2 className="text-[7.6vw] font-black uppercase leading-[0.9] tracking-tight text-neutral-950">
+            Authentic <br />
+            Japanese <br />
+            <span className="text-[#e60012]">Dining.</span>
+          </h2>
+          <p className="mt-[3%] max-w-[85%] text-[3.2vw] font-medium leading-snug text-neutral-800">
+            Fresh sashimi, handcrafted nigiri, and traditional seasonal dishes.
+          </p>
+          <button
+            type="button"
+            onClick={onExploreMenu}
+            className="mt-[3.5%] inline-flex items-center gap-2.5 rounded-full bg-black px-[6%] py-[2.6%] text-[3vw] font-bold uppercase tracking-[0.16em] text-white shadow-[0_6px_18px_rgba(0,0,0,0.35)] active:scale-95"
+          >
+            <span>Explore Menu</span>
+            <span className="text-[3.4vw] font-bold">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Final mobile layout — percentages of the box's own rendered size, plus a
+// uniform CSS transform `scale` per item, both tuned interactively via the
+// (now removed) Canva-style drag/resize tool and reported back as final
+// coordinates. Bands are shared across all 3 dish pairs; dish image/text
+// slots keep the same position for every pair, only their content swaps.
+const MOBILE_DISHES_LAYOUT = {
+  bandTop: { x: 72.4, y: 17.4, scale: 1.25 },
+  bandBottom: { x: 29.8, y: 75.4, scale: 1.28 },
+  headingText: { x: 4.7, y: 16, scale: 1.77 },
+  dishTopImage: { x: 47.4, y: 22.2, scale: 1.23 },
+  dishTopText: { x: 2.5, y: 40, scale: 0.94 },
+  dishBottomImage: { x: 2.5, y: 60.1, scale: 1.28 },
+  dishBottomText: { x: 50, y: 60.8, scale: 1 },
+} as const;
+
+const MOBILE_DISHES_BASE_SIZE: Record<keyof typeof MOBILE_DISHES_LAYOUT, { width: string; height?: string }> = {
+  bandTop: { width: "60%", height: "16%" },
+  bandBottom: { width: "60%", height: "16%" },
+  dishTopImage: { width: "48%" },
+  dishBottomImage: { width: "48%" },
+  headingText: { width: "auto" },
+  dishTopText: { width: "88%" },
+  dishBottomText: { width: "46%" },
+};
+
+function mobilePositioned(id: keyof typeof MOBILE_DISHES_LAYOUT): CSSProperties {
+  const item = MOBILE_DISHES_LAYOUT[id];
+  const base = MOBILE_DISHES_BASE_SIZE[id];
+  return { position: "absolute", left: `${item.x}%`, top: `${item.y}%`, width: base.width, height: base.height, transform: `scale(${item.scale})`, transformOrigin: "top left" };
+}
+
+function MobileDishesSection({
+  dishesPage,
+  setDishesPage,
+}: {
+  dishesPage: DishesPage;
+  setDishesPage: React.Dispatch<React.SetStateAction<DishesPage>>;
+}) {
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const isTransitioningRef = useRef(false);
+
+  const pairs = [
+    { page: "first" as const, topSrc: DISHES_RAMEN_HQ_SRC, bottomSrc: DISHES_SUSHI_PLATTER_HQ_SRC, top: dishesCopy.first.top, bottom: dishesCopy.first.bottom },
+    { page: "second" as const, topSrc: DISHES_UDON_HQ_SRC, bottomSrc: DISHES_TEMPURA_HQ_SRC, top: dishesCopy.second.top, bottom: dishesCopy.second.bottom },
+    { page: "third" as const, topSrc: DISHES_YAKITORI_HQ_SRC, bottomSrc: DISHES_OKONOMIYAKI_HQ_SRC, top: dishesCopy.third.top, bottom: dishesCopy.third.bottom },
+  ];
+  const active = pairs.find((p) => p.page === dishesPage) ?? pairs[0];
+
+  // Entering the section scrolls through it completely normally — nothing
+  // is hijacked until it's FULLY in view. Once fully visible, scrolling
+  // steps through the 3 dish pairs in place (short lock, matching the
+  // in-place fade); only past the last pair does a further scroll leave for
+  // the footer (or back up to the hero from the first pair), using the same
+  // eased scroll + whole-page lock as desktop.
+  useEffect(() => {
+    let accumulatedDelta = 0;
+    let wheelDebounceTimer: number | null = null;
+    let touchStart: { x: number; y: number; time: number } | null = null;
+
+    function goToSection(id: string) {
+      if (isTransitioningRef.current) return;
+      isTransitioningRef.current = true;
+      const el = document.getElementById(id);
+      if (el) smoothScrollTo(el.getBoundingClientRect().top + window.scrollY);
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      window.setTimeout(() => {
+        isTransitioningRef.current = false;
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      }, 2400);
+    }
+
+    function switchFrame(target: DishesPage) {
+      if (isTransitioningRef.current) return;
+      isTransitioningRef.current = true;
+      setDishesPage(target);
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      window.setTimeout(() => {
+        isTransitioningRef.current = false;
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      }, 600);
+    }
+
+    function onWheel(event: WheelEvent) {
+      const box = boxRef.current;
+      if (!box) return;
+      const rect = box.getBoundingClientRect();
+      if (dishesSectionCoverage(rect) < 0.99) return;
+
+      const primaryDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if (Math.abs(primaryDelta) < 3) return;
+      const direction: 1 | -1 = primaryDelta > 0 ? 1 : -1;
+
+      if (isTransitioningRef.current) {
+        event.preventDefault();
+        return;
+      }
+
+      event.preventDefault();
+      accumulatedDelta += primaryDelta;
+      if (wheelDebounceTimer) window.clearTimeout(wheelDebounceTimer);
+      wheelDebounceTimer = window.setTimeout(() => {
+        accumulatedDelta = 0;
+      }, 220);
+
+      if (direction > 0 && accumulatedDelta >= 70) {
+        accumulatedDelta = 0;
+        if (canAdvanceDishesPage(dishesPage)) switchFrame(dishesPage === "first" ? "second" : "third");
+        else goToSection("aevum-footer");
+      } else if (direction < 0 && accumulatedDelta <= -70) {
+        accumulatedDelta = 0;
+        if (dishesPage !== "first") switchFrame(dishesPage === "third" ? "second" : "first");
+        else goToSection("home");
+      }
+    }
+
+    function onTouchStart(e: TouchEvent) {
+      touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
+    }
+    function onTouchEnd(e: TouchEvent) {
+      if (!touchStart) return;
+      const box = boxRef.current;
+      const start = touchStart;
+      touchStart = null;
+      if (!box) return;
+      const rect = box.getBoundingClientRect();
+      if (dishesSectionCoverage(rect) < 0.99) return;
+
+      const dy = e.changedTouches[0].clientY - start.y;
+      const dx = e.changedTouches[0].clientX - start.x;
+      const elapsed = Date.now() - start.time;
+      if (elapsed > 800 || Math.abs(dy) < 45 || Math.abs(dy) < Math.abs(dx)) return;
+      if (dy < 0) {
+        if (canAdvanceDishesPage(dishesPage)) switchFrame(dishesPage === "first" ? "second" : "third");
+        else goToSection("aevum-footer");
+      } else {
+        if (dishesPage !== "first") switchFrame(dishesPage === "third" ? "second" : "first");
+        else goToSection("home");
+      }
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      if (wheelDebounceTimer) window.clearTimeout(wheelDebounceTimer);
+      window.removeEventListener("wheel", onWheel, { capture: true });
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [dishesPage, setDishesPage]);
+
+  return (
+    <div className="relative w-full h-dvh md:hidden flex items-center justify-center overflow-hidden bg-[#f1dfcf]">
+      <div ref={boxRef} className="relative mx-auto h-full max-h-dvh w-full max-w-[56.25dvh] aspect-[9/16] overflow-hidden">
+        <img
+          src="/sakura-assets/_assets/media/dishes-clean-bg.png"
+          alt="Sakura Dishes Background"
+          className="absolute inset-0 h-full w-full object-cover object-center pointer-events-none select-none"
+          draggable={false}
+        />
+
+        <div style={mobilePositioned("bandTop")} className="z-[5]">
+          <div className="h-full w-full bg-black" style={{ transform: "rotate(-32deg)" }} />
+        </div>
+        <div style={mobilePositioned("bandBottom")} className="z-[5]">
+          <div className="h-full w-full bg-black" style={{ transform: "rotate(-32deg)" }} />
+        </div>
+
+        <h2
+          style={mobilePositioned("headingText")}
+          className="z-10 select-none whitespace-nowrap uppercase leading-[0.95] text-black"
+        >
+          <span style={{ fontFamily: "YAEzv44m-7M_0, sans-serif", fontWeight: 400, fontSize: "12.5vw" }}>
+            Top
+            <br />
+            Dishes
+          </span>
+        </h2>
+
+        <img key={`${active.page}-top-img`} src={active.topSrc} alt={active.top.title} style={mobilePositioned("dishTopImage")} className="sakura-mobile-dish-fade z-10 select-none object-contain" draggable={false} />
+        <div key={`${active.page}-top-text`} style={mobilePositioned("dishTopText")} className="sakura-mobile-dish-fade z-10 select-none text-left">
+          <div className="text-[5.6vw] font-black leading-tight text-black">{active.top.number}</div>
+          <div className="text-[5.6vw] font-black uppercase leading-tight text-black">{active.top.title}</div>
+        </div>
+
+        <img key={`${active.page}-bottom-img`} src={active.bottomSrc} alt={active.bottom.title} style={mobilePositioned("dishBottomImage")} className="sakura-mobile-dish-fade z-10 select-none object-contain" draggable={false} />
+        <div key={`${active.page}-bottom-text`} style={mobilePositioned("dishBottomText")} className="sakura-mobile-dish-fade z-10 select-none text-left">
+          <div className="text-[5.6vw] font-black leading-tight text-black">{active.bottom.number}</div>
+          <div className="text-[5.6vw] font-black uppercase leading-tight text-black">{active.bottom.title}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SakuraExperience() {
   const [activeNav, setActiveNav] = useState("home");
   const [dishesPage, setDishesPage] = useState<DishesPage>("first");
@@ -2605,22 +2973,22 @@ export default function SakuraExperience() {
   }, [dishesPage]);
 
   return (
-    <MobileLayoutProvider>
-      <main className="w-full bg-[#f1dfcf]">
-        {!isDisclaimerAccepted && (
-          <AevumDisclaimerGate onAccept={handleDisclaimerAccept} />
-        )}
-        {isLoadingActive && (
-          <AevumLoadingScreen onComplete={handleLoadingComplete} />
-        )}
-        <SakuraNavbar
-          activeNav={activeNav}
-          setActiveNav={setActiveNav}
-          dishesPage={dishesPage}
-          setDishesPage={setDishesPage}
-        />
-        {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
-          <div key={section.id} id={section.id}>
+    <main className="w-full bg-[#f1dfcf]">
+      {!isDisclaimerAccepted && (
+        <AevumDisclaimerGate onAccept={handleDisclaimerAccept} />
+      )}
+      {isLoadingActive && (
+        <AevumLoadingScreen onComplete={handleLoadingComplete} />
+      )}
+      <SakuraNavbar
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        dishesPage={dishesPage}
+        setDishesPage={setDishesPage}
+      />
+      {sections.filter((section) => renderedSectionIds.has(section.id)).map((section) => (
+        <div key={section.id} id={section.id}>
+          <div className="hidden md:block h-full w-full">
             <DesignStage
               section={section}
               activeNav={activeNav}
@@ -2630,12 +2998,23 @@ export default function SakuraExperience() {
               isHeroRevealed={isHeroRevealed}
             />
           </div>
-        ))}
-        <SakuraZenAudio />
-        <AevumAgencyFooter />
-      </main>
-      <MobileLayoutStudioHUD />
-    </MobileLayoutProvider>
+          {section.id === "home" && (
+            <MobileHeroSection
+              onExploreMenu={() => {
+                setActiveNav("dishes-1");
+                setDishesPage("first");
+                scrollToSection("dishes-1");
+              }}
+            />
+          )}
+          {section.id === "dishes-1" && (
+            <MobileDishesSection dishesPage={dishesPage} setDishesPage={setDishesPage} />
+          )}
+        </div>
+      ))}
+      <SakuraZenAudio />
+      <AevumAgencyFooter />
+    </main>
   );
 }
 
